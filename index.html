@@ -65,7 +65,7 @@
     .splash{ background:#000; overflow:hidden; z-index: 20; }
     .splashInner{
       text-align:center; color:#9fd0ff;
-      animation: splashIn 1.6s ease both;
+      animation: splashIn 1.2s ease both;
       letter-spacing:.04em;
     }
     .splash h1{
@@ -197,6 +197,7 @@
       background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30;
     }
     .rotateOverlay .card{max-width: 560px}
+    /* En escritorio nunca bloquear */
     .frame[data-mobile="false"] .rotateOverlay{ display:none !important; pointer-events:none !important; }
 
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
@@ -226,7 +227,7 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional (©) -->
+    <!-- Intro profesional -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
         <h1>Aicade Games</h1>
@@ -439,21 +440,23 @@
     </div>
   </div>
 
-  <!-- Firebase SDK y Firestore -->
+  <!-- Firebase SDK y Firestore (modular v9) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
-      getFirestore, doc, setDoc, getDoc,
-      collection, query, orderBy, limit, startAfter, getDocs, onSnapshot
+      getFirestore, doc, setDoc,
+      collection, query, orderBy, limit, startAfter, getDocs
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_PROYECTO.firebaseapp.com",
-      projectId: "TU_PROYECTO",
-      storageBucket: "TU_PROYECTO.appspot.com",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
+      apiKey: "AIzaSyBWqJI7OKZcEjN2CeTZxPi8pWzo8rBMIkI",
+      authDomain: "nearmemarketplace-ce82b.firebaseapp.com",
+      databaseURL: "https://nearmemarketplace-ce82b-default-rtdb.firebaseio.com",
+      projectId: "nearmemarketplace-ce82b",
+      storageBucket: "nearmemarketplace-ce82b.firebasestorage.app",
+      messagingSenderId: "711845990024",
+      appId: "1:711845990024:web:7948ad5e5606765514d93d",
+      measurementId: "G-X75JHEDQJ0"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -580,7 +583,6 @@
     const LS = {
       best: 'darklight_best',
       history: 'darklight_history',
-      users: 'darklight_comp_users', // ya no se usa para ranking global, solo caché opcional
       identity: 'darklight_identity',
       shipIndex: 'darklight_ship_index',
       sound: 'darklight_sound',
@@ -710,14 +712,14 @@
           const users = [];
           snap.forEach(d=> users.push({ u: d.id, ...d.data() }));
           renderRanking(users);
-          if(users.length>0){
+          if(snap.docs.length>0){
             compCursorStack.push(compLastDoc);
             compLastDoc = snap.docs[snap.docs.length-1];
             compPage += 1;
             compPageEl.textContent = compPage;
           }
         }else{
-          // anterior
+          // Anterior o reset
           if(compCursorStack.length>1){
             compCursorStack.pop(); // quita actual
             const prevCursor = compCursorStack[compCursorStack.length-1];
@@ -732,7 +734,7 @@
             compPage = Math.max(1, compPage-1);
             compPageEl.textContent = compPage;
           }else{
-            // volver a la primera página
+            // Primera página
             compLastDoc = null; compCursorStack = [];
             const qFirst = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
             const snapFirst = await getDocs(qFirst);
@@ -748,13 +750,13 @@
         console.warn('loadRankingPage error', e);
       }
     }
-
     async function loadRankingFirstPage(){
       compPage = 1; compLastDoc = null; compCursorStack = [];
+      compPageEl.textContent = compPage;
       await loadRankingPage(true);
     }
 
-    /* ==== WebSocket chat (opcional, aquí desactivado) ==== */
+    /* ==== Toast (logros) ==== */
     function pushToast(text){
       chatMsgs.innerHTML += `<div class="msg">${text}</div>`;
       chatToast.classList.remove('hidden');
@@ -762,7 +764,6 @@
       setTimeout(()=>{ chatToast.classList.remove('show'); setTimeout(()=>chatToast.classList.add('hidden'),300); }, 3200);
     }
     function sendAchievement(text){
-      // broadcasting opcional con WebSocket si deseas
       pushToast(`${state.user||'Tú'} ${text}`);
     }
 
@@ -1315,7 +1316,8 @@
         beep(960,.12,'triangle',.06); setTimeout(()=>beep(720,.1,'sine',.05),120);
         if(state.competitive && state.user){
           state.victories += 1;
-          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
+          // No bloquea el loop: se dispara sin await
+          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
           sendAchievement('subió de nivel y ganó 1 victoria');
         }
       }
@@ -1362,10 +1364,10 @@
       if(state.competitive && state.user){
         if(win){
           state.victories += 1;
-          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
+          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
           sendAchievement('ganó una partida');
         }else{
-          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
+          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
         }
       }
       showOverlay(win?'¡Victoria!':'Game Over', `Puntaje: ${state.score}. Récord: ${state.best}`);
@@ -1538,11 +1540,20 @@
     requestAnimationFrame(loop);
 
     /* ==== Flujos UI + clics/touch asegurados ==== */
-    setTimeout(()=>{
-      splash.classList.add('hidden');
-      mainMenu.classList.remove('hidden');
-      updateMobileOrientationUI();
-    }, 1200);
+    // Evita congelamiento: muestra el menú sí o sí, y oculta splash luego
+    document.addEventListener('DOMContentLoaded', ()=>{
+      try{
+        mainMenu.classList.remove('hidden');
+        setTimeout(()=>{
+          splash.classList.add('hidden');
+          updateMobileOrientationUI();
+        }, 1200);
+      }catch(e){
+        // En caso de error, que nunca bloquee:
+        mainMenu.classList.remove('hidden');
+        splash.classList.add('hidden');
+      }
+    });
 
     // Bind genérico click + touch
     function bindPress(el, fn){
@@ -1604,7 +1615,8 @@
       if(!name){ alert('Ingresa un usuario o usa tu perfil.'); return; }
       if(!identityMatches(name)){ alert('La identidad está bloqueada por nombre + IP. Usa tu usuario registrado.'); return; }
       await lockIdentity(name);
-      await saveUserToFirestore(name, 0, state.location.country, state.location.region);
+      // Guarda inicial en Firestore
+      void saveUserToFirestore(name, 0, state.location.country, state.location.region);
       compModal.classList.add('hidden');
       startGame(true);
     });
@@ -1626,7 +1638,7 @@
       const name = (profileNameInput.value||'').trim();
       if(!name){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(name);
-      await saveUserToFirestore(name, state.victories||0, state.location.country, state.location.region);
+      void saveUserToFirestore(name, state.victories||0, state.location.country, state.location.region);
       alert('Perfil guardado.');
     });
     bindPress(profileGear, ()=>{
@@ -1638,13 +1650,13 @@
       const newName = (settingsNameInput.value||'').trim();
       if(!newName){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(newName);
-      await saveUserToFirestore(newName, state.victories||0, state.location.country, state.location.region);
+      void saveUserToFirestore(newName, state.victories||0, state.location.country, state.location.region);
       settingsModal.classList.add('hidden');
       updateProfileUI();
       alert('Perfil actualizado.');
     });
 
-    /* ==== Restaurar sonido ==== */
+    /* ==== Sonido ==== */
     const soundStored = loadJSON(LS.sound, {enabled:true});
     soundEnabled = !!soundStored.enabled;
 
