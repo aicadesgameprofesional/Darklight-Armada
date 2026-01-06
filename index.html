@@ -54,7 +54,7 @@
     .overlay{position:absolute; inset:0; display:grid; place-items:center}
     .hidden{display:none}
 
-    /* Intro profesional (solo animación) */
+    /* Intro profesional */
     .splash{ background:#000; overflow:hidden; }
     .splashInner{
       text-align:center; color:#9fd0ff;
@@ -106,7 +106,6 @@
     .btn.ghost{background: rgba(20,28,50,.25); color:#cfe6ff; border:1px solid var(--border)}
     .btn.warn{background: linear-gradient(180deg, #ff9f2e, #ff7f2e); color:#1a0e00}
 
-    /* Título profesional (sin colores llamativos) */
     .titlePro{
       font-weight:900; letter-spacing:.06em; margin-bottom:10px; color: var(--title);
       text-shadow: 0 0 12px rgba(108,220,255,.25);
@@ -182,7 +181,7 @@
       background:rgba(20,28,50,.35); color:#dff7ff; width: 60%;
     }
 
-    /* Controles táctiles */
+    /* Controles táctiles (se muestran solo en dispositivos táctiles) */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
     }
@@ -228,11 +227,11 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional -->
+    <!-- Intro profesional (texto corregido) -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
-        <h1>Aicade Games ©</h1>
-        <p>Todos los derechos reservados 2026, RD</p>
+        <h1>Aicade Games</h1>
+        <p>Todos los derechos reservados. 2026, RD</p>
       </div>
     </div>
 
@@ -249,7 +248,7 @@
           <button class="btn ghost" id="menuProfile">Perfil</button>
           <button class="btn ghost" id="menuSound">Sonidos</button>
         </div>
-        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">Toque: Joystick para moverte, FIRE para disparar.</p>
+        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">PC: Flechas o A/D para moverte, Espacio para disparar, P pausa. Móvil: Joystick + FIRE.</p>
       </div>
     </div>
 
@@ -257,7 +256,7 @@
     <div id="gameOverlay" class="overlay hidden">
       <div class="card">
         <h1 id="overlayTitle">Pausa</h1>
-        <p id="overlayText">Toca para continuar.</p>
+        <p id="overlayText">Pulsa P o toca para continuar.</p>
         <div class="row">
           <button class="btn" id="overlayResume">Continuar</button>
           <button class="btn secondary" id="overlayRestart">Reiniciar</button>
@@ -275,12 +274,11 @@
             <div>
               <h2>Controles</h2>
               <ul>
-                <li><strong>Movimiento:</strong> Joystick izquierdo.</li>
-                <li><strong>Disparo:</strong> Botón FIRE.</li>
-                <li><strong>Pausa:</strong> Menú en pantalla.</li>
+                <li><strong>PC:</strong> Flechas o A/D para moverte. Espacio para disparar. P para pausar.</li>
+                <li><strong>Móvil/Tablet:</strong> Joystick para moverte y botón FIRE para disparar.</li>
               </ul>
               <h2>Objetivo</h2>
-              <p>Destruye meteoros y drones enemigos, recoge power-ups, alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias te suben de rango y cambian tu nave.</p>
+              <p>Destruye meteoros y drones enemigos, recoge power-ups y alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias suben tu rango y cambian tu nave.</p>
               <h2>Consejos</h2>
               <ul>
                 <li><strong>Perforante + Multi</strong> limpia oleadas.</li>
@@ -413,8 +411,8 @@
       </div>
     </div>
 
-    <!-- Controles táctiles (Android) -->
-    <div class="controls" id="touchControls">
+    <!-- Controles táctiles (solo si es táctil; se ocultan por defecto en PC) -->
+    <div class="controls" id="touchControls" hidden>
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
       <div class="fire" id="fireBtn">FIRE</div>
     </div>
@@ -435,6 +433,7 @@
       const code = cc.toUpperCase();
       return String.fromCodePoint(...[...code].map(c=>127397 + c.charCodeAt()));
     };
+    const isTouchDevice = ()=> ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
     /* DOM refs */
     const frame = document.getElementById('frame');
@@ -916,33 +915,57 @@
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* Touch controls only (Android-friendly) */
-    const isTouch = true;
-    let stickDrag = false, stickOrigin = {x:0,y:0};
-    stick.addEventListener('pointerdown', (e)=>{
-      stickDrag = true; stick.setPointerCapture(e.pointerId);
-      const rect = stick.getBoundingClientRect();
-      stickOrigin.x = rect.left + rect.width/2;
-      stickOrigin.y = rect.top + rect.height/2;
-    });
-    stick.addEventListener('pointermove', (e)=>{
-      if(!stickDrag) return;
-      const dx = e.clientX - stickOrigin.x;
-      const dy = e.clientY - stickOrigin.y;
-      const max = 40;
-      const nx = clamp(dx, -max, max);
-      const ny = clamp(dy, -max, max);
-      knob.style.left = (40 + nx) + 'px';
-      knob.style.top  = (40 + ny) + 'px';
-      state.input.left = nx < -8; state.input.right = nx > 8;
-    });
-    stick.addEventListener('pointerup', ()=>{
-      stickDrag = false;
-      knob.style.left = '40px'; knob.style.top = '40px';
-      state.input.left = false; state.input.right = false;
-    });
-    fireBtn.addEventListener('pointerdown', ()=>{ state.input.shoot = true; });
-    fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
+    /* INPUT: teclado (PC) + táctil (móvil) */
+    const keys = new Set();
+    function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
+    function enableKeyboard(){
+      window.addEventListener('keydown', (e)=>{
+        if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
+        if(isTypingTarget(e)) return;
+        keys.add(e.key);
+        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
+        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
+        if(e.key === ' ') state.input.shoot = true;
+        if(e.key.toLowerCase() === 'p') togglePause();
+      });
+      window.addEventListener('keyup', (e)=>{
+        if(isTypingTarget(e)) return;
+        keys.delete(e.key);
+        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
+        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
+        if(e.key === ' ') state.input.shoot = false;
+      });
+    }
+    function enableTouch(){
+      touchControls.hidden = false;
+      let stickDrag = false, stickOrigin = {x:0,y:0};
+      stick.addEventListener('pointerdown', (e)=>{
+        stickDrag = true; stick.setPointerCapture(e.pointerId);
+        const rect = stick.getBoundingClientRect();
+        stickOrigin.x = rect.left + rect.width/2;
+        stickOrigin.y = rect.top + rect.height/2;
+      });
+      stick.addEventListener('pointermove', (e)=>{
+        if(!stickDrag) return;
+        const dx = e.clientX - stickOrigin.x;
+        const dy = e.clientY - stickOrigin.y;
+        const max = 40;
+        const nx = clamp(dx, -max, max);
+        const ny = clamp(dy, -max, max);
+        knob.style.left = (40 + nx) + 'px';
+        knob.style.top  = (40 + ny) + 'px';
+        state.input.left = nx < -8; state.input.right = nx > 8;
+      });
+      stick.addEventListener('pointerup', ()=>{
+        stickDrag = false;
+        knob.style.left = '40px'; knob.style.top = '40px';
+        state.input.left = false; state.input.right = false;
+      });
+      fireBtn.addEventListener('pointerdown', ()=>{ state.input.shoot = true; });
+      fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
+    }
+    // Detecta entorno y habilita solo lo necesario
+    if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
 
     /* Overlay helpers */
     function showOverlay(title, text, buttons=true){
@@ -1166,7 +1189,7 @@
     function togglePause(){
       if(!state.running) return;
       state.paused = !state.paused;
-      if(state.paused){ showOverlay('Pausa','Toca para continuar.'); } else { hideOverlay(); }
+      if(state.paused){ showOverlay('Pausa','Pulsa P o toca para continuar.'); } else { hideOverlay(); }
     }
     function finishRun(win=false){
       state.running = false;
