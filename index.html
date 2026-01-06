@@ -21,7 +21,7 @@
       height:100%; margin:0;
       background:radial-gradient(1200px 700px at 50% 100%, #111730 0%, var(--bg) 60%);
       color:var(--fg); font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
-      display:grid; place-items:center; /* Pantalla del juego perfectamente centrada */
+      display:grid; place-items:center;
     }
     .frame{
       width: min(96vw, 1120px);
@@ -106,7 +106,7 @@
     .btn.ghost{background: rgba(20,28,50,.25); color:#cfe6ff; border:1px solid var(--border)}
     .btn.warn{background: linear-gradient(180deg, #ff9f2e, #ff7f2e); color:#1a0e00}
 
-    /* Título profesional (sin colorines) */
+    /* Título profesional (sin colores llamativos) */
     .titlePro{
       font-weight:900; letter-spacing:.06em; margin-bottom:10px; color: var(--title);
       text-shadow: 0 0 12px rgba(108,220,255,.25);
@@ -182,6 +182,25 @@
       background:rgba(20,28,50,.35); color:#dff7ff; width: 60%;
     }
 
+    /* Controles táctiles */
+    .controls{
+      position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
+    }
+    .stick{
+      width:140px; height:140px; border-radius:50%; background: rgba(20,28,50,.35);
+      border:1px dashed rgba(110,160,255,.35); position:relative; touch-action:none;
+    }
+    .knob{
+      width:60px; height:60px; border-radius:50%; background: rgba(108,220,255,.5);
+      border:1px solid rgba(110,160,255,.55); position:absolute; left:40px; top:40px;
+      box-shadow: var(--shadow);
+    }
+    .fire{
+      width:110px; height:110px; border-radius:16px; display:grid; place-items:center;
+      background: rgba(255,70,160,.35); border:1px dashed rgba(255,110,190,.5); color:#ffe3f0; font-weight:800;
+      user-select:none; touch-action:none;
+    }
+
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
   </style>
 </head>
@@ -230,7 +249,7 @@
           <button class="btn ghost" id="menuProfile">Perfil</button>
           <button class="btn ghost" id="menuSound">Sonidos</button>
         </div>
-        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">Creado por Sam Alexander Castle.</p>
+        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">Toque: Joystick para moverte, FIRE para disparar.</p>
       </div>
     </div>
 
@@ -238,7 +257,7 @@
     <div id="gameOverlay" class="overlay hidden">
       <div class="card">
         <h1 id="overlayTitle">Pausa</h1>
-        <p id="overlayText">Pulsa P para continuar.</p>
+        <p id="overlayText">Toca para continuar.</p>
         <div class="row">
           <button class="btn" id="overlayResume">Continuar</button>
           <button class="btn secondary" id="overlayRestart">Reiniciar</button>
@@ -256,19 +275,18 @@
             <div>
               <h2>Controles</h2>
               <ul>
-                <li><strong>Movimiento:</strong> Flechas o A/D.</li>
-                <li><strong>Disparo:</strong> Espacio.</li>
-                <li><strong>Pausa:</strong> P.</li>
-                <li><strong>Toque:</strong> Joystick y botón FIRE.</li>
+                <li><strong>Movimiento:</strong> Joystick izquierdo.</li>
+                <li><strong>Disparo:</strong> Botón FIRE.</li>
+                <li><strong>Pausa:</strong> Menú en pantalla.</li>
               </ul>
               <h2>Objetivo</h2>
-              <p>Destruye meteoros, recoge power-ups y alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias te suben de rango y cambian tu nave.</p>
+              <p>Destruye meteoros y drones enemigos, recoge power-ups, alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias te suben de rango y cambian tu nave.</p>
               <h2>Consejos</h2>
               <ul>
-                <li><strong>Perforante + Multi:</strong> limpia oleadas.</li>
-                <li><strong>Dron:</strong> aumenta DPS y cobertura.</li>
-                <li><strong>Vórtice + Cadena:</strong> agrupa y remata.</li>
-                <li><strong>Escudo/Barrera:</strong> prioriza supervivencia.</li>
+                <li><strong>Perforante + Multi</strong> limpia oleadas.</li>
+                <li><strong>Dron</strong> aumenta DPS.</li>
+                <li><strong>Vórtice/Gravedad + Cadena</strong> agrupa y remata.</li>
+                <li><strong>Escudo/Barrera</strong> prioriza supervivencia.</li>
               </ul>
             </div>
             <div>
@@ -321,7 +339,7 @@
     <div id="compModal" class="overlay hidden">
       <div class="card">
         <h1>Competencia</h1>
-        <p>Entra con tu perfil y compite.</p>
+        <p>Entra con tu perfil y compite. El ranking muestra país y región.</p>
         <div class="row" style="gap:8px">
           <input id="compName" type="text" placeholder="Tu usuario (si no usarás perfil)" class="input" style="width:60%">
           <button class="btn" id="compUseProfile">Usar perfil</button>
@@ -395,8 +413,8 @@
       </div>
     </div>
 
-    <!-- Controles táctiles -->
-    <div class="controls" id="touchControls" hidden>
+    <!-- Controles táctiles (Android) -->
+    <div class="controls" id="touchControls">
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
       <div class="fire" id="fireBtn">FIRE</div>
     </div>
@@ -692,7 +710,6 @@
         multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
         pierce:0, homing:0, ricochet:0, heal:0, overdrive:0,
         vortex:0, chain:0, barrier:0, charge:0, teleport:0,
-        /* nuevas habilidades */
         phase:0, gravity:0, timewarp:0, nano:0, shock:0
       },
       bullets:[], enemies:[], parts:[], powerUps:[], stars:[], enemyBullets:[],
@@ -813,7 +830,6 @@
       {key:'homing', label:'Teledirigido'}, {key:'ricochet', label:'Rebote'}, {key:'heal', label:'Curación'},
       {key:'slowmo', label:'Cámara lenta'}, {key:'magnet', label:'Imán'}, {key:'drone', label:'Dron'},
       {key:'vortex', label:'Vórtice'}, {key:'chain', label:'Cadena'}, {key:'charge', label:'Carga'}, {key:'teleport', label:'Teleport'},
-      /* nuevas habilidades */
       {key:'phase', label:'Fase'}, {key:'gravity', label:'Gravedad'}, {key:'timewarp', label:'Timewarp'},
       {key:'nano', label:'Nano-reparación'}, {key:'shock', label:'Onda de choque'}
     ];
@@ -837,7 +853,6 @@
       else if(key==='chain'){ c.strokeStyle='#ffe066'; c.beginPath(); c.arc(22,22,10,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(32,18,6,0,Math.PI*2); c.stroke(); }
       else if(key==='charge'){ c.strokeStyle='#ff9fb0'; c.beginPath(); c.moveTo(10,26); c.lineTo(34,18); c.stroke(); }
       else if(key==='teleport'){ c.strokeStyle='#b8ffa6'; c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); c.fillStyle='#b8ffa6'; c.beginPath(); c.arc(22,22,4,0,Math.PI*2); c.fill(); }
-      /* nuevas */
       else if(key==='phase'){ c.strokeStyle='#aef'; c.beginPath(); c.moveTo(12,12); c.lineTo(32,32); c.moveTo(12,32); c.lineTo(32,12); c.stroke(); }
       else if(key==='gravity'){ c.strokeStyle='#89f'; c.beginPath(); c.arc(22,22,6,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); }
       else if(key==='timewarp'){ c.strokeStyle='#cfd6ea'; c.beginPath(); c.arc(22,22,12,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(22,22); c.lineTo(26,16); c.stroke(); }
@@ -901,29 +916,8 @@
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* Input teclado */
-    const keys = new Set();
-    function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
-    window.addEventListener('keydown', (e)=>{
-      if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
-      if(isTypingTarget(e)) return;
-      keys.add(e.key);
-      state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
-      state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
-      if(e.key === ' ') state.input.shoot = true;
-      if(e.key.toLowerCase() === 'p') togglePause();
-    });
-    window.addEventListener('keyup', (e)=>{
-      if(isTypingTarget(e)) return;
-      keys.delete(e.key);
-      state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
-      state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
-      if(e.key === ' ') state.input.shoot = false;
-    });
-
-    /* Touch controls */
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if(isTouch) touchControls.hidden = false;
+    /* Touch controls only (Android-friendly) */
+    const isTouch = true;
     let stickDrag = false, stickOrigin = {x:0,y:0};
     stick.addEventListener('pointerdown', (e)=>{
       stickDrag = true; stick.setPointerCapture(e.pointerId);
@@ -988,7 +982,7 @@
       state.enemies.push({
         type,
         x: rand(20, W-20), y: -size, r: size/2,
-        vx: rand(-48, 48), vy: Math.max(120, speed), // evita frizados
+        vx: rand(-48, 48), vy: Math.max(120, speed),
         hp: Math.max(1, (size/22)|0) + (type==='tank'?2:0),
         wobble: rand(0,Math.PI*2),
         color: colorMap[type],
@@ -1109,7 +1103,6 @@
       if(kind==='barrier')  p.barrier = Math.max(p.barrier, 6);
       if(kind==='charge')   p.charge = Math.max(p.charge, 6);
       if(kind==='teleport') p.teleport = Math.max(p.teleport, 1);
-      /* nuevas */
       if(kind==='phase')    p.phase = Math.max(p.phase, 4);
       if(kind==='gravity')  p.gravity = Math.max(p.gravity, 6);
       if(kind==='timewarp') p.timewarp = Math.max(p.timewarp, 6);
@@ -1173,7 +1166,7 @@
     function togglePause(){
       if(!state.running) return;
       state.paused = !state.paused;
-      if(state.paused){ showOverlay('Pausa','Pulsa P para continuar.'); } else { hideOverlay(); }
+      if(state.paused){ showOverlay('Pausa','Toca para continuar.'); } else { hideOverlay(); }
     }
     function finishRun(win=false){
       state.running = false;
