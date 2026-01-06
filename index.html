@@ -51,7 +51,7 @@
     .hidden{ display:none !important; pointer-events:none !important; }
 
     /* Splash */
-    .splash{ background:#000; overflow:hidden; z-index: 20; }
+    .splash{ background:#000; overflow:hidden; z-index: 50; }
     .splashInner{ text-align:center; color:#9fd0ff; animation: splashIn 1.2s ease both; letter-spacing:.04em; }
     .splash h1{
       font-size: clamp(30px, 7vw, 78px); margin:0 0 12px;
@@ -98,31 +98,6 @@
     .btn.ghost{background: rgba(20,28,50,.25); color:#cfe6ff; border:1px solid var(--border)}
     .btn.warn{background: linear-gradient(180deg, #ff9f2e, #ff7f2e); color:#1a0e00}
     @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
-
-    /* Inputs y cómo jugar */
-    .inputRow{ display:flex; gap:10px; flex-wrap:wrap; }
-    .field{ display:flex; flex-direction:column; gap:6px; width: clamp(220px, 44%, 420px); }
-    .label{ font-size:12px; color:#cfe6ff; text-align:left; }
-    input.input{ background: rgba(14,20,36,.5); border:1px solid rgba(110,160,255,.28); color:#e6f4ff; border-radius:10px; padding:10px 12px; outline:none; width:100%; }
-    .hint{ font-size:11px; color:#9fd0ff; text-align:left; }
-    .error{ font-size:11px; color: var(--error); text-align:left; display:none; }
-    .field.invalid .error{ display:block; }
-
-    .iconGrid{ display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; align-items:center; }
-    .iconCard{ display:flex; align-items:center; gap:8px; background: rgba(10,14,26,.35); border:1px solid var(--border); border-radius:8px; padding:6px; }
-    .iconCanvas{ width:24px; height:24px; }
-
-    /* Tablas y scroll */
-    table{width:100%; border-collapse:collapse; margin-top:10px}
-    th, td{padding:8px 10px; border-bottom:1px solid rgba(110,160,255,.22); text-align:left}
-    th{color:#9fd0ff}
-
-    .scrollArea{
-      max-height: 64vh; overflow:auto; border-radius:12px; border:1px solid rgba(110,160,255,.25);
-      background: rgba(10,14,26,.45); padding:12px; position:relative; cursor:grab;
-    }
-    .scrollArea.dragging{cursor:grabbing}
-    .scrollControls{ display:flex; justify-content:space-between; gap:10px; margin-top:10px; }
 
     /* Controles táctiles */
     .controls{
@@ -179,14 +154,14 @@
     <div id="levelToast" class="levelToast"></div>
 
     <!-- Splash -->
-    <div id="splash" class="overlay splash scanlines">
+    <div id="splash" class="overlay splash scanlines" aria-hidden="true">
       <div class="splashInner">
         <h1>Aicade Games</h1>
         <p>Todos los derechos reservados © 2026, RD</p>
       </div>
     </div>
 
-    <!-- Menú principal épico -->
+    <!-- Menú principal -->
     <div id="mainMenu" class="overlay hidden" style="z-index: 15">
       <div class="card">
         <div class="titlePro" style="font-size: clamp(28px, 5vw, 56px); text-shadow: 0 0 12px rgba(108,220,255,.35); animation: neonFlicker 3.2s ease-in-out infinite alternate;">Darklight Armada: Neon Fury</div>
@@ -196,8 +171,6 @@
           <button class="btn ghost" id="menuHow" type="button">Cómo jugar</button>
           <button class="btn secondary" id="menuScores" type="button">Puntos</button>
           <button class="btn warn" id="menuCompete" type="button">Competencia</button>
-          <button class="btn ghost" id="menuProfile" type="button">Perfil</button>
-          <button class="btn ghost" id="menuAuth" type="button">Acceso</button>
           <button class="btn ghost" id="menuSound" type="button">Sonidos</button>
         </div>
         <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">
@@ -216,167 +189,6 @@
           <button class="btn secondary" id="overlayRestart" type="button">Reiniciar</button>
           <button class="btn ghost" id="overlayMenu" type="button">Menú</button>
           <button class="btn warn" id="overlayQuit" type="button">Salir</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cómo jugar -->
-    <div id="howModal" class="overlay hidden" style="z-index: 26">
-      <div class="card" style="text-align:left">
-        <h1>Cómo jugar</h1>
-        <div class="scrollArea" id="howScroll">
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
-            <div>
-              <h2>Controles</h2>
-              <ul>
-                <li><strong>Teclado:</strong> Flechas o A/D para moverte. Espacio dispara. P pausa.</li>
-                <li><strong>Mouse:</strong> Clic arriba dispara; clic izquierda/derecha mueve.</li>
-                <li><strong>Móvil/Tablet:</strong> Joystick y botón FIRE.</li>
-              </ul>
-              <h2>Objetivo</h2>
-              <p>Alcanza la meta, derrota al jefe y sube de nivel. La meta se triplica cada nivel.</p>
-            </div>
-            <div>
-              <h2>Poderes y habilidades</h2>
-              <div id="iconGrid" class="iconGrid"></div>
-            </div>
-          </div>
-        </div>
-        <div class="scrollControls">
-          <button class="btn ghost" id="howScrollTop" type="button">Arriba</button>
-          <button class="btn ghost" id="howScrollBottom" type="button">Abajo</button>
-          <button class="btn" id="howClose" type="button">Cerrar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sonidos -->
-    <div id="soundModal" class="overlay hidden" style="z-index: 26">
-      <div class="card">
-        <h1>Sonidos</h1>
-        <p>Activa o desactiva efectos de sonido.</p>
-        <div class="row">
-          <button class="btn" id="soundOn" type="button">Encender</button>
-          <button class="btn ghost" id="soundOff" type="button">Apagar</button>
-          <button class="btn" id="soundClose" type="button">Cerrar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Puntuaciones -->
-    <div id="scoresModal" class="overlay hidden" style="z-index: 26">
-      <div class="card">
-        <h1>Puntuaciones</h1>
-        <p>Récord local y últimas partidas.</p>
-        <div id="scoresSummary" class="row" style="justify-content:space-between"></div>
-        <div class="scrollArea" id="scoresScroll">
-          <table id="scoresTable">
-            <thead><tr><th>Fecha</th><th>Puntos</th><th>Nivel</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="scrollControls">
-          <button class="btn ghost" id="scoresTop" type="button">Arriba</button>
-          <button class="btn ghost" id="scoresBottom" type="button">Abajo</button>
-          <button class="btn" id="scoresClose" type="button">Cerrar</button>
-          <button class="btn ghost" id="scoresClear" type="button">Limpiar historial</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Competencia -->
-    <div id="compModal" class="overlay hidden" style="z-index: 26">
-      <div class="card">
-        <h1>Competencia</h1>
-        <p>Compite con tu perfil. El ranking muestra puntuación total.</p>
-        <div class="row" style="gap:8px">
-          <button class="btn" id="compUseProfile" type="button">Competir con mi perfil</button>
-        </div>
-        <h2 style="margin-top:10px">Ranking</h2>
-        <div class="scrollArea" id="compScroll">
-          <table id="compTable">
-            <thead><tr><th>Usuario</th><th>Victorias</th><th>Rango</th><th>Tag</th><th>País</th><th>Puntuación</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="scrollControls" style="flex-wrap:wrap">
-          <div style="display:flex; gap:8px">
-            <button class="btn ghost" id="compPrevPage" type="button">Anterior</button>
-            <button class="btn ghost" id="compNextPage" type="button">Siguiente</button>
-            <div class="pill"><strong>Página:</strong> <span id="compPage">1</span></div>
-          </div>
-          <div style="display:flex; gap:8px">
-            <button class="btn" id="compClose" type="button">Cerrar</button>
-            <button class="btn ghost" id="compShare" type="button">Compartir ranking (PNG)</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Acceso -->
-    <div id="authModal" class="overlay hidden" style="z-index: 27">
-      <div class="card">
-        <h1>Acceso al juego</h1>
-        <p style="color:#cfe6ff">Tu progreso y naves se guardan con tu cuenta.</p>
-        <div class="inputRow">
-          <div class="field" id="fEmail">
-            <div class="label">Correo electrónico</div>
-            <input id="authEmail" type="email" placeholder="ejemplo@dominio.com" class="input">
-            <div class="hint">Usa un correo válido.</div>
-            <div class="error">Ingresa un correo válido.</div>
-          </div>
-          <div class="field" id="fPassword">
-            <div class="label">Contraseña</div>
-            <input id="authPassword" type="password" placeholder="Mínimo 6 caracteres" class="input">
-            <div class="hint">Protege tu cuenta.</div>
-            <div class="error">La contraseña debe tener al menos 6 caracteres.</div>
-          </div>
-        </div>
-        <div class="inputRow">
-          <div class="field" id="fUsername" style="width: clamp(220px, 60%, 560px)">
-            <div class="label">Usuario visible</div>
-            <input id="authUsername" type="text" placeholder="Tu alias (ej. Anderson)" class="input">
-            <div class="hint">Este nombre aparece en el ranking.</div>
-            <div class="error">Ingresa un usuario (mínimo 2 caracteres).</div>
-          </div>
-        </div>
-        <div class="row" style="gap:8px">
-          <button class="btn" id="btnRegister" type="button">Registrarse</button>
-          <button class="btn secondary" id="btnLogin" type="button">Iniciar sesión</button>
-          <button class="btn ghost" id="btnLogout" type="button">Cerrar sesión</button>
-          <button class="btn" id="authClose" type="button">Cerrar</button>
-        </div>
-        <p id="authMsg" style="margin-top:10px; color:#cfe6ff"></p>
-      </div>
-    </div>
-
-    <!-- Perfil -->
-    <div id="profileModal" class="overlay hidden" style="z-index: 26">
-      <div class="card">
-        <h1>Perfil del jugador</h1>
-        <div id="profileInfo" class="row" style="gap:10px; justify-content:space-between; flex-wrap:wrap">
-          <div class="pill"><strong>Usuario:</strong> <span id="profileUser">—</span><span id="profileFlag" class="flag" style="margin-left:6px">🏳️</span></div>
-          <div class="pill"><strong>Email:</strong> <span id="profileEmail">—</span></div>
-          <div class="pill"><strong>Puntuación:</strong> <span id="profileScore">0</span></div>
-          <div class="pill"><strong>Victorias:</strong> <span id="profileWins">0</span></div>
-          <div class="pill"><strong>Rango:</strong> <span id="profileRank">Bronce</span></div>
-          <div class="pill"><strong>Tag:</strong> <span id="profileTag">BR</span></div>
-          <div class="pill"><strong>Nivel actual:</strong> <span id="profileLevel">1</span></div>
-        </div>
-
-        <div class="shipSlider" style="display:grid; grid-template-columns: 48px 1fr 48px; gap:12px; align-items:center; margin-top:12px;">
-          <div id="arrowLeft" class="arrow" role="button" tabindex="0" style="width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background: rgba(20,28,50,.35); border:1px solid var(--border); color:#cfe6ff; font-weight:900; cursor:pointer; user-select:none;">◀</div>
-          <div class="shipCard" id="shipCard" style="position:relative; border:1px solid var(--border); border-radius:12px; background: rgba(10,14,26,.65); padding:8px;">
-            <div id="lockOverlay" class="hidden" style="position:absolute; inset:0; display:flex; flex-direction:column; gap:6px; align-items:center; justify-content:center; color:#ffd2dc; font-weight:900; text-transform:uppercase; letter-spacing:.05em; background: rgba(0,0,0,.42); border-radius:12px; border:1px solid rgba(255,110,150,.55);">BLOQUEADA<small id="lockMessage">Alcanza (nivel) para desbloquear</small></div>
-            <div id="unlockBadge" class="hidden" style="position:absolute; top:8px; right:8px; background: rgba(160,255,200,.2); border:1px solid rgba(160,255,200,.6); color:#e6fff2; padding:4px 8px; border-radius:999px; font-size:12px;">Desbloqueada</div>
-            <canvas id="shipPreview" width="480" height="180" style="width:100%; border-radius:12px;"></canvas>
-            <div style="margin-top:8px; text-align:center; color:#cfe6ff" id="shipTitle">Nave: —</div>
-          </div>
-          <div id="arrowRight" class="arrow" role="button" tabindex="0" style="width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background: rgba(20,28,50,.35); border:1px solid var(--border); color:#cfe6ff; font-weight:900; cursor:pointer; user-select:none;">▶</div>
-        </div>
-
-        <div class="row" style="justify-content:center; margin-top:10px">
-          <button class="btn" id="profileClose" type="button">Cerrar</button>
         </div>
       </div>
     </div>
@@ -410,18 +222,9 @@
     const frame = document.getElementById('frame');
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
-
     const splash = document.getElementById('splash');
     const mainMenu = document.getElementById('mainMenu');
-
     const menuPlay = document.getElementById('menuPlay');
-    const menuHow = document.getElementById('menuHow');
-    const menuScores = document.getElementById('menuScores');
-    const menuCompete = document.getElementById('menuCompete');
-    const menuProfile = document.getElementById('menuProfile');
-    const menuAuth = document.getElementById('menuAuth');
-    const menuSound = document.getElementById('menuSound');
-
     const gameOverlay = document.getElementById('gameOverlay');
     const overlayTitle = document.getElementById('overlayTitle');
     const overlayText = document.getElementById('overlayText');
@@ -429,67 +232,6 @@
     const overlayRestart = document.getElementById('overlayRestart');
     const overlayMenu = document.getElementById('overlayMenu');
     const overlayQuit = document.getElementById('overlayQuit');
-
-    const howModal = document.getElementById('howModal');
-    const howScroll = document.getElementById('howScroll');
-    const howClose = document.getElementById('howClose');
-    const iconGrid = document.getElementById('iconGrid');
-
-    const soundModal = document.getElementById('soundModal');
-    const soundOn = document.getElementById('soundOn');
-    const soundOff = document.getElementById('soundOff');
-    const soundClose = document.getElementById('soundClose');
-
-    const scoresModal = document.getElementById('scoresModal');
-    const scoresSummary = document.getElementById('scoresSummary');
-    const scoresTableBody = document.querySelector('#scoresTable tbody');
-    const scoresClose = document.getElementById('scoresClose');
-    const scoresClear = document.getElementById('scoresClear');
-    const scoresScroll = document.getElementById('scoresScroll');
-
-    const compModal = document.getElementById('compModal');
-    const compClose = document.getElementById('compClose');
-    const compShare = document.getElementById('compShare');
-    const compTableBody = document.querySelector('#compTable tbody');
-    const compScroll = document.getElementById('compScroll');
-    const compPrevPage = document.getElementById('compPrevPage');
-    const compNextPage = document.getElementById('compNextPage');
-    const compPageEl = document.getElementById('compPage');
-    const compUseProfile = document.getElementById('compUseProfile');
-
-    const authModal = document.getElementById('authModal');
-    const authEmail = document.getElementById('authEmail');
-    const authPassword = document.getElementById('authPassword');
-    const authUsername = document.getElementById('authUsername');
-    const btnRegister = document.getElementById('btnRegister');
-    const btnLogin = document.getElementById('btnLogin');
-    const btnLogout = document.getElementById('btnLogout');
-    const authClose = document.getElementById('authClose');
-    const authMsg = document.getElementById('authMsg');
-    const fEmail = document.getElementById('fEmail');
-    const fPassword = document.getElementById('fPassword');
-    const fUsername = document.getElementById('fUsername');
-
-    const profileModal = document.getElementById('profileModal');
-    const profileClose = document.getElementById('profileClose');
-    const profileUser = document.getElementById('profileUser');
-    const profileEmail = document.getElementById('profileEmail');
-    const profileScore = document.getElementById('profileScore');
-    const profileWins = document.getElementById('profileWins');
-    const profileRank = document.getElementById('profileRank');
-    const profileTag = document.getElementById('profileTag');
-    const profileFlag = document.getElementById('profileFlag');
-    const profileLevel = document.getElementById('profileLevel');
-
-    const shipPreview = document.getElementById('shipPreview');
-    const shipCtx = shipPreview.getContext('2d');
-    const shipTitle = document.getElementById('shipTitle');
-    const arrowLeft = document.getElementById('arrowLeft');
-    const arrowRight = document.getElementById('arrowRight');
-    const shipCard = document.getElementById('shipCard');
-    const lockOverlay = document.getElementById('lockOverlay');
-    const lockMessage = document.getElementById('lockMessage');
-    const unlockBadge = document.getElementById('unlockBadge');
 
     const scoreEl = document.getElementById('score');
     const livesEl = document.getElementById('lives');
@@ -506,10 +248,9 @@
 
     const rotateOverlay = document.getElementById('rotateOverlay');
     const tryLockBtn = document.getElementById('tryLock');
-
     const levelToast = document.getElementById('levelToast');
 
-    /* Audio (sólo tras interacción del usuario) */
+    /* Audio */
     let soundEnabled = true;
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audio = null;
@@ -524,37 +265,19 @@
     }
 
     /* Storage */
-    const LS = { best:'darklight_best', history:'darklight_history', sound:'darklight_sound', userCache:'darklight_user_cache', shipIndex:'darklight_ship_index' };
+    const LS = { best:'darklight_best', history:'darklight_history', sound:'darklight_sound' };
     const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
     const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
 
-    /* Rangos */
-    const rankTiers = [
-      {name:'Bronce', tag:'BR', minScore:0, minLevel:1},
-      {name:'Plata', tag:'PL', minScore:3000, minLevel:3},
-      {name:'Oro', tag:'OR', minScore:12000, minLevel:6},
-      {name:'Oficial', tag:'OF', minScore:30000, minLevel:9},
-      {name:'Espartano', tag:'ES', minScore:60000, minLevel:12},
-      {name:'Guerrero', tag:'GU', minScore:100000, minLevel:15},
-      {name:'Maestro', tag:'MA', minScore:160000, minLevel:18},
-      {name:'Kraken', tag:'KR', minScore:240000, minLevel:21},
-      {name:'Leviatán', tag:'LV', minScore:340000, minLevel:24},
-      {name:'Leyenda', tag:'LG', minScore:480000, minLevel:27}
-    ];
-    const shipOrder = rankTiers.map(t=>t.tag);
-    let shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
-
     /* Estado */
     const state = {
-      running:false, paused:false, competitive:false,
-      user: loadJSON(LS.userCache, null),
-      score:0, best: Number(localStorage.getItem(LS.best)||0), victories:0,
+      running:false, paused:false,
+      score:0, best: Number(localStorage.getItem(LS.best)||0),
       lives:3, tick:0, difficulty:1, flash:0,
       level:1, target:100, camera:{shake:0, x:0, y:0},
       player:{ x:0, y:0, w:56, h:22, speed:460, cooldown:0, multi:1,
-               shieldActiveMs:0, burst:0, slowmo:0, magnet:0, drone:false,
-               pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0,
-               phase:0, gravity:0, timewarp:0, nano:0, shock:0 },
+               shieldActiveMs:0, burst:0, slowmo:0, magnet:0,
+               pierce:0, homing:0, ricochet:0, overdrive:0, chain:0, barrier:0, charge:0, teleport:0, phase:0, gravity:0, timewarp:0, nano:0, shock:0 },
       bullets:[], enemies:[], parts:[], powerUps:[], stars:[], enemyBullets:[], homers:[],
       input:{left:false,right:false,shoot:false},
       spaceToneIndex: 0,
@@ -568,7 +291,134 @@
       const rect = frame.getBoundingClientRect();
       W = Math.floor(rect.width); H = Math.floor(rect.height);
       canvas.width = W * DPR; canvas.height = H * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
-      shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180;
+      state.player
+        <div class="titlePro" style="font-size: clamp(28px, 5vw, 56px); text-shadow: 0 0 12px rgba(108,220,255,.35); animation: neonFlicker 3.2s ease-in-out infinite alternate;">Darklight Armada: Neon Fury</div>
+        <h2>Menú principal</h2>
+        <div class="row">
+          <button class="btn" id="menuPlay" type="button">Jugar</button>
+          <button class="btn ghost" id="menuHow" type="button">Cómo jugar</button>
+          <button class="btn secondary" id="menuScores" type="button">Puntos</button>
+          <button class="btn warn" id="menuCompete" type="button">Competencia</button>
+          <button class="btn ghost" id="menuSound" type="button">Sonidos</button>
+        </div>
+        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">
+          PC: Flechas o A/D, Espacio dispara, P pausa. Mouse: clic arriba dispara; clic izquierda/derecha mueve. Móvil: Joystick + FIRE.
+        </p>
+      </div>
+    </div>
+
+    <!-- Overlay Pausa/Game Over -->
+    <div id="gameOverlay" class="overlay hidden" style="z-index: 25">
+      <div class="card">
+        <h1 id="overlayTitle">Pausa</h1>
+        <p id="overlayText">Pulsa P, clic o toca para continuar.</p>
+        <div class="row">
+          <button class="btn" id="overlayResume" type="button">Continuar</button>
+          <button class="btn secondary" id="overlayRestart" type="button">Reiniciar</button>
+          <button class="btn ghost" id="overlayMenu" type="button">Menú</button>
+          <button class="btn warn" id="overlayQuit" type="button">Salir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles táctiles -->
+    <div class="controls" id="touchControls" hidden>
+      <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
+      <div class="fire" id="fireBtn">FIRE</div>
+    </div>
+
+    <!-- Overlay rotación -->
+    <div id="rotateOverlay" class="rotateOverlay">
+      <div class="card">
+        <h1>Gira tu dispositivo</h1>
+        <p>Para jugar mejor, usa orientación horizontal.</p>
+        <div class="row">
+          <button class="btn" id="tryLock" type="button">Intentar ajustar a horizontal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    /* Utils */
+    const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
+    const rand = (a=0,b=1)=>Math.random()*(b-a)+a;
+    const pick = arr=>arr[(Math.random()*arr.length)|0];
+    const isMobileUA = ()=> /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (Math.min(screen.width, screen.height) < 768);
+
+    /* DOM refs */
+    const frame = document.getElementById('frame');
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const splash = document.getElementById('splash');
+    const mainMenu = document.getElementById('mainMenu');
+    const menuPlay = document.getElementById('menuPlay');
+    const gameOverlay = document.getElementById('gameOverlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayText = document.getElementById('overlayText');
+    const overlayResume = document.getElementById('overlayResume');
+    const overlayRestart = document.getElementById('overlayRestart');
+    const overlayMenu = document.getElementById('overlayMenu');
+    const overlayQuit = document.getElementById('overlayQuit');
+
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const powerEl = document.getElementById('power');
+    const powerTimeEl = document.getElementById('powerTime');
+    const bestEl = document.getElementById('best');
+    const levelEl = document.getElementById('level');
+    const targetEl = document.getElementById('target');
+
+    const touchControls = document.getElementById('touchControls');
+    const stick = document.getElementById('stick');
+    const knob = document.getElementById('knob');
+    const fireBtn = document.getElementById('fireBtn');
+
+    const rotateOverlay = document.getElementById('rotateOverlay');
+    const tryLockBtn = document.getElementById('tryLock');
+    const levelToast = document.getElementById('levelToast');
+
+    /* Audio */
+    let soundEnabled = true;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audio = null;
+    function ensureAudio(){ if(!AudioCtx) return; if(!audio) audio = new AudioCtx(); if(audio.state==='suspended') audio.resume(); }
+    function beep(freq=440, dur=0.08, type='square', vol=0.05){
+      if(!soundEnabled || !AudioCtx) return; ensureAudio();
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = type; o.frequency.value = freq; g.gain.value = vol;
+      o.connect(g); g.connect(audio.destination); o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + dur);
+      o.stop(audio.currentTime + dur + 0.01);
+    }
+
+    /* Storage */
+    const LS = { best:'darklight_best', history:'darklight_history', sound:'darklight_sound' };
+    const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
+    const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
+
+    /* Estado */
+    const state = {
+      running:false, paused:false,
+      score:0, best: Number(localStorage.getItem(LS.best)||0),
+      lives:3, tick:0, difficulty:1, flash:0,
+      level:1, target:100, camera:{shake:0, x:0, y:0},
+      player:{ x:0, y:0, w:56, h:22, speed:460, cooldown:0, multi:1,
+               shieldActiveMs:0, burst:0, slowmo:0, magnet:0,
+               pierce:0, homing:0, ricochet:0, overdrive:0, chain:0, barrier:0, charge:0, teleport:0, phase:0, gravity:0, timewarp:0, nano:0, shock:0 },
+      bullets:[], enemies:[], parts:[], powerUps:[], stars:[], enemyBullets:[], homers:[],
+      input:{left:false,right:false,shoot:false},
+      spaceToneIndex: 0,
+      boss:null, bossSpawned:false,
+      activePower: { key:null, expiresAt:0 }
+    };
+
+    /* Canvas y orientación */
+    let W=0, H=0, DPR = Math.min(2, window.devicePixelRatio || 1);
+    function resize(){
+      const rect = frame.getBoundingClientRect();
+      W = Math.floor(rect.width); H = Math.floor(rect.height);
+      canvas.width = W * DPR; canvas.height = H * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
       state.player.x = W/2; state.player.y = H-90;
     }
     function updateMobileOrientationUI(){
@@ -577,13 +427,11 @@
       rotateOverlay.classList.toggle('hidden', !(mobile && portrait));
     }
     window.addEventListener('resize', ()=>{ try{ resize(); updateMobileOrientationUI(); }catch{} });
-
     tryLockBtn.addEventListener('click', ()=>{ try{ if(screen.orientation?.lock){ screen.orientation.lock('landscape').catch(()=>{}); } }catch{} });
 
     /* Fondo espacio */
     const spacePalettes = [
-      ['#0b1020','#0b1426'], ['#0c111f','#0a1524'], ['#0c0f1c','#0a1322'], ['#0d101d','#0a1521'], ['#0d121c','#0a161f'],
-      ['#0d131a','#0a171e'], ['#0e141a','#0a181d'], ['#0e1519','#09181c'], ['#0f1518','#09191b'], ['#0f1618','#091a1a']
+      ['#0b1020','#0b1426'], ['#0c111f','#0a1524'], ['#0c0f1c','#0a1322'], ['#0d101d','#0a1521']
     ];
     function drawSpaceBackground(){
       const idx = state.spaceToneIndex % spacePalettes.length;
@@ -593,7 +441,7 @@
     }
     function spawnStars(){
       state.stars = []; const layers = [0.25, 0.6, 1];
-      layers.forEach((spd,i)=>{ const count = Math.floor((W*H)/15000 * (i+1));
+      layers.forEach((spd,i)=>{ const count = Math.floor((W*H)/16000 * (i+1));
         for(let k=0;k<count;k++){ state.stars.push({ x: rand(0,W), y: rand(0,H), r: rand(0.5,2.2-i), s: spd,
           c: i===0 ? 'rgba(140,160,200,.35)' : i===1 ? 'rgba(160,180,210,.45)' : 'rgba(220,230,240,.6)' }); } });
     }
@@ -618,11 +466,10 @@
       });
     }
 
-    /* Bosses únicos */
+    /* Bosses */
     function makeBoss(level){
       const size = 120 + level*6;
-      const base = { x: W/2, y: -size*0.8, r: size/2, vx: 0, vy: 110, hp: 40 + level*12, alive:true, fireCd: 0.9, pattern: level };
-      return base;
+      return { x: W/2, y: -size*0.8, r: size/2, vx: 0, vy: 110, hp: 40 + level*12, alive:true, fireCd: 0.9 };
     }
     function bossAttack(b, dt){
       b.fireCd -= dt;
@@ -638,34 +485,12 @@
           }
           b.fireCd = 1.1;
         }
-      }else if(state.level === 2){
-        if(b.fireCd <= 0){
-          const sweepCount = 8;
-          for(let i=0;i<sweepCount;i++){
-            state.enemyBullets.push({
-              x: 40 + i*((W-80)/(sweepCount-1)), y: b.y+20, vy: 260, vx: 0, life: 3.0, laser:true
-            });
-          }
-          b.fireCd = 1.2;
-        }
-      }else if(state.level === 3){
-        if(b.fireCd <= 0){
-          const shots = 12;
-          for(let i=0;i<shots;i++){
-            const ang = i/shots * Math.PI*2;
-            state.enemyBullets.push({ x:b.x, y:b.y, vy: Math.sin(ang)*180+60, vx: Math.cos(ang)*180, life: 3.0 });
-          }
-          b.fireCd = 1.0;
-        }
       }else{
         if(b.fireCd <= 0){
-          const mix = 6 + Math.min(6, state.level);
+          const mix = 8;
           for(let i=0;i<mix;i++){
             const ang = (-0.5 + i/(mix-1)) * Math.PI/3;
             state.enemyBullets.push({ x:b.x + Math.cos(ang)*20, y:b.y + Math.sin(ang)*20, vy: 280 + state.level*12, vx: Math.cos(ang)*140, life: 3.2 });
-          }
-          if(Math.random()<0.5){
-            state.homers.push({ x:b.x, y:b.y, vx: rand(-40,40), vy: 140, r: 12, life: 6, turnRate: 1.4, speed: 220, color:'#fc9' });
           }
           b.fireCd = 1.0;
         }
@@ -675,15 +500,13 @@
     /* Poderes */
     const powerLabels = {
       shield:'Escudo', barrier:'Barrera', multi:'Multi', burst:'Ráfaga', slowmo:'Cámara lenta', magnet:'Imán',
-      drone:'Dron', pierce:'Perforante', homing:'Teledirigido', ricochet:'Rebote', heal:'Curación',
-      overdrive:'Overdrive', vortex:'Vórtice', chain:'Cadena', charge:'Carga', teleport:'Teleport',
-      phase:'Fase', gravity:'Gravedad', timewarp:'Timewarp', nano:'Nano', shock:'Choque'
+      pierce:'Perforante', homing:'Teledirigido', ricochet:'Rebote', overdrive:'Overdrive', chain:'Cadena', charge:'Carga',
+      teleport:'Teleport', phase:'Fase', gravity:'Gravedad', timewarp:'Timewarp', nano:'Nano', shock:'Choque', heal:'Curación'
     };
     const powerColorStroke = {
       shield:'#6cf', barrier:'#6cf', multi:'#6cf', burst:'#f06', overdrive:'#ffd54f', pierce:'#39a9ff', homing:'#ffd54f',
-      ricochet:'#ff8ab4', heal:'#7cffb2', slowmo:'#cfe6ff', magnet:'#ff9f2e', drone:'#c86cff',
-      vortex:'#70a0ff', chain:'#ffe066', charge:'#ff9fb0', teleport:'#b8ffa6', phase:'#aef', gravity:'#89f',
-      timewarp:'#cfd6ea', nano:'#7fe3a3', shock:'#ff7f2e'
+      ricochet:'#ff8ab4', heal:'#7cffb2', slowmo:'#cfe6ff', magnet:'#ff9f2e', chain:'#ffe066', charge:'#ff9fb0',
+      teleport:'#b8ffa6', phase:'#aef', gravity:'#89f', timewarp:'#cfd6ea', nano:'#7fe3a3', shock:'#ff7f2e'
     };
     const powerKeys = Object.keys(powerLabels);
 
@@ -702,8 +525,6 @@
       else if(key==='heal'){ c.strokeStyle='#7cffb2'; c.beginPath(); c.moveTo(0,-6); c.lineTo(0,6); c.moveTo(-6,0); c.lineTo(6,0); c.stroke(); }
       else if(key==='slowmo'){ c.strokeStyle='#cfe6ff'; c.beginPath(); c.arc(0,0,7,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(0,0); c.lineTo(3,0); c.stroke(); }
       else if(key==='magnet'){ c.strokeStyle='#ff9f2e'; c.beginPath(); c.arc(0,0,6,Math.PI*0.2,Math.PI*0.8); c.stroke(); c.beginPath(); c.moveTo(-4,-2); c.lineTo(-4,2); c.stroke(); c.beginPath(); c.moveTo(4,-2); c.lineTo(4,2); c.stroke(); }
-      else if(key==='drone'){ c.fillStyle='#c86cff'; c.beginPath(); c.arc(0,-3,4,0,Math.PI*2); c.fill(); c.fillStyle='#6cf'; c.fillRect(-2,3,4,3); }
-      else if(key==='vortex'){ c.strokeStyle='#70a0ff'; for(let r=3;r<=8;r+=2){ c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke(); } }
       else if(key==='chain'){ c.strokeStyle='#ffe066'; c.beginPath(); c.arc(0,0,6,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(5,-3,4,0,Math.PI*2); c.stroke(); }
       else if(key==='charge'){ c.strokeStyle:'#ff9fb0'; c.beginPath(); c.moveTo(-6,6); c.lineTo(6,-2); c.stroke(); }
       else if(key==='teleport'){ c.strokeStyle:'#b8ffa6'; c.beginPath(); c.arc(0,0,8,0,Math.PI*2); c.stroke(); c.fillStyle:'#b8ffa6'; c.beginPath(); c.arc(0,0,2.6,0,Math.PI*2); c.fill(); }
@@ -714,7 +535,6 @@
       else if(key==='shock'){ c.strokeStyle:'#ff7f2e'; c.beginPath(); c.moveTo(-5,0); c.lineTo(0,-5); c.lineTo(0,0); c.lineTo(5,-3); c.stroke(); }
       c.restore();
     }
-
     function drawPowerPickup(pu){
       ctx.save();
       ctx.shadowColor = 'rgba(180,220,255,.6)'; ctx.shadowBlur = 10;
@@ -733,34 +553,19 @@
       state.flash = clamp(state.flash + 0.16, 0, 0.6);
     }
     function addShake(amount=10){ state.camera.shake = Math.min(0.7, state.camera.shake + amount/100); }
-
-    /* Colisión */
     function hitCircleRect(cx, cy, r, rx, ry, rw, rh){
       const nx = clamp(cx, rx, rx+rw), ny = clamp(cy, ry, ry+rh); const dx = cx - nx, dy = cy - ny; return dx*dx + dy*dy <= r*r;
     }
 
-    /* Naves y escudo visible */
-    const shipPalette = { BR:'#7a7676', PL:'#9fb3c9', OR:'#ffd166', OF:'#6cf', ES:'#f06', GU:'#9f6', MA:'#c86cff', KR:'#39a9ff', LV:'#ff8ab4', LG:'#00e6b3' };
-    function drawShipVariant(ctx2,x,y,tag,scale=1){
-      const glow = shipPalette[tag] || '#6cf';
+    /* Nave y escudo visible */
+    function drawShip(ctx2,x,y,scale=1){
       ctx2.save(); ctx2.translate(x,y); ctx2.scale(scale,scale);
-      ctx2.shadowColor = glow; ctx2.shadowBlur = 10; ctx2.fillStyle = 'rgba(140,220,255,.85)';
-      if(tag==='BR'){ ctx2.beginPath(); ctx2.moveTo(0,-18); ctx2.lineTo(18,14); ctx2.lineTo(0,10); ctx2.lineTo(-18,14); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='PL'){ ctx2.beginPath(); ctx2.moveTo(0,-22); ctx2.lineTo(22,2); ctx2.lineTo(0,12); ctx2.lineTo(-22,2); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='OR'){ ctx2.beginPath(); ctx2.moveTo(0,-20); ctx2.lineTo(26,8); ctx2.lineTo(0,6); ctx2.lineTo(-26,8); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='OF'){ ctx2.beginPath(); ctx2.moveTo(-8,-18); ctx2.lineTo(-20,10); ctx2.lineTo(-8,12); ctx2.closePath(); ctx2.fill(); ctx2.beginPath(); ctx2.moveTo(8,-18); ctx2.lineTo(20,10); ctx2.lineTo(8,12); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='ES'){ ctx2.beginPath(); ctx2.moveTo(0,-24); ctx2.lineTo(16,0); ctx2.lineTo(0,14); ctx2.lineTo(-16,0); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='GU'){ ctx2.beginPath(); ctx2.moveTo(0,-18); ctx2.lineTo(18,0); ctx2.lineTo(0,18); ctx2.lineTo(-18,0); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='MA'){ ctx2.beginPath(); ctx2.moveTo(0,-20); ctx2.lineTo(20,-2); ctx2.lineTo(12,14); ctx2.lineTo(-12,14); ctx2.lineTo(-20,-2); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='KR'){ ctx2.beginPath(); ctx2.moveTo(0,-22); ctx2.lineTo(10,0); ctx2.lineTo(0,10); ctx2.lineTo(-10,0); ctx2.closePath(); ctx2.fill();
-                           ctx2.beginPath(); ctx2.moveTo(20,2); ctx2.lineTo(26,12); ctx2.lineTo(14,10); ctx2.closePath(); ctx2.fill();
-                           ctx2.beginPath(); ctx2.moveTo(-20,2); ctx2.lineTo(-26,12); ctx2.lineTo(-14,10); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='LV'){ ctx2.beginPath(); ctx2.moveTo(0,-24); ctx2.lineTo(28,6); ctx2.lineTo(18,16); ctx2.lineTo(-18,16); ctx2.lineTo(-28,6); ctx2.closePath(); ctx2.fill(); }
-      else if(tag==='LG'){ ctx2.beginPath(); ctx2.moveTo(0,-26); ctx2.lineTo(22,-2); ctx2.lineTo(16,16); ctx2.lineTo(-16,16); ctx2.lineTo(-22,-2); ctx2.closePath(); ctx2.fill(); }
+      ctx2.shadowColor = '#6cf'; ctx2.shadowBlur = 10; ctx2.fillStyle = 'rgba(140,220,255,.85)';
+      ctx2.beginPath(); ctx2.moveTo(0,-18); ctx2.lineTo(18,14); ctx2.lineTo(0,10); ctx2.lineTo(-18,14); ctx2.closePath(); ctx2.fill();
       ctx2.shadowBlur = 0; ctx2.fillStyle = 'rgba(255,255,255,.3)';
       ctx2.beginPath(); ctx2.moveTo(-7,-6); ctx2.lineTo(0,-14); ctx2.lineTo(7,-6); ctx2.lineTo(0,-2); ctx2.closePath(); ctx2.fill();
-      ctx2.strokeStyle = glow; ctx2.lineWidth = 3; ctx2.beginPath(); ctx2.moveTo(-22,14); ctx2.lineTo(-28,20); ctx2.moveTo(22,14); ctx2.lineTo(28,20); ctx2.stroke();
-      ctx2.beginPath(); ctx2.arc(0,-18,2.6,0,Math.PI*2); ctx2.fillStyle = glow; ctx2.fill();
+      ctx2.strokeStyle = '#6cf'; ctx2.lineWidth = 3; ctx2.beginPath(); ctx2.moveTo(-22,14); ctx2.lineTo(-28,20); ctx2.moveTo(22,14); ctx2.lineTo(28,20); ctx2.stroke();
+      ctx2.beginPath(); ctx2.arc(0,-18,2.6,0,Math.PI*2); ctx2.fillStyle = '#6cf'; ctx2.fill();
 
       if(state.player.shieldActiveMs > 0){
         const tRatio = clamp(state.player.shieldActiveMs / 60000, 0, 1);
@@ -827,7 +632,7 @@
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
     overlayResume.addEventListener('click', ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
-    overlayRestart.addEventListener('click', ()=> startGame(state.competitive));
+    overlayRestart.addEventListener('click', ()=> startGame());
     overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
     overlayQuit.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
 
@@ -866,7 +671,6 @@
       if(kind==='overdrive'){ p.overdrive = 60; }
       if(kind==='slowmo'){ p.slowmo = 60; }
       if(kind==='magnet'){ p.magnet = 60; }
-      if(kind==='drone'){ p.drone = true; }
       if(kind==='chain'){ p.chain = 60; }
       if(kind==='charge'){ p.charge = 60; }
       if(kind==='teleport'){ p.teleport = 1; }
@@ -894,13 +698,12 @@
       levelEl.textContent = state.level; targetEl.textContent = state.target;
       state.camera.shake = 0; state.camera.x = 0; state.camera.y = 0;
       state.player = { x: W/2, y: H-90, w:56, h:22, speed:460, cooldown:0, multi:1,
-        shieldActiveMs:0, burst:0, slowmo:0, magnet:0, drone:false,
-        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0, phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
+        shieldActiveMs:0, burst:0, slowmo:0, magnet:0,
+        pierce:0, homing:0, ricochet:0, overdrive:0, chain:0, barrier:0, charge:0, teleport:0, phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
       state.bullets.length = 0; state.enemies.length = 0; state.parts.length = 0; state.powerUps.length = 0; state.enemyBullets.length = 0; state.homers.length = 0;
       spawnStars(); scoreEl.textContent = 'Puntos: 0'; livesEl.textContent = 'Vidas: 3'; powerEl.textContent = 'Power: —'; powerTimeEl.textContent = '00:00'; hideOverlay();
-      shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
     }
-    function startGame(competitive=false){ state.competitive = competitive; state.running = true; state.paused = false; resetStateForRun(); mainMenu.classList.add('hidden'); beep(720,.12,'sawtooth',.05); }
+    function startGame(){ state.running = true; state.paused = false; resetStateForRun(); mainMenu.classList.add('hidden'); beep(720,.12,'sawtooth',.05); }
     function togglePause(){ if(!state.running) return; state.paused = !state.paused; if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); } }
     function finishRun(win=false){
       state.running = false;
@@ -1135,8 +938,7 @@
       for(const h of state.homers){ ctx.shadowColor = h.color; ctx.shadowBlur = 8; ctx.strokeStyle = h.color; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(h.x, h.y, h.r, 0, Math.PI*2); ctx.stroke(); ctx.shadowBlur = 0; }
       for(const pu of state.powerUps) drawPowerPickup(pu);
 
-      const currentTag = shipOrder[shipIndex];
-      drawShipVariant(ctx, state.player.x, state.player.y, currentTag, 1.2);
+      drawShip(ctx, state.player.x, state.player.y, 1.2);
 
       if(state.camera.x!==0 || state.camera.y!==0){ ctx.restore(); ctx.globalAlpha = 1; }
 
@@ -1150,70 +952,8 @@
       el.addEventListener('touchstart', (e)=>{ e.preventDefault(); fn(); }, {passive:false});
       el.addEventListener('pointerdown', fn);
     }
-    function enableDragScroll(area){
-      let dragStartY = 0, startScrollTop = 0, dragging = false;
-      area.addEventListener('pointerdown', (e)=>{ dragging=true; area.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=area.scrollTop; area.setPointerCapture(e.pointerId); });
-      area.addEventListener('pointermove', (e)=>{ if(!dragging) return; area.scrollTop = startScrollTop - (e.clientY - dragStartY); });
-      area.addEventListener('pointerup', ()=>{ dragging=false; area.classList.remove('dragging'); });
-    }
 
-    /* Cómo jugar: iconos */
-    function renderHelpIcons(){
-      iconGrid.innerHTML = '';
-      const powersList = [
-        {key:'shield', label:'Escudo'}, {key:'barrier', label:'Barrera'}, {key:'multi', label:'Multi'}, {key:'burst', label:'Ráfaga'},
-        {key:'overdrive', label:'Overdrive'}, {key:'pierce', label:'Perforante'}, {key:'homing', label:'Teledirigido'},
-        {key:'ricochet', label:'Rebote'}, {key:'heal', label:'Curación'}, {key:'slowmo', label:'Cámara lenta'},
-        {key:'magnet', label:'Imán'}, {key:'drone', label:'Dron'}, {key:'vortex', label:'Vórtice'}, {key:'chain', label:'Cadena'},
-        {key:'charge', label:'Carga'}, {key:'teleport', label:'Teleport'}, {key:'phase', label:'Fase'}, {key:'gravity', label:'Gravedad'},
-        {key:'timewarp', label:'Timewarp'}, {key:'nano', label:'Nano-reparación'}, {key:'shock', label:'Onda de choque'}
-      ];
-      powersList.forEach(p=>{
-        const div = document.createElement('div'); div.className='iconCard';
-        const cv = document.createElement('canvas'); cv.width=24; cv.height=24; cv.className='iconCanvas';
-        const c = cv.getContext('2d');
-        c.fillStyle = '#0b1426'; c.fillRect(0,0,24,24);
-        drawPowerShape(c, 12, 12, p.key);
-        const text = document.createElement('div'); text.innerHTML = `<strong>${p.label}:</strong> ${describePower(p.key)}`;
-        div.appendChild(cv); div.appendChild(text); iconGrid.appendChild(div);
-      });
-    }
-    function describePower(key){
-      const map = {
-        shield:'Campo protector con duración de 1 minuto.', barrier:'Escudo reforzado temporal.',
-        multi:'Disparo múltiple.', burst:'Cadencia acelerada por ráfagas.',
-        overdrive:'Menos cooldown, más velocidad.', pierce:'Balas atraviesan enemigos.',
-        homing:'Balas se ajustan al enemigo.', ricochet:'Balas rebotan en bordes.',
-        heal:'Pickup cura +1 vida.', slowmo:'Ralentiza el tiempo.',
-        magnet:'Atrae power-ups.', drone:'Disparo asistente.',
-        vortex:'Atrae enemigos.', chain:'Daño en área.',
-        charge:'Más velocidad en avance.', teleport:'Teleporta al centro.',
-        phase:'Invulnerabilidad breve.', gravity:'Pozo gravitacional.',
-        timewarp:'Ralentiza todo menos tus balas.', nano:'Reparación gradual.',
-        shock:'Onda de empuje y daño.'
-      };
-      return map[key]||'—';
-    }
-
-    /* Ship slider */
-    function renderShipSlider(){
-      const tag = shipOrder[shipIndex];
-      const minLevel = rankTiers.find(t=>t.tag===tag)?.minLevel || 1;
-      const userLevel = state.user?.level || 1;
-      shipCtx.clearRect(0,0,shipPreview.width, shipPreview.height);
-      shipCtx.fillStyle = '#0b1426'; shipCtx.fillRect(0,0,shipPreview.width, shipPreview.height);
-      drawShipVariant(shipCtx, shipPreview.width/2, shipPreview.height/2, tag, 2);
-      const shipRankName = rankTiers.find(t=>t.tag===tag).name;
-      shipTitle.textContent = `Nave rango ${shipRankName} (${tag}) — requiere nivel ${minLevel}`;
-      const unlocked = userLevel >= minLevel;
-      lockOverlay.classList.toggle('hidden', unlocked);
-      unlockBadge.classList.toggle('hidden', !unlocked);
-      lockMessage.textContent = unlocked ? 'Desbloqueada' : `Alcanza nivel ${minLevel} para desbloquear`;
-      if(unlocked){ unlockBadge.textContent = 'Desbloqueada'; }
-    }
-    function changeShip(dir){ shipIndex = (shipIndex + dir + shipOrder.length) % shipOrder.length; localStorage.setItem(LS.shipIndex, String(shipIndex)); renderShipSlider(); }
-
-    /* Arranque ultra blindado: nunca se congela en el splash */
+    /* Arranque: salida del splash garantizada */
     function showMenuNow(){
       try{
         mainMenu.classList.remove('hidden');
@@ -1225,152 +965,50 @@
         resize();
         spawnStars();
         updateMobileOrientationUI();
-        renderHelpIcons();
         showMenuNow();
       }catch(e){
-        console.error('Fallback start:', e);
         showMenuNow();
       }
     }
 
-    // Ejecutar por múltiples eventos y tiempo (redundancia intencional)
+    // Fallbacks múltiples
     document.addEventListener('DOMContentLoaded', safeStartUI, {once:true});
     window.addEventListener('load', safeStartUI, {once:true});
     setTimeout(()=>{ safeStartUI(); }, 800);
     setTimeout(()=>{ showMenuNow(); }, 1500);
-
-    // Si el splash hace su animación, al terminar se oculta y muestra el menú
     const splashInner = document.querySelector('.splashInner');
     if(splashInner){
       splashInner.addEventListener('animationend', ()=> showMenuNow(), {once:true});
     }
-
-    // Guardián: chequea cada 500ms y fuerza salida si aún no hay menú visible
     let startGuard = setInterval(()=>{
       const stuck = splash && !splash.classList.contains('hidden');
-      if(stuck){ showMenuNow(); }
-      else{ clearInterval(startGuard); }
+      if(stuck){ showMenuNow(); } else { clearInterval(startGuard); }
     }, 500);
 
-    /* Bindings y cierres */
-    bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
-    bindPress(menuHow, ()=> { howModal.classList.remove('hidden'); enableDragScroll(howScroll); });
-    bindPress(howClose, ()=> { howModal.classList.add('hidden'); });
-    bindPress(menuScores, ()=> {
-      const best = Number(localStorage.getItem(LS.best)||0);
-      const history = loadJSON(LS.history, []);
-      scoresSummary.innerHTML = `<div class="pill"><strong>Récord:</strong> ${best}</div><div class="pill"><strong>Partidas:</strong> ${history.length}</div>`;
-      scoresTableBody.innerHTML = history.map(h=>{
-        const d = new Date(h.date);
-        return `<tr><td>${d.toLocaleString()}</td><td>${h.score}</td><td>${h.level}</td></tr>`;
-      }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
-      scoresModal.classList.remove('hidden'); scoresScroll.scrollTop = 0; enableDragScroll(scoresScroll);
-    });
-    bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
-    bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); scoresModal.classList.add('hidden'); });
-
-    bindPress(menuCompete, ()=> {
-      compTableBody.innerHTML = `<tr><td colspan="6">Modo offline</td></tr>`;
-      compPageEl.textContent = '1';
-      compScroll.scrollTop = 0;
-      compModal.classList.remove('hidden'); enableDragScroll(compScroll);
-    });
-    bindPress(compClose, ()=> compModal.classList.add('hidden'));
-    bindPress(compShare, ()=>{
-      const rows = [...compTableBody.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>td.textContent));
-      const headers = ['Usuario','Victorias','Rango','Tag','País','Puntuación'];
-      const width = 980, rowH = 36, h = 70 + (rows.length+1)*rowH;
-      const cnv = document.createElement('canvas'); cnv.width = width; cnv.height = h; const c = cnv.getContext('2d');
-      const g = c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#0b1020'); g.addColorStop(1,'#0b1428'); c.fillStyle = g; c.fillRect(0,0,width,h);
-      c.fillStyle = '#cfe6ff'; c.font = 'bold 18px Segoe UI'; c.fillText('Ranking — Aicade Games', 20, 30);
-      c.fillStyle = '#e6e6ff'; c.font = '14px Segoe UI'; let y = 60;
-      function drawRow(arr, y, bold=false){
-        c.fillStyle = bold ? '#9fd0ff' : '#e6e6ff'; c.font = bold ? 'bold 14px Segoe UI' : '14px Segoe UI';
-        const xPos = [20, 240, 360, 460, 560, 760]; arr.forEach((t,i)=> c.fillText(String(t), xPos[i], y));
-        c.strokeStyle = 'rgba(140,220,255,.22)'; c.beginPath(); c.moveTo(16, y+10); c.lineTo(width-16, y+10); c.stroke();
-      }
-      drawRow(headers, y, true); y += rowH; rows.forEach(r=>{ drawRow(r, y); y += rowH; });
-      const a = document.createElement('a'); a.href = cnv.toDataURL('image/png'); a.download = 'ranking_aicade.png'; a.click();
-    });
-    bindPress(compUseProfile, ()=>{ compModal.classList.add('hidden'); startGame(true); });
-
-    bindPress(menuProfile, ()=> { renderShipSlider(); profileModal.classList.remove('hidden'); });
-    bindPress(profileClose, ()=> profileModal.classList.add('hidden'));
-
-    bindPress(menuAuth, ()=> authModal.classList.remove('hidden'));
-    bindPress(authClose, ()=> authModal.classList.add('hidden'));
-    bindPress(btnRegister, ()=>{
-      const email = (authEmail.value||'').trim(); const password = (authPassword.value||'').trim(); const username = (authUsername.value||'').trim();
-      fEmail.classList.toggle('invalid', !email || !email.includes('@'));
-      fPassword.classList.toggle('invalid', !password || password.length<6);
-      fUsername.classList.toggle('invalid', !username || username.length<2);
-      if(!email || !email.includes('@') || !password || password.length<6 || !username || username.length<2){
-        authMsg.textContent = 'Corrige los campos marcados.'; authMsg.style.color = 'var(--error)'; return;
-      }
-      const profile = { uid: 'offline', email, username, score:0, victories:0, level:1, country:'República Dominicana' };
-      state.user = profile; saveJSON(LS.userCache, profile);
-      profileUser.textContent = username; profileEmail.textContent = email; profileLevel.textContent = '1';
-      authMsg.textContent = 'Registro (offline) listo.'; authMsg.style.color = 'var(--ok)';
-    });
-    bindPress(btnLogin, ()=>{
-      const email = (authEmail.value||'').trim(); const password = (authPassword.value||'').trim();
-      if(!email || !password){ authMsg.textContent = 'Ingresa email y contraseña.'; authMsg.style.color = 'var(--error)'; return; }
-      const prof = loadJSON(LS.userCache, null) || { uid:'offline', email, username: authUsername.value||email, score:0, victories:0, level:1, country:'República Dominicana' };
-      state.user = prof; saveJSON(LS.userCache, prof);
-      profileUser.textContent = prof.username; profileEmail.textContent = prof.email; profileLevel.textContent = String(prof.level||1);
-      authMsg.textContent = 'Sesión (offline) lista.'; authMsg.style.color = 'var(--ok)';
-    });
-    bindPress(btnLogout, ()=>{
-      state.user = null; saveJSON(LS.userCache, null); authMsg.textContent = 'Sesión cerrada.'; authMsg.style.color = 'var(--ok)';
-      profileUser.textContent = '—'; profileEmail.textContent = '—'; profileLevel.textContent = '1';
-    });
-
-    bindPress(menuSound, ()=> soundModal.classList.remove('hidden'));
-    bindPress(soundClose, ()=> soundModal.classList.add('hidden'));
-    bindPress(soundOn, ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); });
-    bindPress(soundOff, ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
-
-    arrowLeft.addEventListener('click', ()=> changeShip(-1));
-    arrowRight.addEventListener('click', ()=> changeShip(1));
-    shipCard.addEventListener('click', ()=>{
-      const tag = shipOrder[shipIndex];
-      const minLevel = rankTiers.find(t=>t.tag===tag)?.minLevel || 1;
-      const userLevel = state.user?.level || 1;
-      const unlocked = userLevel >= minLevel;
-      if(!unlocked){ alert(`Bloqueada — alcanza nivel ${minLevel} para usar ${tag}.`); return; }
-      alert('Nave seleccionada.');
-    });
+    /* Bindings */
+    bindPress(menuPlay, ()=> { ensureAudio(); startGame(); });
 
     /* Escape */
     window.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape'){
-        [howModal, scoresModal, compModal, profileModal, soundModal, authModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
+        gameOverlay.classList.add('hidden');
         if(!state.running) mainMenu.classList.remove('hidden');
       }
       if(e.key.toLowerCase() === 'p'){ togglePause(); }
     });
 
     /* Device input */
-    if(isMobileUA()){ enableTouch(); } else { enableKeyboard(); }
-
-    /* Poderes: spawn */
-    function spawnPower(x,y){
-      const kind = pick(powerKeys);
-      state.powerUps.push({ x, y, kind, collected:false });
+    if(isMobileUA()){ 
+      enableTouch(); 
+    } else { 
+      enableKeyboard(); 
     }
 
     /* Persistencia sonido */
     const soundStored = loadJSON(LS.sound, {enabled:true}); soundEnabled = !!soundStored.enabled;
 
-    /* Fallback final (doble seguridad) */
+    /* Fallback final */
     setTimeout(()=>{ showMenuNow(); }, 3000);
-
-    /* Inicializa perfil si existe */
-    if(state.user){
-      profileUser.textContent = state.user.username||'—';
-      profileEmail.textContent = state.user.email||'—';
-      profileLevel.textContent = String(state.user.level||1);
-    }
   </script>
 </body>
 </html>
