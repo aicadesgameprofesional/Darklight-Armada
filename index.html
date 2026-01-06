@@ -11,10 +11,7 @@
       --glass: rgba(16,22,38,.86);
       --border: rgba(110,160,255,.28);
       --shadow:0 0 12px rgba(108,220,255,.55);
-      --text:#e8ecf5;
-      --cardTitle:#d9e4ff;
-      --title:#dfe6fb;
-      --muted:#b8c2d9;
+      --text:#e8ecf5; --cardTitle:#d9e4ff; --title:#dfe6fb; --muted:#b8c2d9;
     }
     *{box-sizing:border-box}
     html,body{
@@ -37,8 +34,7 @@
     .hud{
       position:absolute; inset:0; padding:14px;
       display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
-      font-weight:600; text-shadow: 0 0 12px rgba(255,255,255,.12);
-      pointer-events:none;
+      font-weight:600; text-shadow: 0 0 12px rgba(255,255,255,.12); pointer-events:none;
     }
     .hud .left, .hud .right {display:flex; flex-direction:column; gap:6px}
     .pill{
@@ -47,54 +43,36 @@
       box-shadow: var(--shadow);
     }
     .pill .dot{width:8px; height:8px; border-radius:50%}
-    .dot.score{background: var(--accent)}
-    .dot.lives{background: var(--accent2)}
-    .dot.power{background: var(--accent3)}
+    .dot.score{background: var(--accent)} .dot.lives{background: var(--accent2)} .dot.power{background: var(--accent3)}
 
     /* Overlays base */
     .overlay{
       position:absolute; inset:0; display:grid; place-items:center;
       pointer-events:auto; z-index: 10;
     }
-    .hidden{
-      display:none !important;
-      pointer-events:none !important;
-    }
+    .hidden{ display:none !important; pointer-events:none !important; }
 
-    /* Intro profesional */
+    /* Intro */
     .splash{ background:#000; overflow:hidden; z-index: 20; }
-    .splashInner{
-      text-align:center; color:#9fd0ff;
-      animation: splashIn 1.2s ease both;
-      letter-spacing:.04em;
-    }
+    .splashInner{ text-align:center; color:#9fd0ff; animation: splashIn 1.2s ease both; letter-spacing:.04em; }
     .splash h1{
-      font-size: clamp(30px, 7vw, 78px);
-      margin:0 0 12px;
+      font-size: clamp(30px, 7vw, 78px); margin:0 0 12px;
       text-shadow: 0 0 14px #6cf, 0 0 28px #39a9ff, 0 0 54px rgba(57,169,255,.5);
       animation: neonFlicker 2.6s ease-in-out infinite alternate;
     }
-    .splash p{
-      margin:10px 0 0; font-size: clamp(12px, 2.3vw, 18px); color:#cfe6ff;
-      text-shadow: 0 0 10px rgba(108,220,255,.45);
-    }
+    .splash p{ margin:10px 0 0; font-size: clamp(12px, 2.3vw, 18px); color:#cfe6ff; text-shadow: 0 0 10px rgba(108,220,255,.45); }
     .scanlines:before{
       content:""; position:absolute; inset:0; pointer-events:none;
       background: repeating-linear-gradient(transparent 0 2px, rgba(255,255,255,.02) 2px 4px);
       mix-blend-mode: screen; animation: scan 3s linear infinite;
     }
     @keyframes splashIn{ from{opacity:0; transform: scale(0.92)} to{opacity:1; transform: scale(1)} }
-    @keyframes neonFlicker{
-      0%{filter: drop-shadow(0 0 10px #6cf)}
-      50%{filter: drop-shadow(0 0 22px #6cf) drop-shadow(0 0 46px #39a9ff)}
-      100%{filter: drop-shadow(0 0 14px #6cf)}
-    }
+    @keyframes neonFlicker{ 0%{filter: drop-shadow(0 0 10px #6cf)} 50%{filter: drop-shadow(0 0 22px #6cf) drop-shadow(0 0 46px #39a9ff)} 100%{filter: drop-shadow(0 0 14px #6cf)} }
     @keyframes scan{ 0%{transform: translateY(0)} 100%{transform: translateY(100%)} }
 
-    /* Cards */
+    /* Cards + botones visibles */
     .card{
-      position:relative;
-      background: var(--glass); border:1px solid var(--border);
+      position:relative; background: var(--glass); border:1px solid var(--border);
       box-shadow: 0 24px 80px rgba(0,0,0,.6), var(--shadow);
       border-radius:16px; padding:22px; text-align:center; max-width: 940px;
       animation: fadeIn .35s ease both;
@@ -105,74 +83,61 @@
     .row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px}
     .btn{
       appearance:none; border:none; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;
-      background: linear-gradient(180deg, #6cf, #3aa9ff); color:#00101a;
-      box-shadow: 0 10px 20px rgba(60,160,255,.35); transition: transform .12s ease, filter .2s ease, opacity .25s ease;
-      user-select:none; opacity:0; transform: translateY(6px);
+      background: linear-gradient(180deg, #6cf, #3aa9ff); color:#00101a; box-shadow: 0 10px 20px rgba(60,160,255,.35);
+      transition: transform .12s ease, filter .2s ease; user-select:none;
     }
-    .btn.show{opacity:1; transform: translateY(0)}
     .btn:hover{transform: translateY(-1px)}
     .btn.secondary{background: linear-gradient(180deg, #f06, #ff4a9a); color:white}
     .btn.ghost{background: rgba(20,28,50,.25); color:#cfe6ff; border:1px solid var(--border)}
     .btn.warn{background: linear-gradient(180deg, #ff9f2e, #ff7f2e); color:#1a0e00}
 
-    .titlePro{
-      font-weight:900; letter-spacing:.06em; margin-bottom:10px; color: var(--title);
-      text-shadow: 0 0 12px rgba(108,220,255,.25);
-    }
+    .titlePro{ font-weight:900; letter-spacing:.06em; margin-bottom:10px; color: var(--title); text-shadow: 0 0 12px rgba(108,220,255,.25); }
 
     /* Inputs */
-    input.input{
-      background: rgba(14,20,36,.5); border:1px solid rgba(110,160,255,.28); color:#e6f4ff;
-      border-radius:10px; padding:10px 12px; outline:none; width:100%;
+    input.input{ background: rgba(14,20,36,.5); border:1px solid rgba(110,160,255,.28); color:#e6f4ff; border-radius:10px; padding:10px 12px; outline:none; width:100%; }
+
+    /* Iconos pequeños en Cómo jugar */
+    .iconGrid{
+      display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; align-items:center;
     }
+    .iconCard{ display:flex; align-items:center; gap:8px; background: rgba(10,14,26,.35); border:1px solid var(--border); border-radius:8px; padding:6px; }
+    .iconCanvas{ width:28px; height:28px; }
 
     /* Tables */
     table{width:100%; border-collapse:collapse; margin-top:10px}
     th, td{padding:8px 10px; border-bottom:1px solid rgba(110,160,255,.22); text-align:left}
     th{color:#9fd0ff}
 
-    /* Scroll areas reutilizables */
+    /* Scroll areas */
     .scrollArea{
       max-height: 64vh; overflow:auto; border-radius:12px; border:1px solid rgba(110,160,255,.25);
       background: rgba(10,14,26,.45); padding:12px; position:relative; cursor:grab;
     }
     .scrollArea.dragging{cursor:grabbing}
-    .scrollControls{
-      display:flex; justify-content:space-between; gap:10px; margin-top:10px;
-    }
+    .scrollControls{ display:flex; justify-content:space-between; gap:10px; margin-top:10px; }
 
     /* Chat toast */
     .chatToast{
-      position:absolute; left:12px; bottom:12px; max-width: 44%;
-      padding:10px 12px; border-radius:12px;
-      background: rgba(12,16,28,.72); border:1px solid rgba(110,160,255,.25);
-      font-size: 12px; pointer-events:none;
-      opacity:0; transform: translateY(10px);
-      transition: opacity .3s ease, transform .3s ease;
-      z-index: 5;
+      position:absolute; left:12px; bottom:12px; max-width: 44%; padding:10px 12px; border-radius:12px;
+      background: rgba(12,16,28,.72); border:1px solid rgba(110,160,255,.25); font-size: 12px; pointer-events:none;
+      opacity:0; transform: translateY(10px); transition: opacity .3s ease, transform .3s ease; z-index: 5;
     }
     .chatToast.show{opacity:1; transform: translateY(0)}
     .chatToast h3{margin:0 0 6px; font-size:14px; color:#cfe6ff}
     .chatToast .msg{margin:4px 0; color:#e6f4ff}
 
     /* Ship slider */
-    .shipSlider{
-      display:grid; grid-template-columns: 48px 1fr 48px; gap:12px; align-items:center; margin-top:12px;
-    }
+    .shipSlider{ display:grid; grid-template-columns: 48px 1fr 48px; gap:12px; align-items:center; margin-top:12px; }
     .arrow{
       width:48px; height:48px; border-radius:12px; display:grid; place-items:center;
-      background: rgba(20,28,50,.35); border:1px solid var(--border); color:#cfe6ff; font-weight:900; cursor:pointer;
-      user-select:none;
+      background: rgba(20,28,50,.35); border:1px solid var(--border); color:#cfe6ff; font-weight:900; cursor:pointer; user-select:none;
     }
-    .shipCard{
-      position:relative; border:1px solid var(--border); border-radius:12px; background: rgba(10,14,26,.65); padding:8px;
-    }
+    .shipCard{ position:relative; border:1px solid var(--border); border-radius:12px; background: rgba(10,14,26,.65); padding:8px; }
     .lockOverlay{
       position:absolute; inset:0; display:flex; flex-direction:column; gap:6px; align-items:center; justify-content:center;
       color:#ffd2dc; font-weight:900; text-transform:uppercase; letter-spacing:.05em;
       background: rgba(0,0,0,.42); border-radius:12px; border:1px solid rgba(255,110,150,.55);
     }
-    .lockOverlay small{ text-transform:none; letter-spacing:normal; color:#ffc3d2 }
     .unlockBadge{
       position:absolute; top:8px; right:8px; background: rgba(160,255,200,.2);
       border:1px solid rgba(160,255,200,.6); color:#e6fff2; padding:4px 8px; border-radius:999px; font-size:12px;
@@ -189,24 +154,19 @@
     }
     .knob{
       width:60px; height:60px; border-radius:50%; background: rgba(108,220,255,.5);
-      border:1px solid rgba(110,160,255,.55); position:absolute; left:40px; top:40px;
-      box-shadow: var(--shadow);
+      border:1px solid rgba(110,160,255,.55); position:absolute; left:40px; top:40px; box-shadow: var(--shadow);
     }
     .fire{
       width:110px; height:110px; border-radius:16px; display:grid; place-items:center;
-      background: rgba(255,70,160,.35); border:1px dashed rgba(255,110,190,.5); color:#ffe3f0; font-weight:800;
-      user-select:none; touch-action:none;
+      background: rgba(255,70,160,.35); border:1px dashed rgba(255,110,190,.5); color:#ffe3f0; font-weight:800; user-select:none; touch-action:none;
     }
 
-    /* Overlay “gira tu dispositivo” */
-    .rotateOverlay{
-      position:absolute; inset:0; display:none; place-items:center;
-      background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30;
-    }
+    /* Overlay rotación */
+    .rotateOverlay{ position:absolute; inset:0; display:none; place-items:center; background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30; }
     .rotateOverlay .card{max-width: 560px}
     .frame[data-mobile="false"] .rotateOverlay{ display:none !important; pointer-events:none !important; }
 
-    @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
   </style>
 </head>
 <body>
@@ -233,7 +193,7 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional -->
+    <!-- Intro -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
         <h1>Aicade Games</h1>
@@ -252,6 +212,7 @@
           <button class="btn secondary" id="menuScores" type="button">Puntos</button>
           <button class="btn warn" id="menuCompete" type="button">Competencia</button>
           <button class="btn ghost" id="menuProfile" type="button">Perfil</button>
+          <button class="btn ghost" id="menuAuth" type="button">Registrarse / Iniciar sesión</button>
           <button class="btn ghost" id="menuSound" type="button">Sonidos</button>
         </div>
         <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">
@@ -269,6 +230,7 @@
           <button class="btn" id="overlayResume" type="button">Continuar</button>
           <button class="btn secondary" id="overlayRestart" type="button">Reiniciar</button>
           <button class="btn ghost" id="overlayMenu" type="button">Menú</button>
+          <button class="btn warn" id="overlayQuit" type="button">Salir</button>
         </div>
       </div>
     </div>
@@ -287,7 +249,7 @@
                 <li><strong>Móvil/Tablet:</strong> Joystick para moverte y botón FIRE para disparar.</li>
               </ul>
               <h2>Objetivo</h2>
-              <p>Destruye meteoros y drones enemigos, recoge power-ups y alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias suben tu rango y cambian tu nave.</p>
+              <p>Destruye meteoros y drones enemigos, recoge power-ups y alcanza objetivos para subir de nivel. La meta se triplica cada nivel.</p>
             </div>
             <div>
               <h2>Poderes y habilidades</h2>
@@ -311,8 +273,6 @@
         <div class="row">
           <button class="btn" id="soundOn" type="button">Encender</button>
           <button class="btn ghost" id="soundOff" type="button">Apagar</button>
-        </div>
-        <div class="row">
           <button class="btn" id="soundClose" type="button">Cerrar</button>
         </div>
       </div>
@@ -339,11 +299,11 @@
       </div>
     </div>
 
-    <!-- Modal de competencia con scroll + paginación -->
+    <!-- Modal de competencia -->
     <div id="compModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Competencia</h1>
-        <p>Entra con tu perfil y compite. El ranking muestra tu puntuación total.</p>
+        <p>Compite con tu perfil. El ranking muestra puntuación total.</p>
         <div class="row" style="gap:8px">
           <button class="btn" id="compUseProfile" type="button">Competir con mi perfil</button>
         </div>
@@ -372,27 +332,30 @@
       </div>
     </div>
 
-    <!-- Modal de perfil con autenticación -->
+    <!-- Modal de autenticación (login/registro) -->
+    <div id="authModal" class="overlay hidden" style="z-index: 27">
+      <div class="card">
+        <h1>Registrarse / Iniciar sesión</h1>
+        <div class="row" style="gap:8px; flex-wrap:wrap">
+          <input id="authEmail" type="email" placeholder="Correo electrónico" class="input" style="width:48%">
+          <input id="authPassword" type="password" placeholder="Contraseña" class="input" style="width:48%">
+        </div>
+        <div class="row" style="gap:8px">
+          <input id="authUsername" type="text" placeholder="Usuario visible (ej. Anderson)" class="input" style="width:60%">
+        </div>
+        <div class="row" style="gap:8px">
+          <button class="btn" id="btnRegister" type="button">Registrarse</button>
+          <button class="btn secondary" id="btnLogin" type="button">Iniciar sesión</button>
+          <button class="btn ghost" id="btnLogout" type="button">Cerrar sesión</button>
+          <button class="btn" id="authClose" type="button">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de perfil -->
     <div id="profileModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Perfil del jugador</h1>
-        <p style="margin-bottom:10px">Regístrate o inicia sesión para competir y guardar tus datos.</p>
-
-        <div id="authSection">
-          <div class="row" style="gap:8px; flex-wrap:wrap">
-            <input id="authEmail" type="email" placeholder="Correo electrónico" class="input" style="width:48%">
-            <input id="authPassword" type="password" placeholder="Contraseña" class="input" style="width:48%">
-          </div>
-          <div class="row" style="gap:8px">
-            <input id="authUsername" type="text" placeholder="Usuario visible (ej. Anderson)" class="input" style="width:60%">
-          </div>
-          <div class="row" style="gap:8px">
-            <button class="btn" id="btnRegister" type="button">Registrar</button>
-            <button class="btn secondary" id="btnLogin" type="button">Iniciar sesión</button>
-            <button class="btn ghost" id="btnLogout" type="button">Cerrar sesión</button>
-          </div>
-        </div>
-
         <div id="profileInfo" class="row" style="gap:10px; justify-content:space-between; flex-wrap:wrap">
           <div class="pill"><strong>Usuario:</strong> <span id="profileUser">—</span><span id="profileFlag" class="flag">🏳️</span></div>
           <div class="pill"><strong>Email:</strong> <span id="profileEmail">—</span></div>
@@ -422,21 +385,6 @@
       </div>
     </div>
 
-    <!-- Modal de configuración de perfil (cambia solo username visible) -->
-    <div id="settingsModal" class="overlay hidden" style="z-index: 27">
-      <div class="card settingsModal">
-        <h1>Configurar perfil</h1>
-        <div class="row">
-          <input id="settingsNameInput" type="text" placeholder="Nuevo nombre visible" class="input">
-        </div>
-        <div class="row" style="gap:8px">
-          <button class="btn" id="settingsSave" type="button">Guardar</button>
-          <button class="btn ghost" id="settingsCancel" type="button">Cancelar</button>
-        </div>
-        <p style="margin-top:10px">Tu cuenta se sincroniza en la nube.</p>
-      </div>
-    </div>
-
     <!-- Controles táctiles -->
     <div class="controls" id="touchControls" hidden>
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
@@ -455,7 +403,7 @@
     </div>
   </div>
 
-  <!-- Firebase SDK y módulos -->
+  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -482,7 +430,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    /* ==== Utils ==== */
+    /* Utils */
     const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
     const rand = (a=0,b=1)=>Math.random()*(b-a)+a;
     const pick = arr=>arr[(Math.random()*arr.length)|0];
@@ -494,7 +442,7 @@
     const isMobileUA = ()=> /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (Math.min(screen.width, screen.height) < 768);
     const isTouchDevice = ()=> isMobileUA();
 
-    /* ==== DOM refs ==== */
+    /* DOM refs */
     const frame = document.getElementById('frame');
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
@@ -511,6 +459,7 @@
     const overlayResume = document.getElementById('overlayResume');
     const overlayRestart = document.getElementById('overlayRestart');
     const overlayMenu = document.getElementById('overlayMenu');
+    const overlayQuit = document.getElementById('overlayQuit');
 
     const howModal = document.getElementById('howModal');
     const howScroll = document.getElementById('howScroll');
@@ -529,6 +478,7 @@
     const menuScores = document.getElementById('menuScores');
     const menuCompete = document.getElementById('menuCompete');
     const menuProfile = document.getElementById('menuProfile');
+    const menuAuth = document.getElementById('menuAuth');
     const menuSound = document.getElementById('menuSound');
 
     const scoresModal = document.getElementById('scoresModal');
@@ -552,6 +502,15 @@
     const compNextPage = document.getElementById('compNextPage');
     const compPageEl = document.getElementById('compPage');
 
+    const authModal = document.getElementById('authModal');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authUsername = document.getElementById('authUsername');
+    const btnRegister = document.getElementById('btnRegister');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const authClose = document.getElementById('authClose');
+
     const profileModal = document.getElementById('profileModal');
     const profileClose = document.getElementById('profileClose');
     const profileUser = document.getElementById('profileUser');
@@ -562,13 +521,6 @@
     const profileTag = document.getElementById('profileTag');
     const profileFlag = document.getElementById('profileFlag');
 
-    const authEmail = document.getElementById('authEmail');
-    const authPassword = document.getElementById('authPassword');
-    const authUsername = document.getElementById('authUsername');
-    const btnRegister = document.getElementById('btnRegister');
-    const btnLogin = document.getElementById('btnLogin');
-    const btnLogout = document.getElementById('btnLogout');
-
     const shipPreview = document.getElementById('shipPreview');
     const shipCtx = shipPreview.getContext('2d');
     const shipTitle = document.getElementById('shipTitle');
@@ -578,11 +530,6 @@
     const lockOverlay = document.getElementById('lockOverlay');
     const lockMessage = document.getElementById('lockMessage');
     const unlockBadge = document.getElementById('unlockBadge');
-
-    const settingsModal = document.getElementById('settingsModal');
-    const settingsNameInput = document.getElementById('settingsNameInput');
-    const settingsSave = document.getElementById('settingsSave');
-    const settingsCancel = document.getElementById('settingsCancel');
 
     const scoreEl = document.getElementById('score');
     const livesEl = document.getElementById('lives');
@@ -599,25 +546,14 @@
     const rotateOverlay = document.getElementById('rotateOverlay');
     const tryLockBtn = document.getElementById('tryLock');
 
-    /* ==== Audio ==== */
+    /* Audio */
     let soundEnabled = true;
-    const LS = {
-      best: 'darklight_best',
-      history: 'darklight_history',
-      shipIndex: 'darklight_ship_index',
-      sound: 'darklight_sound',
-      location: 'darklight_location'
-    };
+    const LS = { best:'darklight_best', history:'darklight_history', shipIndex:'darklight_ship_index', sound:'darklight_sound' };
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audio = null;
-    function ensureAudio(){
-      if(!AudioCtx) return;
-      if(!audio) audio = new AudioCtx();
-      if(audio.state === 'suspended') audio.resume();
-    }
+    function ensureAudio(){ if(!AudioCtx) return; if(!audio) audio = new AudioCtx(); if(audio.state==='suspended') audio.resume(); }
     function beep(freq=440, dur=0.08, type='square', vol=0.06){
-      if(!soundEnabled || !AudioCtx) return;
-      ensureAudio();
+      if(!soundEnabled || !AudioCtx) return; ensureAudio();
       const o = audio.createOscillator(), g = audio.createGain();
       o.type = type; o.frequency.value = freq; g.gain.value = vol;
       o.connect(g); g.connect(audio.destination); o.start();
@@ -625,11 +561,11 @@
       o.stop(audio.currentTime + dur + 0.01);
     }
 
-    /* ==== Persistencia local simple ==== */
+    /* Storage util */
     const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
     const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
 
-    /* ==== Rangos (más difíciles) ==== */
+    /* Rangos por puntuación (difícil) */
     const rankTiers = [
       {name:'Bronce', tag:'BR', minScore:0},
       {name:'Plata', tag:'PL', minScore:3000},
@@ -642,360 +578,211 @@
       {name:'Leviatán', tag:'LV', minScore:340000},
       {name:'Leyenda', tag:'LG', minScore:480000}
     ];
-    function getRankByScore(score){
-      let r = rankTiers[0]; for(const t of rankTiers) if(score>=t.minScore) r = t; return r;
-    }
+    function getRankByScore(score){ let r = rankTiers[0]; for(const t of rankTiers) if(score>=t.minScore) r = t; return r; }
     const rankIndex = tag=> rankTiers.findIndex(t=>t.tag===tag);
 
-    /* ==== Geo + IP mínima (solo país para bandera) ==== */
+    /* Geo país (bandera) */
     async function resolveCountryByIP(){
-      try{
-        const r = await fetch('https://ipapi.co/json/');
-        const j = await r.json();
+      try{ const r = await fetch('https://ipapi.co/json/'); const j = await r.json();
         return { countryCode: (j.country || 'DO'), country: j.country_name || '—' };
-      }catch{
-        return {countryCode:'DO', country:'República Dominicana'};
-      }
+      }catch{ return {countryCode:'DO', country:'República Dominicana'}; }
     }
 
-    /* ==== Firestore: usuarios y ranking ==== */
-    const USERS_COLLECTION = "users";
+    /* Firestore usuarios */
+    const USERS = "users";
+    async function upsertUser(uid, data){ try{ await setDoc(doc(db, USERS, uid), data, { merge:true }); return true; }catch(e){ console.warn(e); return false; } }
+    async function getUser(uid){ try{ const s=await getDoc(doc(db, USERS, uid)); return s.exists()?s.data():null; }catch(e){ console.warn(e); return null; } }
 
-    async function upsertUserProfile(uid, data){
-      try{
-        await setDoc(doc(db, USERS_COLLECTION, uid), data, { merge: true });
-        return true;
-      }catch(e){ console.warn('upsertUserProfile error', e); return false; }
-    }
-    async function getUserProfile(uid){
-      try{
-        const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
-        return snap.exists() ? snap.data() : null;
-      }catch(e){ console.warn('getUserProfile error', e); return null; }
-    }
-
-    // Paginación Firestore (ranking por puntuación total)
-    let compPage = 1;
-    let compPageSize = 200;
-    let compLastDoc = null;
-    let compCursorStack = [];
-
+    /* Ranking por puntuación */
+    let compPage = 1, compPageSize = 200, compLastDoc = null, compCursorStack = [];
     async function loadRankingPage(next=true){
       try{
         let q;
         if(next){
-          if(compLastDoc){
-            q = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), startAfter(compLastDoc), limit(compPageSize));
-          }else{
-            q = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
-          }
+          q = compLastDoc
+            ? query(collection(db, USERS), orderBy('score','desc'), startAfter(compLastDoc), limit(compPageSize))
+            : query(collection(db, USERS), orderBy('score','desc'), limit(compPageSize));
           const snap = await getDocs(q);
           const users = [];
           snap.forEach(d=>{
-            const x = d.data();
-            users.push({
-              u: x.username || x.email || d.id,
-              victories: Number(x.victories||0),
-              score: Number(x.score||0),
-              country: x.country || '—',
-              tag: getRankByScore(Number(x.score||0)).tag,
-              rankName: getRankByScore(Number(x.score||0)).name
-            });
+            const x = d.data(); const r = getRankByScore(Number(x.score||0));
+            users.push({ u: x.username || x.email || d.id, victories: Number(x.victories||0), score: Number(x.score||0), country: x.country || '—', tag: r.tag, rankName: r.name });
           });
           renderRanking(users);
-          if(snap.docs.length>0){
-            compCursorStack.push(compLastDoc);
-            compLastDoc = snap.docs[snap.docs.length-1];
-            compPage += 1;
-            compPageEl.textContent = compPage;
-          }
+          if(snap.docs.length>0){ compCursorStack.push(compLastDoc); compLastDoc = snap.docs[snap.docs.length-1]; compPage += 1; compPageEl.textContent = compPage; }
         }else{
           if(compCursorStack.length>1){
             compCursorStack.pop();
             const prevCursor = compCursorStack[compCursorStack.length-1];
             const qPrev = prevCursor
-              ? query(collection(db, USERS_COLLECTION), orderBy('score','desc'), startAfter(prevCursor), limit(compPageSize))
-              : query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
+              ? query(collection(db, USERS), orderBy('score','desc'), startAfter(prevCursor), limit(compPageSize))
+              : query(collection(db, USERS), orderBy('score','desc'), limit(compPageSize));
             const snapPrev = await getDocs(qPrev);
             const users = [];
             snapPrev.forEach(d=>{
-              const x = d.data();
-              users.push({
-                u: x.username || x.email || d.id,
-                victories: Number(x.victories||0),
-                score: Number(x.score||0),
-                country: x.country || '—',
-                tag: getRankByScore(Number(x.score||0)).tag,
-                rankName: getRankByScore(Number(x.score||0)).name
-              });
+              const x = d.data(); const r = getRankByScore(Number(x.score||0));
+              users.push({ u: x.username || x.email || d.id, victories: Number(x.victories||0), score: Number(x.score||0), country: x.country || '—', tag: r.tag, rankName: r.name });
             });
             renderRanking(users);
-            compLastDoc = snapPrev.docs[snapPrev.docs.length-1] || null;
-            compPage = Math.max(1, compPage-1);
-            compPageEl.textContent = compPage;
+            compLastDoc = snapPrev.docs[snapPrev.docs.length-1] || null; compPage = Math.max(1, compPage-1); compPageEl.textContent = compPage;
           }else{
-            compLastDoc = null; compCursorStack = [];
-            const qFirst = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
+            compLastDoc = null; compCursorStack = []; compPage = 1; compPageEl.textContent = compPage;
+            const qFirst = query(collection(db, USERS), orderBy('score','desc'), limit(compPageSize));
             const snapFirst = await getDocs(qFirst);
             const users = [];
             snapFirst.forEach(d=>{
-              const x = d.data();
-              users.push({
-                u: x.username || x.email || d.id,
-                victories: Number(x.victories||0),
-                score: Number(x.score||0),
-                country: x.country || '—',
-                tag: getRankByScore(Number(x.score||0)).tag,
-                rankName: getRankByScore(Number(x.score||0)).name
-              });
+              const x = d.data(); const r = getRankByScore(Number(x.score||0));
+              users.push({ u: x.username || x.email || d.id, victories: Number(x.victories||0), score: Number(x.score||0), country: x.country || '—', tag: r.tag, rankName: r.name });
             });
             renderRanking(users);
-            compLastDoc = snapFirst.docs[snapFirst.docs.length-1] || null;
-            compCursorStack.push(null);
-            compPage = 1; compPageEl.textContent = compPage;
+            compLastDoc = snapFirst.docs[snapFirst.docs.length-1] || null; compCursorStack.push(null);
           }
         }
-      }catch(e){
-        console.warn('loadRankingPage error', e);
-      }
+      }catch(e){ console.warn('ranking', e); }
     }
-    async function loadRankingFirstPage(){
-      compPage = 1; compLastDoc = null; compCursorStack = [];
-      compPageEl.textContent = compPage;
-      await loadRankingPage(true);
+    async function loadRankingFirstPage(){ compPage = 1; compLastDoc = null; compCursorStack = []; compPageEl.textContent = compPage; await loadRankingPage(true); }
+    function renderRanking(users){
+      compTableBody.innerHTML = (users||[]).map(i=>`<tr><td>${i.u}</td><td>${i.victories}</td><td>${i.rankName}</td><td>${i.tag}</td><td>${i.country||'—'}</td><td>${i.score||0}</td></tr>`).join('')
+        || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* ==== Toast ==== */
+    /* Toast */
     function pushToast(text){
       chatMsgs.innerHTML += `<div class="msg">${text}</div>`;
-      chatToast.classList.remove('hidden');
-      chatToast.classList.add('show');
+      chatToast.classList.remove('hidden'); chatToast.classList.add('show');
       setTimeout(()=>{ chatToast.classList.remove('show'); setTimeout(()=>chatToast.classList.add('hidden'),300); }, 3200);
     }
     function sendAchievement(text){ pushToast(`${state.user?.username || 'Tú'} ${text}`); }
 
-    /* ==== PNG ranking ==== */
+    /* PNG ranking */
     function downloadRankingPNG(){
       const rows = [...compTableBody.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>td.textContent));
       const headers = ['Usuario','Victorias','Rango','Tag','País','Puntuación'];
       const width = 980, rowH = 36, h = 70 + (rows.length+1)*rowH;
-      const cnv = document.createElement('canvas'); cnv.width = width; cnv.height = h;
-      const c = cnv.getContext('2d');
+      const cnv = document.createElement('canvas'); cnv.width = width; cnv.height = h; const c = cnv.getContext('2d');
       const g = c.createLinearGradient(0,0,0,h); g.addColorStop(0,'#0b1020'); g.addColorStop(1,'#0b1428');
       c.fillStyle = g; c.fillRect(0,0,width,h);
-      c.fillStyle = '#cfe6ff'; c.font = 'bold 18px Segoe UI';
-      c.fillText('Ranking — Aicade Games', 20, 30);
-      c.fillStyle = '#e6e6ff'; c.font = '14px Segoe UI';
-      let y = 60;
+      c.fillStyle = '#cfe6ff'; c.font = 'bold 18px Segoe UI'; c.fillText('Ranking — Aicade Games', 20, 30);
+      c.fillStyle = '#e6e6ff'; c.font = '14px Segoe UI'; let y = 60;
       function drawRow(arr, y, bold=false){
-        c.fillStyle = bold ? '#9fd0ff' : '#e6e6ff';
-        c.font = bold ? 'bold 14px Segoe UI' : '14px Segoe UI';
-        const xPos = [20, 240, 360, 460, 560, 760];
-        arr.forEach((t,i)=> c.fillText(String(t), xPos[i], y));
-        c.strokeStyle = 'rgba(140,220,255,.22)';
-        c.beginPath(); c.moveTo(16, y+10); c.lineTo(width-16, y+10); c.stroke();
+        c.fillStyle = bold ? '#9fd0ff' : '#e6e6ff'; c.font = bold ? 'bold 14px Segoe UI' : '14px Segoe UI';
+        const xPos = [20, 240, 360, 460, 560, 760]; arr.forEach((t,i)=> c.fillText(String(t), xPos[i], y));
+        c.strokeStyle = 'rgba(140,220,255,.22)'; c.beginPath(); c.moveTo(16, y+10); c.lineTo(width-16, y+10); c.stroke();
       }
-      drawRow(headers, y, true); y += rowH;
-      rows.forEach(r=>{ drawRow(r, y, false); y += rowH; });
-      const url = cnv.toDataURL('image/png');
-      const a = document.createElement('a'); a.href = url; a.download = 'ranking_aicade.png'; a.click();
+      drawRow(headers, y, true); y += rowH; rows.forEach(r=>{ drawRow(r, y); y += rowH; });
+      const a = document.createElement('a'); a.href = cnv.toDataURL('image/png'); a.download = 'ranking_aicade.png'; a.click();
     }
 
-    /* ==== Estado del juego ==== */
+    /* Estado */
     const state = {
       running:false, paused:false, competitive:false,
-      user:null, // { uid, email, username, countryCode, country }
-      score:0, best: Number(localStorage.getItem(LS.best)||0),
-      victories:0,
+      user:null, // { uid,email,username,country,score,victories }
+      score:0, best: Number(localStorage.getItem(LS.best)||0), victories:0,
       lives:3, tick:0, difficulty:1, flash:0,
-      level:1, target:100,
-      camera:{shake:0, x:0, y:0},
-      player:{
-        x:0, y:0, w:56, h:22, speed:460, cooldown:0,
-        multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
-        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0,
-        vortex:0, chain:0, barrier:0, charge:0, teleport:0,
-        phase:0, gravity:0, timewarp:0, nano:0, shock:0
-      },
+      level:1, target:100, camera:{shake:0, x:0, y:0},
+      player:{ x:0, y:0, w:56, h:22, speed:460, cooldown:0, multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
+               pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0,
+               phase:0, gravity:0, timewarp:0, nano:0, shock:0 },
       bullets:[], enemies:[], parts:[], powerUps:[], stars:[], enemyBullets:[],
       input:{left:false,right:false,shoot:false},
-      spaceToneIndex: 0 // para gradiente por nivel
+      spaceToneIndex: 0
     };
 
-    /* ==== Canvas size ==== */
+    /* Canvas */
     let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
-    function resize(){
-      const rect = frame.getBoundingClientRect();
-      W = Math.floor(rect.width); H = Math.floor(rect.height);
-      canvas.width = W * DPR; canvas.height = H * DPR;
-      ctx.setTransform(DPR,0,0,DPR,0,0);
-      shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180;
-      state.player.x = W/2; state.player.y = H-90;
-    }
+    function resize(){ const rect = frame.getBoundingClientRect(); W = Math.floor(rect.width); H = Math.floor(rect.height);
+      canvas.width = W * DPR; canvas.height = H * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+      shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180; state.player.x = W/2; state.player.y = H-90; }
 
-    /* ==== Orientación móvil ==== */
-    async function tryLockLandscape(){
-      if(screen.orientation && screen.orientation.lock){
-        try{ await screen.orientation.lock('landscape'); rotateOverlay.classList.add('hidden'); }catch(e){}
-      }
-    }
-    function updateMobileOrientationUI(){
-      const mobile = isMobileUA();
-      frame.dataset.mobile = mobile ? 'true' : 'false';
+    /* Orientación */
+    async function tryLockLandscape(){ if(screen.orientation && screen.orientation.lock){ try{ await screen.orientation.lock('landscape'); rotateOverlay.classList.add('hidden'); }catch(e){} } }
+    function updateMobileOrientationUI(){ const mobile = isMobileUA(); frame.dataset.mobile = mobile ? 'true' : 'false';
       const portrait = window.matchMedia('(orientation: portrait)').matches || (W < H);
-      if(mobile && portrait){ rotateOverlay.classList.remove('hidden'); }
-      else { rotateOverlay.classList.add('hidden'); }
-    }
+      if(mobile && portrait) rotateOverlay.classList.remove('hidden'); else rotateOverlay.classList.add('hidden'); }
     window.addEventListener('orientationchange', ()=>{ updateMobileOrientationUI(); resize(); });
     tryLockBtn.addEventListener('click', ()=>{ ensureAudio(); tryLockLandscape(); });
 
-    resize();
-    updateMobileOrientationUI();
+    resize(); updateMobileOrientationUI();
     window.addEventListener('resize', ()=>{ resize(); updateMobileOrientationUI(); });
 
-    /* ==== Audio entrada ==== */
-    ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
-      window.addEventListener(evt, ensureAudio, {once:true, passive:true});
-    });
+    ['click','touchstart','pointerdown','keydown'].forEach(evt=>{ window.addEventListener(evt, ensureAudio, {once:true, passive:true}); });
 
-    /* ==== Espacio por nivel (gradientes apagados) ==== */
+    /* Espacio por nivel */
     const spacePalettes = [
-      ['#0b1020','#0b1426'],
-      ['#0c111f','#0a1524'],
-      ['#0c0f1c','#0a1322'],
-      ['#0d101d','#0a1521'],
-      ['#0d121c','#0a161f'],
-      ['#0d131a','#0a171e'],
-      ['#0e141a','#0a181d'],
-      ['#0e1519','#09181c'],
-      ['#0f1518','#09191b'],
-      ['#0f1618','#091a1a']
+      ['#0b1020','#0b1426'], ['#0c111f','#0a1524'], ['#0c0f1c','#0a1322'], ['#0d101d','#0a1521'], ['#0d121c','#0a161f'],
+      ['#0d131a','#0a171e'], ['#0e141a','#0a181d'], ['#0e1519','#09181c'], ['#0f1518','#09191b'], ['#0f1618','#091a1a']
     ];
-    function drawSpaceBackground(){
-      const idx = state.spaceToneIndex % spacePalettes.length;
-      const [c1,c2] = spacePalettes[idx];
-      const g = ctx.createLinearGradient(0,0,0,H);
-      g.addColorStop(0,c1); g.addColorStop(1,c2);
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-    }
+    function drawSpaceBackground(){ const idx = state.spaceToneIndex % spacePalettes.length; const [c1,c2] = spacePalettes[idx];
+      const g = ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,c1); g.addColorStop(1,c2); ctx.fillStyle = g; ctx.fillRect(0,0,W,H); }
 
-    /* ==== Fondo de estrellas ==== */
+    /* Stars */
     function spawnStars(){
-      state.stars = [];
-      const layers = [0.25, 0.6, 1];
-      layers.forEach((spd,i)=>{
-        const count = Math.floor((W*H)/15000 * (i+1));
-        for(let k=0;k<count;k++){
-          state.stars.push({
-            x: rand(0,W), y: rand(0,H),
-            r: rand(0.5,2.2-i), s: spd,
-            c: i===0 ? 'rgba(140,160,200,.35)' : i===1 ? 'rgba(160,180,210,.45)' : 'rgba(220,230,240,.6)'
-          });
-        }
-      });
+      state.stars = []; const layers = [0.25, 0.6, 1];
+      layers.forEach((spd,i)=>{ const count = Math.floor((W*H)/15000 * (i+1));
+        for(let k=0;k<count;k++){ state.stars.push({ x: rand(0,W), y: rand(0,H), r: rand(0.5,2.2-i), s: spd,
+          c: i===0 ? 'rgba(140,160,200,.35)' : i===1 ? 'rgba(160,180,210,.45)' : 'rgba(220,230,240,.6)' }); } });
     }
     spawnStars();
 
-    /* ==== Enemigos ==== */
+    /* Enemigos */
     function spawnEnemy(){
       const type = pick(['rock','zigzag','tank','swarmer','sniper']);
-      const levelFactor = 1 + (state.level-1)*0.18; // más resistencia y velocidad por nivel
+      const levelFactor = 1 + (state.level-1)*0.18;
       const size = type==='tank' ? rand(42,68) : rand(22,60);
       const baseSpeed = {rock:1, zigzag:1.2, tank:0.9, swarmer:1.4, sniper:1.0}[type] * levelFactor;
       const speed = rand(130, 240) * baseSpeed * (0.9 + state.difficulty*0.15);
       const colorMap = {rock:'#6cf', zigzag:'#f06', tank:'#ff9f2e', swarmer:'#9f6', sniper:'#c86cff'};
       const baseHP = Math.max(1, (size/22)|0) + (type==='tank'?2:0);
-      state.enemies.push({
-        type,
-        x: rand(20, W-20), y: -size, r: size/2,
-        vx: rand(-48, 48), vy: Math.max(120, speed),
-        hp: Math.ceil(baseHP * (1 + (state.level-1)*0.25)), // más vida por nivel
-        wobble: rand(0,Math.PI*2),
-        color: colorMap[type],
-        fireCd: type==='sniper' ? rand(0.6,1.4) : 999
-      });
+      state.enemies.push({ type, x: rand(20, W-20), y: -size, r: size/2, vx: rand(-48, 48), vy: Math.max(120, speed),
+        hp: Math.ceil(baseHP * (1 + (state.level-1)*0.25)), wobble: rand(0,Math.PI*2), color: colorMap[type], fireCd: type==='sniper' ? rand(0.6,1.4) : 999 });
     }
 
-    /* ==== Poderes y partículas ==== */
+    /* Poderes y partículas */
     function spawnPower(x,y){
       const kinds = ['shield','multi','burst','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
-      const kind = pick(kinds);
-      const colorMap = {
+      const kind = pick(kinds); const colorMap = {
         shield:'#9f6', multi:'#6cf', burst:'#f06', slowmo:'#cfe6ff', magnet:'#ff9f2e',
         drone:'#c86cff', pierce:'#39a9ff', homing:'#ffd54f', ricochet:'#ff8ab4', heal:'#7cffb2',
         overdrive:'#ff6', vortex:'#70a0ff', chain:'#ffe066', barrier:'#9dffea', charge:'#ff9fb0', teleport:'#b8ffa6',
         phase:'#aef', gravity:'#89f', timewarp:'#cfd6ea', nano:'#7fe3a3', shock:'#ff7f2e'
-      };
-      state.powerUps.push({ x, y, r: 10, vy: 160, kind, color: colorMap[kind] });
+      }; state.powerUps.push({ x, y, r: 9, vy: 160, kind, color: colorMap[kind] });
     }
-    function explode(x,y,color, count=18){
-      for(let i=0;i<count;i++){
-        state.parts.push({ x,y, vx: rand(-160,160), vy: rand(-200,60), life: rand(0.35,0.9), r: rand(1.5,3.8), color });
-      }
-      state.flash = Math.min(1, state.flash + 0.22);
-    }
+    function explode(x,y,color, count=18){ for(let i=0;i<count;i++){
+      state.parts.push({ x,y, vx: rand(-160,160), vy: rand(-200,60), life: rand(0.35,0.9), r: rand(1.5,3.8), color }); }
+      state.flash = Math.min(1, state.flash + 0.22); }
     function addShake(amount=10){ state.camera.shake = Math.min(0.6, state.camera.shake + amount/100); }
 
-    /* ==== Colisiones ==== */
-    const clampRect = (cx, rx, rw)=> clamp(cx, rx, rx+rw);
+    /* Colisiones */
     function hitCircleRect(cx, cy, r, rx, ry, rw, rh){
-      const nx = clampRect(cx, rx, rw);
-      const ny = clamp(cy, ry, ry+rh);
-      const dx = cx - nx, dy = cy - ny;
-      return dx*dx + dy*dy <= r*r;
+      const nx = clamp(cx, rx, rx+rw), ny = clamp(cy, ry, ry+rh); const dx = cx - nx, dy = cy - ny; return dx*dx + dy*dy <= r*r;
     }
 
-    /* ==== Dibujo ==== */
-    function applyCamera(){
-      if(state.camera.shake>0){
-        state.camera.shake = Math.max(0, state.camera.shake - 0.02);
-        state.camera.x = (Math.random()*2-1) * 10 * state.camera.shake;
-        state.camera.y = (Math.random()*2-1) * 8 * state.camera.shake;
-        ctx.save(); ctx.translate(state.camera.x, state.camera.y);
-      }else{ state.camera.x = 0; state.camera.y = 0; }
-    }
+    /* Dibujo */
+    function applyCamera(){ if(state.camera.shake>0){ state.camera.shake = Math.max(0, state.camera.shake - 0.02);
+      state.camera.x = (Math.random()*2-1) * 10 * state.camera.shake; state.camera.y = (Math.random()*2-1) * 8 * state.camera.shake; ctx.save(); ctx.translate(state.camera.x, state.camera.y); } }
     function restoreCamera(){ if(state.camera.x!==0 || state.camera.y!==0) ctx.restore(); }
     function drawStars(dt){
       const slow = state.player.slowmo>0 || state.player.timewarp>0 ? 0.35 : 1;
-      for(const s of state.stars){
-        s.y += s.s * 38 * dt * slow;
-        if(s.y > H) { s.y -= H; s.x = rand(0,W); }
-        ctx.fillStyle = s.c;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
-      }
+      for(const s of state.stars){ s.y += s.s * 38 * dt * slow; if(s.y > H) { s.y -= H; s.x = rand(0,W); }
+        ctx.fillStyle = s.c; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); }
     }
     function drawEnemy(e, t){
-      ctx.save(); ctx.translate(e.x, e.y);
-      const wob = Math.sin(e.wobble + t*3) * 0.25; if(e.type==='zigzag') ctx.rotate(wob);
+      ctx.save(); ctx.translate(e.x, e.y); const wob = Math.sin(e.wobble + t*3) * 0.25; if(e.type==='zigzag') ctx.rotate(wob);
       ctx.shadowColor = e.color; ctx.shadowBlur = 12; ctx.strokeStyle = e.color; ctx.lineWidth = e.type==='tank' ? 4 : 3;
-      ctx.beginPath();
-      const sides = e.type==='rock'?6 : e.type==='tank'?8 : e.type==='swarmer'?5 : e.type==='sniper'?4 : 6;
+      ctx.beginPath(); const sides = e.type==='rock'?6 : e.type==='tank'?8 : e.type==='swarmer'?5 : e.type==='sniper'?4 : 6;
       for(let i=0;i<sides;i++){ const ang = i/sides * Math.PI*2; ctx.lineTo(Math.cos(ang)*e.r, Math.sin(ang)*e.r); }
       ctx.closePath(); ctx.stroke(); ctx.restore(); ctx.shadowBlur = 0;
     }
-    function drawBullet(b){
-      ctx.shadowColor = '#6cf'; ctx.shadowBlur = 10;
-      ctx.fillStyle = b.chain? 'rgba(255,220,120,.9)' : 'rgba(108,220,255,.85)';
-      ctx.fillRect(b.x-2, b.y-8, 4, 14); ctx.shadowBlur = 0;
-    }
-    function drawEnemyBullet(b){
-      ctx.shadowColor = '#f66'; ctx.shadowBlur = 8;
-      ctx.fillStyle = 'rgba(255,100,120,.85)';
-      ctx.fillRect(b.x-2, b.y-6, 4, 10); ctx.shadowBlur = 0;
-    }
-    function drawPower(pu){
-      ctx.shadowColor = pu.color; ctx.shadowBlur = 12;
-      ctx.strokeStyle = pu.color; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI*2); ctx.stroke();
-      ctx.shadowBlur = 0; ctx.fillStyle = pu.color; ctx.fillRect(pu.x-6, pu.y-2, 12, 4);
-    }
+    function drawBullet(b){ ctx.shadowColor = '#6cf'; ctx.shadowBlur = 10; ctx.fillStyle = b.chain? 'rgba(255,220,120,.9)' : 'rgba(108,220,255,.85)'; ctx.fillRect(b.x-2, b.y-8, 4, 14); ctx.shadowBlur = 0; }
+    function drawEnemyBullet(b){ ctx.shadowColor = '#f66'; ctx.shadowBlur = 8; ctx.fillStyle = 'rgba(255,100,120,.85)'; ctx.fillRect(b.x-2, b.y-6, 4, 10); ctx.shadowBlur = 0; }
+    function drawPower(pu){ ctx.shadowColor = pu.color; ctx.shadowBlur = 12; ctx.strokeStyle = pu.color; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI*2); ctx.stroke(); ctx.shadowBlur = 0; }
     function drawParts(dt){
       for(const pt of state.parts){ pt.life -= dt; pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.vy += 260 * dt; }
       state.parts = state.parts.filter(p=>p.life>0 && p.y < H+20);
       for(const p of state.parts){ ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
     }
 
-    /* ==== Ship variants ==== */
+    /* Ship */
     const shipPalette = { BR:'#7a7676', PL:'#9fb3c9', OR:'#ffd166', OF:'#6cf', ES:'#f06', GU:'#9f6', MA:'#c86cff', KR:'#39a9ff', LV:'#ff8ab4', LG:'#00e6b3' };
     function drawShipVariant(ctx2,x,y,tag,scale=1){
       const glow = shipPalette[tag] || '#6cf';
@@ -1016,17 +803,12 @@
       else if(tag==='LG'){ ctx2.beginPath(); ctx2.moveTo(0,-26); ctx2.lineTo(22,-2); ctx2.lineTo(16,16); ctx2.lineTo(-16,16); ctx2.lineTo(-22,-2); ctx2.closePath(); ctx2.fill(); }
       ctx2.shadowBlur = 0; ctx2.fillStyle = 'rgba(255,255,255,.3)';
       ctx2.beginPath(); ctx2.moveTo(-7,-6); ctx2.lineTo(0,-14); ctx2.lineTo(7,-6); ctx2.lineTo(0,-2); ctx2.closePath(); ctx2.fill();
-      ctx2.strokeStyle = glow; ctx2.lineWidth = 3;
-      ctx2.beginPath(); ctx2.moveTo(-22,14); ctx2.lineTo(-28,20); ctx2.moveTo(22,14); ctx2.lineTo(28,20); ctx2.stroke();
-      ctx2.beginPath(); ctx2.arc(0,-18,2.6,0,Math.PI*2); ctx2.fillStyle = glow; ctx2.fill();
-      ctx2.restore();
+      ctx2.strokeStyle = glow; ctx2.lineWidth = 3; ctx2.beginPath(); ctx2.moveTo(-22,14); ctx2.lineTo(-28,20); ctx2.moveTo(22,14); ctx2.lineTo(28,20); ctx2.stroke();
+      ctx2.beginPath(); ctx2.arc(0,-18,2.6,0,Math.PI*2); ctx2.fillStyle = glow; ctx2.fill(); ctx2.restore();
     }
-    const shipOrder = ['BR','PL','OR','OF','ES','GU','MA','KR','LV','LG'];
-    let shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
-
+    const shipOrder = ['BR','PL','OR','OF','ES','GU','MA','KR','LV','LG']; let shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
     function renderShipSlider(){
-      const tag = shipOrder[shipIndex];
-      const currentRank = getRankByScore(state.user?.score || 0);
+      const tag = shipOrder[shipIndex]; const currentRank = getRankByScore(state.user?.score || 0);
       shipCtx.clearRect(0,0,shipPreview.width, shipPreview.height);
       shipCtx.fillStyle = '#0b1426'; shipCtx.fillRect(0,0,shipPreview.width, shipPreview.height);
       drawShipVariant(shipCtx, shipPreview.width/2, shipPreview.height/2, tag, 2);
@@ -1035,101 +817,57 @@
       const unlocked = rankIndex(tag) <= rankIndex(currentRank.tag);
       lockOverlay.classList.toggle('hidden', unlocked);
       unlockBadge.classList.toggle('hidden', !unlocked);
-      if(!unlocked){
-        lockMessage.textContent = `Alcanza ${shipRankName} para desbloquear`;
-      }else{
-        unlockBadge.textContent = tag===currentRank.tag?'Tu nave actual':'Desbloqueada';
-      }
+      lockMessage.textContent = unlocked ? 'Desbloqueada' : `Alcanza ${shipRankName} para desbloquear`;
+      if(unlocked){ unlockBadge.textContent = tag===currentRank.tag ? 'Tu nave actual' : 'Desbloqueada'; }
     }
-    function changeShip(dir){
-      shipIndex = (shipIndex + dir + shipOrder.length) % shipOrder.length;
-      localStorage.setItem(LS.shipIndex, String(shipIndex));
-      renderShipSlider();
-    }
+    function changeShip(dir){ shipIndex = (shipIndex + dir + shipOrder.length) % shipOrder.length; localStorage.setItem(LS.shipIndex, String(shipIndex)); renderShipSlider(); }
     arrowLeft.addEventListener('click', ()=> changeShip(-1));
     arrowRight.addEventListener('click', ()=> changeShip(1));
     shipCard.addEventListener('click', ()=>{
-      const tag = shipOrder[shipIndex];
-      const currentTag = getRankByScore(state.user?.score || 0).tag;
+      const tag = shipOrder[shipIndex]; const currentTag = getRankByScore(state.user?.score || 0).tag;
       const unlocked = rankIndex(tag) <= rankIndex(currentTag);
-      if(!unlocked){ pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name} para desbloquear`); return; }
-      pushToast(tag===currentTag ? 'Tu nave actual está lista.' : 'Nave desbloqueada (se asigna al alcanzar el rango).');
+      if(!unlocked){ pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name}`); return; }
+      pushToast(tag===currentTag ? 'Tu nave actual está lista.' : 'Nave desbloqueada.');
     });
 
-    /* ==== Ranking render (puntuación) ==== */
-    function renderRanking(users){
-      const rows = (users||[])
-        .map(info=>{
-          return `<tr><td>${info.u}</td><td>${info.victories}</td><td>${info.rankName}</td><td>${info.tag}</td><td>${info.country||'—'}</td><td>${info.score||0}</td></tr>`;
-        }).join('');
-      compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
-    }
+    /* Ranking render ya definido arriba */
 
-    /* ==== INPUT ==== */
+    /* INPUT */
     const keys = new Set();
     function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
-
     function enableKeyboard(){
       window.addEventListener('keydown', (e)=>{
         if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
-        if(isTypingTarget(e)) return;
-        ensureAudio();
-        keys.add(e.key);
+        if(isTypingTarget(e)) return; ensureAudio(); keys.add(e.key);
         state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
         state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
-        if(e.key === ' ') state.input.shoot = true;
-        if(e.key.toLowerCase() === 'p') togglePause();
+        if(e.key === ' ') state.input.shoot = true; if(e.key.toLowerCase() === 'p') togglePause();
       });
       window.addEventListener('keyup', (e)=>{
-        if(isTypingTarget(e)) return;
-        keys.delete(e.key);
+        if(isTypingTarget(e)) return; keys.delete(e.key);
         state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
         state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
         if(e.key === ' ') state.input.shoot = false;
       });
     }
-
     function enableTouch(){
       touchControls.hidden = false;
       let stickDrag = false, stickOrigin = {x:0,y:0};
-      stick.addEventListener('pointerdown', (e)=>{
-        ensureAudio();
-        stickDrag = true; stick.setPointerCapture(e.pointerId);
-        const rect = stick.getBoundingClientRect();
-        stickOrigin.x = rect.left + rect.width/2;
-        stickOrigin.y = rect.top + rect.height/2;
-      });
+      stick.addEventListener('pointerdown', (e)=>{ ensureAudio(); stickDrag = true; stick.setPointerCapture(e.pointerId);
+        const rect = stick.getBoundingClientRect(); stickOrigin.x = rect.left + rect.width/2; stickOrigin.y = rect.top + rect.height/2; });
       stick.addEventListener('pointermove', (e)=>{
-        if(!stickDrag) return;
-        const dx = e.clientX - stickOrigin.x;
-        const dy = e.clientY - stickOrigin.y;
-        const max = 40;
-        const nx = clamp(dx, -max, max);
-        const ny = clamp(dy, -max, max);
-        knob.style.left = (40 + nx) + 'px';
-        knob.style.top  = (40 + ny) + 'px';
-        state.input.left = nx < -8; state.input.right = nx > 8;
+        if(!stickDrag) return; const dx = e.clientX - stickOrigin.x; const max = 40; const nx = clamp(dx, -max, max);
+        knob.style.left = (40 + nx) + 'px'; state.input.left = nx < -8; state.input.right = nx > 8;
       });
-      stick.addEventListener('pointerup', ()=>{
-        stickDrag = false;
-        knob.style.left = '40px'; knob.style.top = '40px';
-        state.input.left = false; state.input.right = false;
-      });
+      stick.addEventListener('pointerup', ()=>{ stickDrag = false; knob.style.left = '40px'; state.input.left = false; state.input.right = false; });
       fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
       fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
     }
-
-    /* ==== Mouse control ==== */
     let mouseDown = false;
     function updateMouseControl(e){
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const leftSide = x < rect.width/2;
-      const rightSide = x >= rect.width/2;
-      state.input.left = leftSide && mouseDown;
-      state.input.right = rightSide && mouseDown;
-      state.input.shoot = mouseDown && (y < rect.height/2);
+      const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      const leftSide = x < rect.width/2, rightSide = x >= rect.width/2;
+      state.input.left = leftSide && mouseDown; state.input.right = rightSide && mouseDown; state.input.shoot = mouseDown && (y < rect.height/2);
     }
     canvas.addEventListener('mousedown', (e)=>{ ensureAudio(); mouseDown = true; updateMouseControl(e); });
     window.addEventListener('mousemove', (e)=>{ if(!mouseDown) return; updateMouseControl(e); });
@@ -1137,139 +875,90 @@
 
     if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
 
-    /* ==== Overlays ==== */
+    /* Overlays */
     function showOverlay(title, text, buttons=true){
-      overlayTitle.textContent = title;
-      overlayText.textContent = text;
+      overlayTitle.textContent = title; overlayText.textContent = text;
       overlayResume.classList.toggle('hidden', !buttons);
       overlayRestart.classList.toggle('hidden', !buttons);
       overlayMenu.classList.toggle('hidden', !buttons);
+      overlayQuit.classList.toggle('hidden', !buttons);
       gameOverlay.classList.remove('hidden');
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
-    gameOverlay.addEventListener('click', ()=>{
-      if(state.running){ state.paused = false; hideOverlay(); }
-    });
+    overlayResume.addEventListener('click', ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
+    overlayRestart.addEventListener('click', ()=> startGame(state.competitive));
+    overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
+    overlayQuit.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
 
-    /* ==== Nivel y metas triples ==== */
-    function nextTargetTriple(prevTarget){
-      return Math.floor(prevTarget * 3); // triplica meta por nivel
-    }
+    /* Metas triples */
+    function nextTargetTriple(prevTarget){ return Math.floor(prevTarget * 3); }
 
-    /* ==== Balas enemigo ==== */
+    /* Enemy bullets */
     function spawnEnemyBullet(ex,ey){ state.enemyBullets.push({x:ex, y:ey, vy: 300 + state.difficulty*40, life: 3}); }
 
-    /* ==== Targeting ==== */
+    /* Targeting */
     function nearestEnemy(x,y){ let best=null, bd=1e9; for(const e of state.enemies){ const d = Math.hypot(e.x-x, e.y-y); if(d<bd){ bd=d; best=e; } } return best; }
 
-    /* ==== Control de partida ==== */
+    /* Control de partida */
     function resetStateForRun(){
       state.score = 0; state.lives = 3; state.tick = 0; state.difficulty = 1; state.flash = 0;
-      state.level = 1; state.target = 100;
-      state.spaceToneIndex = 0;
+      state.level = 1; state.target = 100; state.spaceToneIndex = 0;
       levelEl.textContent = state.level; targetEl.textContent = state.target;
       state.camera.shake = 0; state.camera.x = 0; state.camera.y = 0;
-      state.player = { x: W/2, y: H-90, w:56, h:22, speed:460, cooldown:0,
-        multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
-        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0,
-        phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
+      state.player = { x: W/2, y: H-90, w:56, h:22, speed:460, cooldown:0, multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
+        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0, phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
       state.bullets.length = 0; state.enemies.length = 0; state.parts.length = 0; state.powerUps.length = 0; state.enemyBullets.length = 0;
-      spawnStars();
-      scoreEl.textContent = 'Puntos: 0'; livesEl.textContent = 'Vidas: 3'; powerEl.textContent = 'Power: —';
-      hideOverlay();
+      spawnStars(); scoreEl.textContent = 'Puntos: 0'; livesEl.textContent = 'Vidas: 3'; powerEl.textContent = 'Power: —'; hideOverlay();
     }
-    function startGame(competitive=false){
-      state.competitive = competitive;
-      state.running = true; state.paused = false;
-      resetStateForRun();
-      mainMenu.classList.add('hidden');
-      beep(720,.12,'sawtooth',.05);
-    }
-    function togglePause(){
-      if(!state.running) return;
-      state.paused = !state.paused;
-      if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); }
-    }
+    function startGame(competitive=false){ state.competitive = competitive; state.running = true; state.paused = false; resetStateForRun(); mainMenu.classList.add('hidden'); beep(720,.12,'sawtooth',.05); }
+    function togglePause(){ if(!state.running) return; state.paused = !state.paused; if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); } }
     function finishRun(win=false){
       state.running = false;
       state.best = Math.max(state.best, state.score); localStorage.setItem(LS.best, String(state.best)); bestEl.textContent = state.best;
-      const history = loadJSON(LS.history, []); history.unshift({date: new Date().toISOString(), score: state.score, level: state.level});
-      saveJSON(LS.history, history.slice(0, 200));
+      const history = loadJSON(LS.history, []); history.unshift({date: new Date().toISOString(), score: state.score, level: state.level}); saveJSON(LS.history, history.slice(0, 200));
       if(state.competitive && state.user){
-        // Actualiza Firestore sin bloquear loop
-        const newVictories = state.victories + (win?1:0);
-        const newScore = (state.user.score||0) + state.score;
-        state.victories = newVictories;
-        state.user.score = newScore;
-        const rank = getRankByScore(newScore);
-        void upsertUserProfile(state.user.uid, {
-          email: state.user.email,
-          username: state.user.username,
-          score: newScore,
-          victories: newVictories,
-          country: state.user.country,
-          updated: new Date().toISOString(),
-          rankTag: rank.tag,
-          rankName: rank.name
-        });
-        sendAchievement(win?'ganó una partida':'terminó una partida');
-        updateProfileUI();
+        state.victories = state.victories + (win?1:0);
+        state.user.score = (state.user.score||0) + state.score;
+        const rank = getRankByScore(state.user.score||0);
+        void upsertUser(state.user.uid, { email: state.user.email, username: state.user.username, score: state.user.score, victories: state.victories, country: state.user.country, updated: new Date().toISOString(), rankTag: rank.tag, rankName: rank.name });
+        sendAchievement(win?'ganó una partida':'terminó una partida'); updateProfileUI();
       }
       showOverlay(win?'¡Victoria!':'Game Over', `Puntaje: ${state.score}. Récord: ${state.best}`);
       beep(win?960:220, .18, 'square', .07);
     }
 
-    /* ==== Loop ==== */
+    /* Loop */
     let last = performance.now();
     function loop(now){
-      const dtRaw = Math.min(0.033, (now - last)/1000); last = now;
-      const p = state.player;
-      const dt = p.slowmo>0 || p.timewarp>0 ? dtRaw*0.6 : dtRaw;
+      const dtRaw = Math.min(0.033, (now - last)/1000); last = now; const p = state.player; const dt = p.slowmo>0 || p.timewarp>0 ? dtRaw*0.6 : dtRaw;
 
-      drawSpaceBackground(); // gradiente por nivel
-      ctx.globalAlpha = 1;
+      drawSpaceBackground();
       if(state.flash > 0) state.flash = Math.max(0, state.flash - dt*0.7);
       ctx.fillStyle = `rgba(255,255,255,${state.flash * 0.35})`; ctx.fillRect(0,0,W,H);
 
-      applyCamera();
-      drawStars(dt);
+      applyCamera(); drawStars(dt);
 
       if(state.running && !state.paused){
-        state.tick += dt;
-        // Dificultad progresiva más agresiva por nivel
-        state.difficulty += dt * (0.03 + state.level*0.004);
+        state.tick += dt; state.difficulty += dt * (0.03 + state.level*0.004);
 
         ['slowmo','magnet','homing','ricochet','overdrive','vortex','chain','barrier','charge','phase','gravity','timewarp','nano'].forEach(k=> p[k]=Math.max(0,p[k]-dt));
         if(p.nano>0 && Math.random()<0.01){ state.lives = Math.min(9, state.lives+1); p.nano = Math.max(0, p.nano-0.5); }
-        if(p.shock>0 && Math.random()<0.002){
-          for(const e of state.enemies){ const d = Math.hypot(e.x-p.x, e.y-p.y); if(d<140){ e.hp -= 1; e.vx += (e.x-p.x)/d*120; e.vy += (e.y-p.y)/d*80; } }
-        }
+        if(p.shock>0 && Math.random()<0.002){ for(const e of state.enemies){ const d = Math.hypot(e.x-p.x, e.y-p.y); if(d<140){ e.hp -= 1; e.vx += (e.x-p.x)/d*120; e.vy += (e.y-p.y)/d*80; } } }
 
         let dir = 0; if(state.input.left) dir -= 1; if(state.input.right) dir += 1;
-        let speed = p.speed * (p.overdrive>0 ? 1.15 : 1);
-        if(p.charge>0 && dir!==0){ speed *= 1.35; }
+        let speed = p.speed * (p.overdrive>0 ? 1.15 : 1); if(p.charge>0 && dir!==0){ speed *= 1.35; }
         p.x = clamp(p.x + dir * speed * dt, 20, W-20);
         if(p.teleport>0 && Math.random()<0.002){ p.x = W/2; p.teleport = 0; addShake(10); }
 
         p.cooldown = Math.max(0, p.cooldown - dt);
+        if(p.drone && Math.random() < 0.06){ state.bullets.push({ x: p.x + 20*Math.cos(state.tick*5), y: p.y-26, vy: -430, life: 1, pierceLeft: p.pierce||0, chain: p.chain>0 }); }
 
-        if(p.drone && Math.random() < 0.06){
-          state.bullets.push({ x: p.x + 20*Math.cos(state.tick*5), y: p.y-26, vy: -430, life: 1, pierceLeft: p.pierce||0, chain: p.chain>0 });
-        }
-
-        const baseCd = p.overdrive>0 ? 0.06 : 0.12;
-        const canShoot = state.input.shoot && p.cooldown <= 0;
+        const baseCd = p.overdrive>0 ? 0.06 : 0.12; const canShoot = state.input.shoot && p.cooldown <= 0;
         if(canShoot){
-          const spread = p.multi > 1 ? 10 : 0;
-          const count = p.multi;
-          for(let i=0;i<count;i++){
-            const offset = (i - (count-1)/2) * spread;
-            const vyBoost = p.timewarp>0 ? -620 : -560;
-            state.bullets.push({ x: p.x + offset, y: p.y-18, vy: vyBoost, life: 2, pierceLeft: p.pierce||0, chain: p.chain>0 });
-          }
-          p.cooldown = p.burst>0 ? 0.06 : baseCd;
-          if(p.burst>0) p.burst -= 1;
-          beep(880, .05, 'square', .04);
+          const spread = p.multi > 1 ? 10 : 0; const count = p.multi;
+          for(let i=0;i<count;i++){ const offset = (i - (count-1)/2) * spread; const vyBoost = p.timewarp>0 ? -620 : -560;
+            state.bullets.push({ x: p.x + offset, y: p.y-18, vy: vyBoost, life: 2, pierceLeft: p.pierce||0, chain: p.chain>0 }); }
+          p.cooldown = p.burst>0 ? 0.06 : baseCd; if(p.burst>0) p.burst -= 1; beep(880, .05, 'square', .04);
         }
 
         for(const b of state.bullets){
@@ -1281,8 +970,7 @@
 
         if(p.vortex>0 || p.gravity>0){
           for(const e of state.enemies){
-            const dx = p.x - e.x, dy = p.y - e.y; const d = Math.hypot(dx,dy);
-            const radius = p.gravity>0 ? 260 : 220;
+            const dx = p.x - e.x, dy = p.y - e.y; const d = Math.hypot(dx,dy); const radius = p.gravity>0 ? 260 : 220;
             if(d<radius){ e.x += (dx/d) * 60 * dt; e.y += (dy/d) * 40 * dt; }
           }
         }
@@ -1292,8 +980,7 @@
         for(const e of state.enemies){
           const levelSpeedBoost = 1 + (state.level-1)*0.06;
           e.vy = Math.max(e.vy, (120 + state.difficulty*10) * levelSpeedBoost);
-          e.y += e.vy * dt;
-          e.x = clamp(e.x + e.vx * dt, 16, W-16);
+          e.y += e.vy * dt; e.x = clamp(e.x + e.vx * dt, 16, W-16);
           if(e.type==='zigzag'){ e.vx += Math.sin(state.tick*3 + e.wobble)*10; }
           if(e.type==='swarmer'){ e.vx += Math.sin(state.tick*5 + e.wobble)*12; e.vy += Math.sin(state.tick*2)*4; }
           if(e.type==='tank'){ e.vx *= 0.995; e.vy = Math.max(e.vy*0.998, 120); }
@@ -1317,11 +1004,7 @@
               e.hp -= 1; explode(b.x, b.y, 'rgba(108,220,255,.8)', 6); addShake(8); beep(560,.04,'triangle',.035);
               if(b.chain){ for(const e2 of state.enemies){ const d = Math.hypot(e2.x-e.x, e2.y-e.y); if(e2!==e && d<90) e2.hp -= 1; } }
               if((b.pierceLeft||0) > 0){ b.pierceLeft -= 1; b.y -= 4; } else { b.life = 0; }
-              if(e.hp<=0){
-                explode(e.x, e.y, e.color, 24); addShake(18);
-                if(Math.random() < 0.24) spawnPower(e.x, e.y);
-                e.r = 0; state.score += 10 + Math.floor(state.level*2.5); // más puntos por nivel
-              }
+              if(e.hp<=0){ explode(e.x, e.y, e.color, 24); addShake(18); if(Math.random() < 0.24) spawnPower(e.x, e.y); e.r = 0; state.score += 10 + Math.floor(state.level*2.5); }
             }
           }
         }
@@ -1370,41 +1053,21 @@
         livesEl.textContent = `Vidas: ${state.lives}`;
         powerEl.textContent = `Power: ${pw}`;
 
-        // Nivel up con meta triple
         if(state.score >= state.target){
-          const completedLevel = state.level;
-          state.level++; levelEl.textContent = state.level;
+          const completedLevel = state.level; state.level++; levelEl.textContent = state.level;
           state.target = nextTargetTriple(state.target); targetEl.textContent = state.target;
-          state.difficulty += 0.9;
-          state.spaceToneIndex = (state.spaceToneIndex + 1) % spacePalettes.length;
+          state.difficulty += 0.9; state.spaceToneIndex = (state.spaceToneIndex + 1) % spacePalettes.length;
           const pool = ['burst','shield','multi','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
-          const reward = pool[(state.level-1) % pool.length];
-          grantPower(reward); powerEl.textContent = `Power: ${reward[0].toUpperCase()+reward.slice(1)}`;
-          showOverlay(`Nivel ${completedLevel} completado`, `Nuevo objetivo: ${state.target} puntos`, false);
-          setTimeout(hideOverlay, 1500);
+          const reward = pool[(state.level-1) % pool.length]; grantPower(reward); powerEl.textContent = `Power: ${reward[0].toUpperCase()+reward.slice(1)}`;
+          showOverlay(`Nivel ${completedLevel} completado`, `Nuevo objetivo: ${state.target} puntos`, true);
           beep(960,.12,'triangle',.06); setTimeout(()=>beep(720,.1,'sine',.05),120);
           if(state.competitive && state.user){
-            state.victories += 1;
-            const newVictories = state.victories;
-            const newScore = (state.user.score||0) + 100; // bonus pequeño por subir nivel
-            state.user.score = newScore;
-            const rank = getRankByScore(newScore);
-            void upsertUserProfile(state.user.uid, {
-              email: state.user.email,
-              username: state.user.username,
-              score: newScore,
-              victories: newVictories,
-              country: state.user.country,
-              updated: new Date().toISOString(),
-              rankTag: rank.tag,
-              rankName: rank.name
-            });
-            sendAchievement('subió de nivel y ganó 1 victoria');
-            updateProfileUI();
+            state.victories += 1; const rank = getRankByScore((state.user.score||0) + 100);
+            void upsertUser(state.user.uid, { victories: state.victories, updated:new Date().toISOString(), rankTag: rank.tag, rankName: rank.name });
+            sendAchievement('subió de nivel y ganó 1 victoria'); updateProfileUI();
           }
         }
 
-        // Condición de victoria extra en modo competitivo (opcional)
         if(state.competitive && state.score >= state.target + 640){ finishRun(true); }
       }
 
@@ -1421,28 +1084,11 @@
     }
     requestAnimationFrame(loop);
 
-    /* ==== UI, transiciones y bindings ==== */
+    /* UI y transiciones */
     document.addEventListener('DOMContentLoaded', async ()=>{
-      try{
-        // Transición suave: muestra menú y anima botones
-        mainMenu.classList.remove('hidden');
-        setTimeout(()=>{
-          splash.classList.add('hidden');
-          updateMobileOrientationUI();
-          // Anima botones del menú
-          [menuPlay, menuHow, menuScores, menuCompete, menuProfile, menuSound].forEach((b,i)=>{
-            setTimeout(()=> b.classList.add('show'), 120*i);
-          });
-        }, 1200);
-      }catch(e){
-        mainMenu.classList.remove('hidden');
-        splash.classList.add('hidden');
-      }
-
-      // Geo país para bandera
-      const geo = await resolveCountryByIP();
-      state.userCountry = geo.country;
-      state.userCountryCode = geo.countryCode;
+      mainMenu.classList.remove('hidden');
+      setTimeout(()=>{ splash.classList.add('hidden'); updateMobileOrientationUI(); }, 1200);
+      const geo = await resolveCountryByIP(); state.userCountry = geo.country; state.userCountryCode = geo.countryCode;
     });
 
     function bindPress(el, fn){
@@ -1455,16 +1101,13 @@
     bindPress(menuScores, ()=> openScores());
     bindPress(menuCompete, ()=> openComp());
     bindPress(menuProfile, ()=> openProfile());
+    bindPress(menuAuth, ()=> authModal.classList.remove('hidden'));
     bindPress(menuSound, ()=> soundModal.classList.remove('hidden'));
     bindPress(soundClose, ()=> soundModal.classList.add('hidden'));
     bindPress(soundOn, ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
     bindPress(soundOff, ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
 
-    bindPress(overlayResume, ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
-    bindPress(overlayRestart, ()=> startGame(state.competitive));
-    bindPress(overlayMenu, ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
-
-    /* ==== Puntuaciones ==== */
+    /* Puntuaciones modal */
     function openScores(){
       const best = Number(localStorage.getItem(LS.best)||0);
       const history = loadJSON(LS.history, []);
@@ -1473,8 +1116,7 @@
         const d = new Date(h.date);
         return `<tr><td>${d.toLocaleString()}</td><td>${h.score}</td><td>${h.level}</td></tr>`;
       }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
-      scoresModal.classList.remove('hidden');
-      scoresScroll.scrollTop = 0;
+      scoresModal.classList.remove('hidden'); scoresScroll.scrollTop = 0;
     }
     bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
     bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); openScores(); });
@@ -1488,182 +1130,117 @@
     }
     enableDragScroll(scoresScroll);
     enableDragScroll(howScroll);
+    enableDragScroll(compScroll);
 
-    /* ==== Competencia ==== */
-    async function openComp(){
-      compModal.classList.remove('hidden');
-      compPage = 1; compLastDoc = null; compCursorStack = [];
-      compPageEl.textContent = compPage;
-      await loadRankingFirstPage();
-      compScroll.scrollTop = 0;
-    }
+    /* Competencia modal */
+    async function openComp(){ compModal.classList.remove('hidden'); compPage = 1; compLastDoc = null; compCursorStack = []; compPageEl.textContent = compPage; await loadRankingFirstPage(); compScroll.scrollTop = 0; }
     bindPress(compClose, ()=> compModal.classList.add('hidden'));
     bindPress(compShare, ()=> downloadRankingPNG());
     bindPress(compTop, ()=> compScroll.scrollTo({top:0, behavior:'smooth'}));
     bindPress(compBottom, ()=> compScroll.scrollTo({top:compScroll.scrollHeight, behavior:'smooth'}));
-    enableDragScroll(compScroll);
     bindPress(compNextPage, async ()=>{ await loadRankingPage(true); compScroll.scrollTop = 0; });
     bindPress(compPrevPage, async ()=>{ await loadRankingPage(false); compScroll.scrollTop = 0; });
+    bindPress(compUseProfile, ()=>{ if(!state.user){ alert('Primero registrate o inicia sesión.'); return; } compModal.classList.add('hidden'); startGame(true); });
 
-    bindPress(compUseProfile, ()=>{
-      if(!state.user){ alert('Primero inicia sesión o regístrate en Perfil.'); return; }
-      compModal.classList.add('hidden');
-      startGame(true);
-    });
-
-    /* ==== Perfil + Auth ==== */
-    function openProfile(){
-      updateProfileUI();
-      profileModal.classList.remove('hidden');
-    }
+    /* Perfil modal */
+    function openProfile(){ updateProfileUI(); profileModal.classList.remove('hidden'); }
     bindPress(profileClose, ()=> profileModal.classList.add('hidden'));
 
+    /* Auth modal: registro/login/logout */
+    bindPress(authClose, ()=> authModal.classList.add('hidden'));
+
     bindPress(btnRegister, async ()=>{
-      const email = (authEmail.value||'').trim();
-      const password = (authPassword.value||'').trim();
-      const username = (authUsername.value||'').trim();
+      const email = (authEmail.value||'').trim(); const password = (authPassword.value||'').trim(); const username = (authUsername.value||'').trim();
       if(!email || !password || !username){ alert('Ingresa email, contraseña y usuario.'); return; }
       try{
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-        const geo = await resolveCountryByIP();
-        const profile = {
-          uid, email, username,
-          score: 0, victories: 0,
-          country: geo.country,
-          updated: new Date().toISOString(),
-          rankTag: 'BR', rankName: 'Bronce'
-        };
-        await upsertUserProfile(uid, profile);
-        state.user = profile;
-        updateProfileUI();
-        alert('Registro completado.');
-      }catch(e){
-        alert('Error al registrar: ' + (e.message||e));
-      }
+        const uid = cred.user.uid; const geo = await resolveCountryByIP();
+        const profile = { uid, email, username, score: 0, victories: 0, country: geo.country, updated: new Date().toISOString(), rankTag:'BR', rankName:'Bronce' };
+        await upsertUser(uid, profile); state.user = profile; updateProfileUI(); alert('Registro completado.');
+      }catch(e){ alert('Error al registrar: ' + (e.message||e)); }
     });
 
     bindPress(btnLogin, async ()=>{
-      const email = (authEmail.value||'').trim();
-      const password = (authPassword.value||'').trim();
+      const email = (authEmail.value||'').trim(); const password = (authPassword.value||'').trim();
       if(!email || !password){ alert('Ingresa email y contraseña.'); return; }
       try{
         const cred = await signInWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-        const prof = await getUserProfile(uid);
-        if(prof){
-          state.user = prof;
-        }else{
-          // Si no existe doc, crea básico
+        const uid = cred.user.uid; const prof = await getUser(uid);
+        if(prof){ state.user = prof; } else {
           const geo = await resolveCountryByIP();
           const profile = { uid, email, username: authUsername.value||email, score:0, victories:0, country: geo.country, updated:new Date().toISOString(), rankTag:'BR', rankName:'Bronce' };
-          await upsertUserProfile(uid, profile);
-          state.user = profile;
+          await upsertUser(uid, profile); state.user = profile;
         }
-        updateProfileUI();
-        alert('Sesión iniciada.');
-      }catch(e){
-        alert('Error al iniciar sesión: ' + (e.message||e));
-      }
+        updateProfileUI(); alert('Sesión iniciada.');
+      }catch(e){ alert('Error al iniciar sesión: ' + (e.message||e)); }
     });
 
     bindPress(btnLogout, async ()=>{
-      try{
-        await signOut(auth);
-        state.user = null;
-        updateProfileUI();
-        alert('Sesión cerrada.');
-      }catch(e){
-        alert('Error al cerrar sesión: ' + (e.message||e));
-      }
-    });
-
-    bindPress(settingsCancel, ()=> settingsModal.classList.add('hidden'));
-    bindPress(settingsSave, async ()=>{
-      if(!state.user){ alert('Inicia sesión primero.'); return; }
-      const newName = (settingsNameInput.value||'').trim();
-      if(!newName){ alert('Escribe un nombre visible.'); return; }
-      state.user.username = newName;
-      const rank = getRankByScore(state.user.score||0);
-      await upsertUserProfile(state.user.uid, {
-        username: newName,
-        rankTag: rank.tag, rankName: rank.name,
-        updated: new Date().toISOString()
-      });
-      settingsModal.classList.add('hidden');
-      updateProfileUI();
-      alert('Nombre actualizado.');
+      try{ await signOut(auth); state.user = null; updateProfileUI(); alert('Sesión cerrada.'); }
+      catch(e){ alert('Error al cerrar sesión: ' + (e.message||e)); }
     });
 
     function updateProfileUI(){
       const u = state.user;
-      profileUser.textContent = u?.username || '—';
-      profileEmail.textContent = u?.email || '—';
-      profileScore.textContent = u?.score || 0;
-      profileWins.textContent = u?.victories || 0;
-      const rank = getRankByScore(u?.score || 0);
-      profileRank.textContent = rank.name; profileTag.textContent = rank.tag;
+      profileUser.textContent = u?.username || '—'; profileEmail.textContent = u?.email || '—';
+      profileScore.textContent = u?.score || 0; profileWins.textContent = u?.victories || 0;
+      const rank = getRankByScore(u?.score || 0); profileRank.textContent = rank.name; profileTag.textContent = rank.tag;
       profileFlag.textContent = countryCodeToFlag(state.userCountryCode || 'DO');
       renderShipSlider();
     }
 
-    /* ==== Sonido ==== */
-    const soundStored = loadJSON(LS.sound, {enabled:true});
-    soundEnabled = !!soundStored.enabled;
+    /* Sonido */
+    const soundStored = loadJSON(LS.sound, {enabled:true}); soundEnabled = !!soundStored.enabled;
 
-    /* ==== Escape: cerrar overlays ==== */
+    /* Escape para cerrar */
     window.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape'){
-        [howModal, scoresModal, compModal, profileModal, settingsModal, soundModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
+        [howModal, scoresModal, compModal, profileModal, soundModal, authModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
         if(!state.running) mainMenu.classList.remove('hidden');
       }
-      if(e.key.toLowerCase() === 'g' && state.user){ // abrir config rápido
-        settingsNameInput.value = state.user.username || '';
-        settingsModal.classList.remove('hidden');
-      }
+      if(e.key.toLowerCase() === 'p'){ togglePause(); }
     });
 
-    /* ==== Ayuda: iconos ==== */
+    /* Iconos pequeños en Cómo jugar */
     const powersList = [
-      {key:'shield', label:'Escudo'}, {key:'barrier', label:'Barrera'}, {key:'multi', label:'Multi'},
-      {key:'burst', label:'Ráfaga'}, {key:'overdrive', label:'Overdrive'}, {key:'pierce', label:'Perforante'},
-      {key:'homing', label:'Teledirigido'}, {key:'ricochet', label:'Rebote'}, {key:'heal', label:'Curación'},
-      {key:'slowmo', label:'Cámara lenta'}, {key:'magnet', label:'Imán'}, {key:'drone', label:'Dron'},
-      {key:'vortex', label:'Vórtice'}, {key:'chain', label:'Cadena'}, {key:'charge', label:'Carga'}, {key:'teleport', label:'Teleport'},
-      {key:'phase', label:'Fase'}, {key:'gravity', label:'Gravedad'}, {key:'timewarp', label:'Timewarp'},
-      {key:'nano', label:'Nano-reparación'}, {key:'shock', label:'Onda de choque'}
+      {key:'shield', label:'Escudo'}, {key:'barrier', label:'Barrera'}, {key:'multi', label:'Multi'}, {key:'burst', label:'Ráfaga'},
+      {key:'overdrive', label:'Overdrive'}, {key:'pierce', label:'Perforante'}, {key:'homing', label:'Teledirigido'},
+      {key:'ricochet', label:'Rebote'}, {key:'heal', label:'Curación'}, {key:'slowmo', label:'Cámara lenta'},
+      {key:'magnet', label:'Imán'}, {key:'drone', label:'Dron'}, {key:'vortex', label:'Vórtice'}, {key:'chain', label:'Cadena'},
+      {key:'charge', label:'Carga'}, {key:'teleport', label:'Teleport'}, {key:'phase', label:'Fase'}, {key:'gravity', label:'Gravedad'},
+      {key:'timewarp', label:'Timewarp'}, {key:'nano', label:'Nano-reparación'}, {key:'shock', label:'Onda de choque'}
     ];
     function drawIcon(canvas2, key){
       const c = canvas2.getContext('2d'); c.clearRect(0,0,canvas2.width,canvas2.height);
       c.fillStyle = '#0b1426'; c.fillRect(0,0,canvas2.width,canvas2.height);
-      c.shadowColor = '#6cf'; c.shadowBlur = 8; c.strokeStyle = '#6cf'; c.lineWidth = 2;
-      if(key==='shield'){ c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); }
-      else if(key==='barrier'){ c.beginPath(); c.arc(22,22,16,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(22,22,12,0,Math.PI*2); c.stroke(); }
-      else if(key==='multi'){ c.fillStyle='#6cf'; c.fillRect(10,16,6,14); c.fillRect(20,12,6,18); c.fillRect(30,16,6,14); }
-      else if(key==='burst'){ c.fillStyle='#f06'; c.beginPath(); c.moveTo(10,30); c.lineTo(22,10); c.lineTo(34,30); c.closePath(); c.fill(); }
-      else if(key==='overdrive'){ c.strokeStyle='#ffd54f'; c.beginPath(); c.moveTo(8,22); c.lineTo(36,22); c.stroke(); c.beginPath(); c.moveTo(22,8); c.lineTo(22,36); c.stroke(); }
-      else if(key==='pierce'){ c.fillStyle='#39a9ff'; c.fillRect(20,8,4,28); c.fillStyle='#9fd0ff'; c.fillRect(16,14,4,20); c.fillRect(24,14,4,20); }
-      else if(key==='homing'){ c.strokeStyle='#ffd54f'; c.beginPath(); c.arc(22,22,10,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(22,22); c.lineTo(32,12); c.stroke(); }
-      else if(key==='ricochet'){ c.strokeStyle='#ff8ab4'; c.beginPath(); c.moveTo(12,10); c.lineTo(12,34); c.moveTo(32,10); c.lineTo(32,34); c.stroke(); c.fillStyle='#ff8ab4'; c.fillRect(20,16,4,12); }
-      else if(key==='heal'){ c.strokeStyle='#7cffb2'; c.beginPath(); c.moveTo(22,10); c.lineTo(22,34); c.moveTo(10,22); c.lineTo(34,22); c.stroke(); }
-      else if(key==='slowmo'){ c.strokeStyle='#cfe6ff'; c.beginPath(); c.arc(22,22,12,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(22,22); c.lineTo(30,22); c.stroke(); }
-      else if(key==='magnet'){ c.strokeStyle='#ff9f2e'; c.beginPath(); c.arc(22,22,10,Math.PI*0.2,Math.PI*0.8); c.stroke(); c.beginPath(); c.moveTo(12,18); c.lineTo(12,26); c.stroke(); c.beginPath(); c.moveTo(32,18); c.lineTo(32,26); c.stroke(); }
-      else if(key==='drone'){ c.fillStyle='#c86cff'; c.beginPath(); c.arc(22,14,7,0,Math.PI*2); c.fill(); c.fillStyle='#6cf'; c.fillRect(18,24,8,6); }
-      else if(key==='vortex'){ c.strokeStyle='#70a0ff'; for(let r=6;r<=16;r+=4){ c.beginPath(); c.arc(22,22,r,0,Math.PI*2); c.stroke(); } }
-      else if(key==='chain'){ c.strokeStyle='#ffe066'; c.beginPath(); c.arc(22,22,10,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(32,18,6,0,Math.PI*2); c.stroke(); }
-      else if(key==='charge'){ c.strokeStyle='#ff9fb0'; c.beginPath(); c.moveTo(10,26); c.lineTo(34,18); c.stroke(); }
-      else if(key==='teleport'){ c.strokeStyle='#b8ffa6'; c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); c.fillStyle='#b8ffa6'; c.beginPath(); c.arc(22,22,4,0,Math.PI*2); c.fill(); }
-      else if(key==='phase'){ c.strokeStyle='#aef'; c.beginPath(); c.moveTo(12,12); c.lineTo(32,32); c.moveTo(12,32); c.lineTo(32,12); c.stroke(); }
-      else if(key==='gravity'){ c.strokeStyle='#89f'; c.beginPath(); c.arc(22,22,6,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); }
-      else if(key==='timewarp'){ c.strokeStyle='#cfd6ea'; c.beginPath(); c.arc(22,22,12,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(22,22); c.lineTo(26,16); c.stroke(); }
-      else if(key==='nano'){ c.strokeStyle='#7fe3a3'; for(let i=0;i<6;i++){ c.beginPath(); c.arc(12+i*4, 22, 2, 0, Math.PI*2); c.stroke(); } }
-      else if(key==='shock'){ c.strokeStyle='#ff7f2e'; c.beginPath(); c.moveTo(12,22); c.lineTo(22,12); c.lineTo(22,22); c.lineTo(32,16); c.stroke(); }
+      c.shadowColor = '#6cf'; c.shadowBlur = 6; c.strokeStyle = '#6cf'; c.lineWidth = 2;
+      if(key==='shield'){ c.beginPath(); c.arc(14,14,9,0,Math.PI*2); c.stroke(); }
+      else if(key==='barrier'){ c.beginPath(); c.arc(14,14,10,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(14,14,7,0,Math.PI*2); c.stroke(); }
+      else if(key==='multi'){ c.fillStyle='#6cf'; c.fillRect(8,10,4,8); c.fillRect(14,8,4,12); c.fillRect(20,10,4,8); }
+      else if(key==='burst'){ c.fillStyle='#f06'; c.beginPath(); c.moveTo(8,20); c.lineTo(14,8); c.lineTo(20,20); c.closePath(); c.fill(); }
+      else if(key==='overdrive'){ c.strokeStyle='#ffd54f'; c.beginPath(); c.moveTo(6,14); c.lineTo(22,14); c.stroke(); c.beginPath(); c.moveTo(14,6); c.lineTo(14,22); c.stroke(); }
+      else if(key==='pierce'){ c.fillStyle='#39a9ff'; c.fillRect(13,6,3,16); }
+      else if(key==='homing'){ c.strokeStyle='#ffd54f'; c.beginPath(); c.arc(14,14,7,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(14,14); c.lineTo(20,8); c.stroke(); }
+      else if(key==='ricochet'){ c.strokeStyle='#ff8ab4'; c.beginPath(); c.moveTo(9,8); c.lineTo(9,22); c.moveTo(19,8); c.lineTo(19,22); c.stroke(); c.fillStyle='#ff8ab4'; c.fillRect(13,12,3,6); }
+      else if(key==='heal'){ c.strokeStyle='#7cffb2'; c.beginPath(); c.moveTo(14,8); c.lineTo(14,20); c.moveTo(8,14); c.lineTo(20,14); c.stroke(); }
+      else if(key==='slowmo'){ c.strokeStyle='#cfe6ff'; c.beginPath(); c.arc(14,14,8,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(14,14); c.lineTo(18,14); c.stroke(); }
+      else if(key==='magnet'){ c.strokeStyle='#ff9f2e'; c.beginPath(); c.arc(14,14,7,Math.PI*0.2,Math.PI*0.8); c.stroke(); c.beginPath(); c.moveTo(9,12); c.lineTo(9,16); c.stroke(); c.beginPath(); c.moveTo(19,12); c.lineTo(19,16); c.stroke(); }
+      else if(key==='drone'){ c.fillStyle='#c86cff'; c.beginPath(); c.arc(14,10,5,0,Math.PI*2); c.fill(); c.fillStyle='#6cf'; c.fillRect(12,16,4,4); }
+      else if(key==='vortex'){ c.strokeStyle='#70a0ff'; for(let r=4;r<=10;r+=3){ c.beginPath(); c.arc(14,14,r,0,Math.PI*2); c.stroke(); } }
+      else if(key==='chain'){ c.strokeStyle='#ffe066'; c.beginPath(); c.arc(14,14,7,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(20,11,4,0,Math.PI*2); c.stroke(); }
+      else if(key==='charge'){ c.strokeStyle='#ff9fb0'; c.beginPath(); c.moveTo(8,18); c.lineTo(20,10); c.stroke(); }
+      else if(key==='teleport'){ c.strokeStyle='#b8ffa6'; c.beginPath(); c.arc(14,14,9,0,Math.PI*2); c.stroke(); c.fillStyle='#b8ffa6'; c.beginPath(); c.arc(14,14,3,0,Math.PI*2); c.fill(); }
+      else if(key==='phase'){ c.strokeStyle='#aef'; c.beginPath(); c.moveTo(9,9); c.lineTo(19,19); c.moveTo(9,19); c.lineTo(19,9); c.stroke(); }
+      else if(key==='gravity'){ c.strokeStyle='#89f'; c.beginPath(); c.arc(14,14,4,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(14,14,9,0,Math.PI*2); c.stroke(); }
+      else if(key==='timewarp'){ c.strokeStyle='#cfd6ea'; c.beginPath(); c.arc(14,14,8,0,Math.PI*2); c.stroke(); c.beginPath(); c.moveTo(14,14); c.lineTo(16,10); c.stroke(); }
+      else if(key==='nano'){ c.strokeStyle='#7fe3a3'; for(let i=0;i<5;i++){ c.beginPath(); c.arc(9+i*3, 14, 1.6, 0, Math.PI*2); c.stroke(); } }
+      else if(key==='shock'){ c.strokeStyle='#ff7f2e'; c.beginPath(); c.moveTo(9,14); c.lineTo(14,9); c.lineTo(14,14); c.lineTo(19,11); c.stroke(); }
     }
     function renderHelpIcons(){
       iconGrid.innerHTML = '';
       powersList.forEach(p=>{
         const div = document.createElement('div'); div.className='iconCard';
-        const cv = document.createElement('canvas'); cv.width=44; cv.height=44; cv.className='iconCanvas';
+        const cv = document.createElement('canvas'); cv.width=28; cv.height=28; cv.className='iconCanvas';
         drawIcon(cv, p.key);
         const text = document.createElement('div'); text.innerHTML = `<strong>${p.label}:</strong> ${describePower(p.key)}`;
         div.appendChild(cv); div.appendChild(text); iconGrid.appendChild(div);
@@ -1671,27 +1248,27 @@
     }
     function describePower(key){
       const map = {
-        shield:'Campo protector contra impactos.',
-        barrier:'Escudo reforzado contra balas enemigas.',
-        multi:'Disparo múltiple en abanico.',
-        burst:'Cadencia temporal acelerada.',
-        overdrive:'Reduce cooldown y aumenta velocidad.',
-        pierce:'Balas atraviesan múltiples enemigos.',
-        homing:'Balas se ajustan al enemigo más cercano.',
-        ricochet:'Balas rebotan en los bordes.',
-        heal:'Próximo pickup cura +1 vida.',
-        slowmo:'Ralentiza el tiempo temporalmente.',
-        magnet:'Atrae power-ups hacia la nave.',
-        drone:'Disparo automático asistente.',
-        vortex:'Atrae enemigos hacia la nave.',
-        chain:'Daño en área alrededor del impacto.',
-        charge:'Aumenta velocidad de movimiento al avanzar.',
-        teleport:'Teleporta al centro en emergencia.',
-        phase:'Breve invulnerabilidad y atraviesa enemigos.',
-        gravity:'Pozo gravitacional que atrae meteoros.',
+        shield:'Campo protector.',
+        barrier:'Escudo reforzado.',
+        multi:'Disparo múltiple.',
+        burst:'Cadencia acelerada.',
+        overdrive:'Menos cooldown, más velocidad.',
+        pierce:'Balas atraviesan enemigos.',
+        homing:'Balas se ajustan al enemigo.',
+        ricochet:'Balas rebotan en bordes.',
+        heal:'Pickup cura +1 vida.',
+        slowmo:'Ralentiza el tiempo.',
+        magnet:'Atrae power-ups.',
+        drone:'Disparo asistente.',
+        vortex:'Atrae enemigos.',
+        chain:'Daño en área.',
+        charge:'Más velocidad en avance.',
+        teleport:'Teleporta al centro.',
+        phase:'Invulnerabilidad breve.',
+        gravity:'Pozo gravitacional.',
         timewarp:'Ralentiza todo menos tus balas.',
-        nano:'Reparación gradual de la nave.',
-        shock:'Onda que empuja y daña en círculo.'
+        nano:'Reparación gradual.',
+        shock:'Onda de empuje y daño.'
       };
       return map[key]||'—';
     }
