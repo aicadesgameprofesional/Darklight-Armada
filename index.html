@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Darklight Armada: Neon Fury — Aicade Games</title>
   <style>
     :root{
@@ -54,7 +54,7 @@
     .overlay{position:absolute; inset:0; display:grid; place-items:center}
     .hidden{display:none}
 
-    /* Intro profesional */
+    /* Intro profesional (texto corregido con 'c' al final como pediste) */
     .splash{ background:#000; overflow:hidden; }
     .splashInner{
       text-align:center; color:#9fd0ff;
@@ -181,7 +181,7 @@
       background:rgba(20,28,50,.35); color:#dff7ff; width: 60%;
     }
 
-    /* Controles táctiles (se muestran solo en dispositivos táctiles) */
+    /* Controles táctiles (solo en dispositivos táctiles) */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
     }
@@ -227,11 +227,11 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional (texto corregido) -->
+    <!-- Intro profesional (con 'c' como indicaste) -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
         <h1>Aicade Games</h1>
-        <p>Todos los derechos reservados. 2026, RD</p>
+        <p>Todos los derechos reservados c 2026, RD</p>
       </div>
     </div>
 
@@ -279,13 +279,6 @@
               </ul>
               <h2>Objetivo</h2>
               <p>Destruye meteoros y drones enemigos, recoge power-ups y alcanza el objetivo de puntos para subir de nivel. En competencia, las victorias suben tu rango y cambian tu nave.</p>
-              <h2>Consejos</h2>
-              <ul>
-                <li><strong>Perforante + Multi</strong> limpia oleadas.</li>
-                <li><strong>Dron</strong> aumenta DPS.</li>
-                <li><strong>Vórtice/Gravedad + Cadena</strong> agrupa y remata.</li>
-                <li><strong>Escudo/Barrera</strong> prioriza supervivencia.</li>
-              </ul>
             </div>
             <div>
               <h2>Poderes y habilidades</h2>
@@ -411,7 +404,7 @@
       </div>
     </div>
 
-    <!-- Controles táctiles (solo si es táctil; se ocultan por defecto en PC) -->
+    <!-- Controles táctiles (solo si es táctil; oculto por defecto en PC) -->
     <div class="controls" id="touchControls" hidden>
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
       <div class="fire" id="fireBtn">FIRE</div>
@@ -419,11 +412,11 @@
   </div>
 
   <script>
-    /* Backend (configurable) para ranking/chat online */
+    /* ==== Config backend opcional ==== */
     const BACKEND_API = ''; // 'https://tu-backend.com/ranking' (REST JSON global)
     const BACKEND_WS  = ''; // 'wss://tu-backend.com/ws' (WebSocket logros/chat)
 
-    /* Utils */
+    /* ==== Utils ==== */
     const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
     const rand = (a=0,b=1)=>Math.random()*(b-a)+a;
     const pick = arr=>arr[(Math.random()*arr.length)|0];
@@ -435,7 +428,7 @@
     };
     const isTouchDevice = ()=> ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 
-    /* DOM refs */
+    /* ==== DOM refs ==== */
     const frame = document.getElementById('frame');
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
@@ -526,7 +519,7 @@
     const knob = document.getElementById('knob');
     const fireBtn = document.getElementById('fireBtn');
 
-    /* Sound state */
+    /* ==== Estado de sonido (creación diferida del AudioContext para evitar bloqueo de autoplay) ==== */
     let soundEnabled = true;
     const LS = {
       best: 'darklight_best',
@@ -537,23 +530,16 @@
       sound: 'darklight_sound',
       location: 'darklight_location'
     };
-
-    /* Canvas sizing */
-    let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
-    function resize(){
-      const rect = frame.getBoundingClientRect();
-      W = Math.floor(rect.width); H = Math.floor(rect.height);
-      canvas.width = W * DPR; canvas.height = H * DPR;
-      ctx.setTransform(DPR,0,0,DPR,0,0);
-      shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180;
-    }
-    resize(); window.addEventListener('resize', resize);
-
-    /* Audio */
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    const audio = AudioCtx ? new AudioCtx() : null;
+    let audio = null;
+    function ensureAudio(){
+      if(!AudioCtx) return;
+      if(!audio) audio = new AudioCtx();
+      if(audio.state === 'suspended') audio.resume();
+    }
     function beep(freq=440, dur=0.08, type='square', vol=0.06){
-      if(!audio || !soundEnabled) return;
+      if(!soundEnabled || !AudioCtx) return;
+      ensureAudio();
       const o = audio.createOscillator(), g = audio.createGain();
       o.type = type; o.frequency.value = freq; g.gain.value = vol;
       o.connect(g); g.connect(audio.destination); o.start();
@@ -561,11 +547,11 @@
       o.stop(audio.currentTime + dur + 0.01);
     }
 
-    /* Persistence helpers */
+    /* ==== Persistencia ==== */
     const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
     const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
 
-    /* Ranks */
+    /* ==== Rango/Rankings ==== */
     const rankTiers = [
       {name:'Bronce', tag:'BR', min:0},
       {name:'Plata', tag:'PL', min:3},
@@ -581,7 +567,7 @@
     function getRank(v){ let r = rankTiers[0]; for(const t of rankTiers) if(v>=t.min) r = t; return r; }
     const rankIndex = tag=> rankTiers.findIndex(t=>t.tag===tag);
 
-    /* Geo + IP + country/region */
+    /* ==== Geo + IP ==== */
     async function fetchIP(){
       try{ const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); return j.ip || '0.0.0.0'; }
       catch{ return '0.0.0.0'; }
@@ -632,7 +618,7 @@
       });
     }
 
-    /* Online ranking persistence */
+    /* ==== Backend ranking ==== */
     async function loadRankingFromBackend(){
       if(!BACKEND_API) return null;
       try{ const r = await fetch(BACKEND_API); return await r.json(); }catch{ return null; }
@@ -643,7 +629,7 @@
       catch{ return false; }
     }
 
-    /* WebSocket chat */
+    /* ==== WebSocket chat ==== */
     let ws = null;
     function initChat(){
       if(!BACKEND_WS) return;
@@ -669,7 +655,7 @@
       pushToast(`${state.user||'Tú'} ${text}`);
     }
 
-    /* Ranking screenshot PNG */
+    /* ==== PNG ranking ==== */
     function downloadRankingPNG(){
       const rows = [...compTableBody.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>td.textContent));
       const headers = ['Usuario','Victorias','Rango','Tag','País','Región'];
@@ -696,7 +682,7 @@
       const a = document.createElement('a'); a.href = url; a.download = 'ranking_aicade.png'; a.click();
     }
 
-    /* Game state */
+    /* ==== Estado del juego ==== */
     const state = {
       running:false, paused:false, competitive:false,
       user:null, ip:'0.0.0.0', identityHash:null, victories:0,
@@ -705,7 +691,7 @@
       level:1, target:100,
       camera:{shake:0, x:0, y:0},
       player:{
-        x:W/2, y:H-90, w:56, h:22, speed:460, cooldown:0,
+        x:0, y:0, w:56, h:22, speed:460, cooldown:0,
         multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
         pierce:0, homing:0, ricochet:0, heal:0, overdrive:0,
         vortex:0, chain:0, barrier:0, charge:0, teleport:0,
@@ -715,40 +701,48 @@
       input:{left:false,right:false,shoot:false},
       location:{countryCode:'DO', country:'República Dominicana', region:'—'}
     };
-    bestEl.textContent = state.best;
-    levelEl.textContent = state.level;
-    targetEl.textContent = state.target;
+    /* ==== Tamaño canvas ==== */
+    let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
+    function resize(){
+      const rect = frame.getBoundingClientRect();
+      W = Math.floor(rect.width); H = Math.floor(rect.height);
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180;
+      state.player.x = W/2; state.player.y = H-90;
+    }
+    resize(); window.addEventListener('resize', resize);
 
-    /* Ships */
+    /* ==== Nave y variantes ==== */
     const shipPalette = { BR:'#7a7676', PL:'#9fb3c9', OR:'#ffd166', OF:'#6cf', ES:'#f06', GU:'#9f6', MA:'#c86cff', KR:'#39a9ff', LV:'#ff8ab4', LG:'#00e6b3' };
-    function drawShipVariant(ctx,x,y,tag,scale=1){
+    function drawShipVariant(ctx2,x,y,tag,scale=1){
       const glow = shipPalette[tag] || '#6cf';
-      ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
-      ctx.shadowColor = glow; ctx.shadowBlur = 12; ctx.fillStyle = 'rgba(140,220,255,.85)';
-      if(tag==='BR'){ ctx.beginPath(); ctx.moveTo(0,-18); ctx.lineTo(18,14); ctx.lineTo(0,10); ctx.lineTo(-18,14); ctx.closePath(); ctx.fill(); }
-      else if(tag==='PL'){ ctx.beginPath(); ctx.moveTo(0,-22); ctx.lineTo(22,2); ctx.lineTo(0,12); ctx.lineTo(-22,2); ctx.closePath(); ctx.fill(); }
-      else if(tag==='OR'){ ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(26,8); ctx.lineTo(0,6); ctx.lineTo(-26,8); ctx.closePath(); ctx.fill(); }
-      else if(tag==='OF'){ ctx.beginPath(); ctx.moveTo(-8,-18); ctx.lineTo(-20,10); ctx.lineTo(-8,12); ctx.closePath(); ctx.fill();
-                           ctx.beginPath(); ctx.moveTo(8,-18); ctx.lineTo(20,10); ctx.lineTo(8,12); ctx.closePath(); ctx.fill(); }
-      else if(tag==='ES'){ ctx.beginPath(); ctx.moveTo(0,-24); ctx.lineTo(16,0); ctx.lineTo(0,14); ctx.lineTo(-16,0); ctx.closePath(); ctx.fill(); }
-      else if(tag==='GU'){ ctx.beginPath(); ctx.moveTo(0,-18); ctx.lineTo(18,0); ctx.lineTo(0,18); ctx.lineTo(-18,0); ctx.closePath(); ctx.fill(); }
-      else if(tag==='MA'){ ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(20,-2); ctx.lineTo(12,14); ctx.lineTo(-12,14); ctx.lineTo(-20,-2); ctx.closePath(); ctx.fill(); }
-      else if(tag==='KR'){ ctx.beginPath(); ctx.moveTo(0,-22); ctx.lineTo(10,0); ctx.lineTo(0,10); ctx.lineTo(-10,0); ctx.closePath(); ctx.fill();
-                           ctx.beginPath(); ctx.moveTo(20,2); ctx.lineTo(26,12); ctx.lineTo(14,10); ctx.closePath(); ctx.fill();
-                           ctx.beginPath(); ctx.moveTo(-20,2); ctx.lineTo(-26,12); ctx.lineTo(-14,10); ctx.closePath(); ctx.fill(); }
-      else if(tag==='LV'){ ctx.beginPath(); ctx.moveTo(0,-24); ctx.lineTo(28,6); ctx.lineTo(18,16); ctx.lineTo(-18,16); ctx.lineTo(-28,6); ctx.closePath(); ctx.fill(); }
-      else if(tag==='LG'){ ctx.beginPath(); ctx.moveTo(0,-26); ctx.lineTo(22,-2); ctx.lineTo(16,16); ctx.lineTo(-16,16); ctx.lineTo(-22,-2); ctx.closePath(); ctx.fill(); }
-      ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,.3)';
-      ctx.beginPath(); ctx.moveTo(-7,-6); ctx.lineTo(0,-14); ctx.lineTo(7,-6); ctx.lineTo(0,-2); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = glow; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(-22,14); ctx.lineTo(-28,20); ctx.moveTo(22,14); ctx.lineTo(28,20); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0,-18,2.6,0,Math.PI*2); ctx.fillStyle = glow; ctx.fill();
-      ctx.restore();
+      ctx2.save(); ctx2.translate(x,y); ctx2.scale(scale,scale);
+      ctx2.shadowColor = glow; ctx2.shadowBlur = 12; ctx2.fillStyle = 'rgba(140,220,255,.85)';
+      if(tag==='BR'){ ctx2.beginPath(); ctx2.moveTo(0,-18); ctx2.lineTo(18,14); ctx2.lineTo(0,10); ctx2.lineTo(-18,14); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='PL'){ ctx2.beginPath(); ctx2.moveTo(0,-22); ctx2.lineTo(22,2); ctx2.lineTo(0,12); ctx2.lineTo(-22,2); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='OR'){ ctx2.beginPath(); ctx2.moveTo(0,-20); ctx2.lineTo(26,8); ctx2.lineTo(0,6); ctx2.lineTo(-26,8); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='OF'){ ctx2.beginPath(); ctx2.moveTo(-8,-18); ctx2.lineTo(-20,10); ctx2.lineTo(-8,12); ctx2.closePath(); ctx2.fill();
+                           ctx2.beginPath(); ctx2.moveTo(8,-18); ctx2.lineTo(20,10); ctx2.lineTo(8,12); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='ES'){ ctx2.beginPath(); ctx2.moveTo(0,-24); ctx2.lineTo(16,0); ctx2.lineTo(0,14); ctx2.lineTo(-16,0); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='GU'){ ctx2.beginPath(); ctx2.moveTo(0,-18); ctx2.lineTo(18,0); ctx2.lineTo(0,18); ctx2.lineTo(-18,0); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='MA'){ ctx2.beginPath(); ctx2.moveTo(0,-20); ctx2.lineTo(20,-2); ctx2.lineTo(12,14); ctx2.lineTo(-12,14); ctx2.lineTo(-20,-2); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='KR'){ ctx2.beginPath(); ctx2.moveTo(0,-22); ctx2.lineTo(10,0); ctx2.lineTo(0,10); ctx2.lineTo(-10,0); ctx2.closePath(); ctx2.fill();
+                           ctx2.beginPath(); ctx2.moveTo(20,2); ctx2.lineTo(26,12); ctx2.lineTo(14,10); ctx2.closePath(); ctx2.fill();
+                           ctx2.beginPath(); ctx2.moveTo(-20,2); ctx2.lineTo(-26,12); ctx2.lineTo(-14,10); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='LV'){ ctx2.beginPath(); ctx2.moveTo(0,-24); ctx2.lineTo(28,6); ctx2.lineTo(18,16); ctx2.lineTo(-18,16); ctx2.lineTo(-28,6); ctx2.closePath(); ctx2.fill(); }
+      else if(tag==='LG'){ ctx2.beginPath(); ctx2.moveTo(0,-26); ctx2.lineTo(22,-2); ctx2.lineTo(16,16); ctx2.lineTo(-16,16); ctx2.lineTo(-22,-2); ctx2.closePath(); ctx2.fill(); }
+      ctx2.shadowBlur = 0; ctx2.fillStyle = 'rgba(255,255,255,.3)';
+      ctx2.beginPath(); ctx2.moveTo(-7,-6); ctx2.lineTo(0,-14); ctx2.lineTo(7,-6); ctx2.lineTo(0,-2); ctx2.closePath(); ctx2.fill();
+      ctx2.strokeStyle = glow; ctx2.lineWidth = 3;
+      ctx2.beginPath(); ctx2.moveTo(-22,14); ctx2.lineTo(-28,20); ctx2.moveTo(22,14); ctx2.lineTo(28,20); ctx2.stroke();
+      ctx2.beginPath(); ctx2.arc(0,-18,2.6,0,Math.PI*2); ctx2.fillStyle = glow; ctx2.fill();
+      ctx2.restore();
     }
     const shipOrder = ['BR','PL','OR','OF','ES','GU','MA','KR','LV','LG'];
     let shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
 
-    /* Identity (persistente) */
+    /* ==== Identidad ==== */
     async function initIdentity(){
       state.ip = await fetchIP();
       const saved = loadJSON(LS.identity, null);
@@ -786,7 +780,7 @@
       return id.user === name && id.ip === state.ip && id.hash;
     }
 
-    /* Ship slider */
+    /* ==== Ship slider ==== */
     function renderShipSlider(){
       const tag = shipOrder[shipIndex];
       const currentRank = getRank(state.victories||0);
@@ -815,14 +809,11 @@
       const tag = shipOrder[shipIndex];
       const currentTag = getRank(state.victories||0).tag;
       const unlocked = rankIndex(tag) <= rankIndex(currentTag);
-      if(!unlocked){
-        pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name} para desbloquear`);
-        return;
-      }
+      if(!unlocked){ pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name} para desbloquear`); return; }
       pushToast(tag===currentTag ? 'Tu nave actual está lista.' : 'Nave desbloqueada (se asigna al alcanzar el rango).');
     };
 
-    /* Help icons */
+    /* ==== Help icons ==== */
     const powersList = [
       {key:'shield', label:'Escudo'}, {key:'barrier', label:'Barrera'}, {key:'multi', label:'Multi'},
       {key:'burst', label:'Ráfaga'}, {key:'overdrive', label:'Overdrive'}, {key:'pierce', label:'Perforante'},
@@ -832,9 +823,9 @@
       {key:'phase', label:'Fase'}, {key:'gravity', label:'Gravedad'}, {key:'timewarp', label:'Timewarp'},
       {key:'nano', label:'Nano-reparación'}, {key:'shock', label:'Onda de choque'}
     ];
-    function drawIcon(canvas, key){
-      const c = canvas.getContext('2d'); c.clearRect(0,0,canvas.width,canvas.height);
-      c.fillStyle = '#0b1426'; c.fillRect(0,0,canvas.width,canvas.height);
+    function drawIcon(canvas2, key){
+      const c = canvas2.getContext('2d'); c.clearRect(0,0,canvas2.width,canvas2.height);
+      c.fillStyle = '#0b1426'; c.fillRect(0,0,canvas2.width,canvas2.height);
       c.shadowColor = '#6cf'; c.shadowBlur = 8; c.strokeStyle = '#6cf'; c.lineWidth = 2;
       if(key==='shield'){ c.beginPath(); c.arc(22,22,14,0,Math.PI*2); c.stroke(); }
       else if(key==='barrier'){ c.beginPath(); c.arc(22,22,16,0,Math.PI*2); c.stroke(); c.beginPath(); c.arc(22,22,12,0,Math.PI*2); c.stroke(); }
@@ -895,7 +886,7 @@
       return map[key]||'—';
     }
 
-    /* Help scroll controls + drag-to-scroll */
+    /* ==== Scroll help ==== */
     let dragStartY = 0, startScrollTop = 0, dragging = false;
     howScroll.addEventListener('pointerdown', (e)=>{ dragging=true; howScroll.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=howScroll.scrollTop; howScroll.setPointerCapture(e.pointerId); });
     howScroll.addEventListener('pointermove', (e)=>{ if(!dragging) return; howScroll.scrollTop = startScrollTop - (e.clientY - dragStartY); });
@@ -903,7 +894,7 @@
     howScrollTop.onclick = ()=> howScroll.scrollTo({top:0, behavior:'smooth'});
     howScrollBottom.onclick = ()=> howScroll.scrollTo({top:howScroll.scrollHeight, behavior:'smooth'});
 
-    /* Competition ranking */
+    /* ==== Ranking render ==== */
     function renderRanking(usersObj){
       const users = usersObj || loadJSON(LS.users, {});
       const rows = Object.entries(users)
@@ -915,13 +906,14 @@
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* INPUT: teclado (PC) + táctil (móvil) */
+    /* ==== INPUT: teclado (PC) + táctil (móvil) ==== */
     const keys = new Set();
     function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
     function enableKeyboard(){
       window.addEventListener('keydown', (e)=>{
         if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
         if(isTypingTarget(e)) return;
+        ensureAudio();
         keys.add(e.key);
         state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
         state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
@@ -940,6 +932,7 @@
       touchControls.hidden = false;
       let stickDrag = false, stickOrigin = {x:0,y:0};
       stick.addEventListener('pointerdown', (e)=>{
+        ensureAudio();
         stickDrag = true; stick.setPointerCapture(e.pointerId);
         const rect = stick.getBoundingClientRect();
         stickOrigin.x = rect.left + rect.width/2;
@@ -961,13 +954,12 @@
         knob.style.left = '40px'; knob.style.top = '40px';
         state.input.left = false; state.input.right = false;
       });
-      fireBtn.addEventListener('pointerdown', ()=>{ state.input.shoot = true; });
+      fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
       fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
     }
-    // Detecta entorno y habilita solo lo necesario
     if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
 
-    /* Overlay helpers */
+    /* ==== Overlays ==== */
     function showOverlay(title, text, buttons=true){
       overlayTitle.textContent = title;
       overlayText.textContent = text;
@@ -978,7 +970,7 @@
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
 
-    /* Stars parallax */
+    /* ==== Stars ==== */
     function spawnStars(){
       state.stars = [];
       const layers = [0.25, 0.6, 1];
@@ -995,7 +987,7 @@
     }
     spawnStars();
 
-    /* Entities */
+    /* ==== Entidades ==== */
     function spawnEnemy(){
       const type = pick(['rock','zigzag','tank','swarmer','sniper']);
       const size = type==='tank' ? rand(42,68) : rand(22,60);
@@ -1031,7 +1023,7 @@
     }
     function addShake(amount=10){ state.camera.shake = Math.min(0.6, state.camera.shake + amount/100); }
 
-    /* Collisions */
+    /* ==== Colisiones ==== */
     function hitCircleRect(cx, cy, r, rx, ry, rw, rh){
       const nx = clamp(cx, rx, rx+rw);
       const ny = clamp(cy, ry, ry+rh);
@@ -1039,7 +1031,7 @@
       return dx*dx + dy*dy <= r*r;
     }
 
-    /* Draw helpers */
+    /* ==== Dibujo ==== */
     function applyCamera(){
       if(state.camera.shake>0){
         state.camera.shake = Math.max(0, state.camera.shake - 0.02);
@@ -1088,8 +1080,6 @@
       state.parts = state.parts.filter(p=>p.life>0 && p.y < H+20);
       for(const p of state.parts){ ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
     }
-
-    /* Player ship draw */
     function drawPlayerShip(){
       const r = getRank(state.victories||0);
       drawShipVariant(ctx, state.player.x, state.player.y, r.tag, 1.2);
@@ -1107,7 +1097,7 @@
       }
     }
 
-    /* Abilities */
+    /* ==== Poderes ==== */
     function grantPower(kind){
       const p = state.player;
       if(kind==='shield')   p.shield = Math.max(p.shield, 6);
@@ -1133,7 +1123,7 @@
       if(kind==='shock')    p.shock = Math.max(p.shock, 1);
     }
 
-    /* Level system */
+    /* ==== Niveles ==== */
     function checkLevelUp(){
       if(state.score >= state.target && state.running && !state.paused){
         const completedLevel = state.level;
@@ -1158,13 +1148,13 @@
       }
     }
 
-    /* Enemy bullets (sniper) */
+    /* ==== Enemigos disparos ==== */
     function spawnEnemyBullet(ex,ey){ state.enemyBullets.push({x:ex, y:ey, vy: 300 + state.difficulty*40, life: 3}); }
 
-    /* Targeting helpers */
+    /* ==== Targeting ==== */
     function nearestEnemy(x,y){ let best=null, bd=1e9; for(const e of state.enemies){ const d = Math.hypot(e.x-x, e.y-y); if(d<bd){ bd=d; best=e; } } return best; }
 
-    /* Game controls */
+    /* ==== Control de partida ==== */
     function resetStateForRun(){
       state.score = 0; state.lives = 3; state.tick = 0; state.difficulty = 1; state.flash = 0;
       state.level = 1; state.target = 100;
@@ -1206,7 +1196,7 @@
       beep(win?960:220, .18, 'square', .07);
     }
 
-    /* Loop */
+    /* ==== Loop ==== */
     let last = performance.now();
     function loop(now){
       const dtRaw = Math.min(0.033, (now - last)/1000); last = now;
@@ -1370,10 +1360,17 @@
     }
     requestAnimationFrame(loop);
 
-    /* UI flows */
-    setTimeout(()=>{ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); }, 1800);
+    /* ==== Flujos UI ==== */
+    // Quitar splash y mostrar menú
+    setTimeout(()=>{ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); }, 1200);
 
-    menuPlay.addEventListener('click', ()=> startGame(false));
+    // Activar audio en primer gesto
+    ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+      window.addEventListener(evt, ensureAudio, {once:true, passive:true});
+    });
+
+    // Menú principal
+    menuPlay.addEventListener('click', ()=> { ensureAudio(); startGame(false); });
     menuHow.addEventListener('click', ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
     howClose.addEventListener('click', ()=> howModal.classList.add('hidden'));
     menuScores.addEventListener('click', ()=> openScores());
@@ -1384,10 +1381,12 @@
     soundOn.addEventListener('click', ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
     soundOff.addEventListener('click', ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
 
+    // Overlay juego
     overlayResume.addEventListener('click', ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
     overlayRestart.addEventListener('click', ()=> startGame(state.competitive));
-    overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); });
+    overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
 
+    // Puntuaciones
     function openScores(){
       const best = Number(localStorage.getItem(LS.best)||0);
       const history = loadJSON(LS.history, []);
@@ -1401,6 +1400,7 @@
     scoresClose.addEventListener('click', ()=> scoresModal.classList.add('hidden'));
     scoresClear.addEventListener('click', ()=>{ saveJSON(LS.history, []); openScores(); });
 
+    // Competencia
     async function openComp(){
       let users = loadJSON(LS.users, {});
       const remote = await loadRankingFromBackend();
@@ -1428,6 +1428,7 @@
       startGame(true);
     });
 
+    // Perfil
     function openProfile(){
       updateProfileUI();
       profileModal.classList.remove('hidden');
@@ -1443,8 +1444,6 @@
       await saveRankingToBackend(users);
       alert('Perfil guardado.');
     });
-
-    /* Gear actions: configurar perfil (cambiar nombre) */
     profileGear.addEventListener('click', ()=>{
       settingsNameInput.value = state.user || '';
       settingsModal.classList.remove('hidden');
@@ -1463,13 +1462,22 @@
       alert('Perfil actualizado.');
     });
 
-    /* Restore sound setting */
+    /* ==== Restaurar sonido ==== */
     const soundStored = loadJSON(LS.sound, {enabled:true});
     soundEnabled = !!soundStored.enabled;
 
-    /* Init identity + chat */
+    /* ==== Init identidad + chat ==== */
     initIdentity();
     initChat();
+
+    /* ==== Fix: asegurar que botones siempre funcionen, incluso si overlays quedan abiertos ==== */
+    // Cerrar cualquier overlay si se presiona Escape
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        [howModal, scoresModal, compModal, profileModal, settingsModal, soundModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
+        if(!state.running) mainMenu.classList.remove('hidden');
+      }
+    });
   </script>
 </body>
 </html>
