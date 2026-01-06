@@ -52,7 +52,7 @@
 
     /* Splash */
     .splash{ background:#000; overflow:hidden; z-index: 20; }
-    .splashInner{ text-align:center; color:#9fd0ff; animation: splashIn 1.0s ease both; letter-spacing:.04em; }
+    .splashInner{ text-align:center; color:#9fd0ff; animation: splashIn 1.2s ease both; letter-spacing:.04em; }
     .splash h1{
       font-size: clamp(30px, 7vw, 78px); margin:0 0 12px;
       text-shadow: 0 0 14px #6cf, 0 0 28px #39a9ff, 0 0 54px rgba(57,169,255,.5);
@@ -206,7 +206,7 @@
       </div>
     </div>
 
-    <!-- Overlay para Pausa/Game Over -->
+    <!-- Overlay Pausa/Game Over -->
     <div id="gameOverlay" class="overlay hidden" style="z-index: 25">
       <div class="card">
         <h1 id="overlayTitle">Pausa</h1>
@@ -231,7 +231,7 @@
               <ul>
                 <li><strong>Teclado:</strong> Flechas o A/D para moverte. Espacio dispara. P pausa.</li>
                 <li><strong>Mouse:</strong> Clic arriba dispara; clic izquierda/derecha mueve.</li>
-                <li><strong>Móvil/Tablet:</strong> Joystick para moverte y botón FIRE para disparar.</li>
+                <li><strong>Móvil/Tablet:</strong> Joystick y botón FIRE.</li>
               </ul>
               <h2>Objetivo</h2>
               <p>Alcanza la meta, derrota al jefe y sube de nivel. La meta se triplica cada nivel.</p>
@@ -509,7 +509,7 @@
 
     const levelToast = document.getElementById('levelToast');
 
-    /* Audio */
+    /* Audio (sólo tras interacción del usuario) */
     let soundEnabled = true;
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audio = null;
@@ -627,7 +627,6 @@
     function bossAttack(b, dt){
       b.fireCd -= dt;
       if(state.level === 1){
-        // Asteroides perseguidores
         if(b.fireCd <= 0){
           const shots = 2 + Math.min(4, state.level);
           for(let i=0;i<shots;i++){
@@ -640,7 +639,6 @@
           b.fireCd = 1.1;
         }
       }else if(state.level === 2){
-        // Barrido láser horizontal
         if(b.fireCd <= 0){
           const sweepCount = 8;
           for(let i=0;i<sweepCount;i++){
@@ -651,7 +649,6 @@
           b.fireCd = 1.2;
         }
       }else if(state.level === 3){
-        // Explosiones radiales
         if(b.fireCd <= 0){
           const shots = 12;
           for(let i=0;i<shots;i++){
@@ -661,7 +658,6 @@
           b.fireCd = 1.0;
         }
       }else{
-        // Combinado
         if(b.fireCd <= 0){
           const mix = 6 + Math.min(6, state.level);
           for(let i=0;i<mix;i++){
@@ -1217,29 +1213,44 @@
     }
     function changeShip(dir){ shipIndex = (shipIndex + dir + shipOrder.length) % shipOrder.length; localStorage.setItem(LS.shipIndex, String(shipIndex)); renderShipSlider(); }
 
-    /* Arranque seguro: nunca se congela en el splash */
+    /* Arranque ultra blindado: nunca se congela en el splash */
+    function showMenuNow(){
+      try{
+        mainMenu.classList.remove('hidden');
+        splash.classList.add('hidden');
+      }catch{}
+    }
     function safeStartUI(){
       try{
         resize();
         spawnStars();
         updateMobileOrientationUI();
         renderHelpIcons();
-        mainMenu.classList.remove('hidden');
-        splash.classList.add('hidden'); // clave: oculta splash siempre
+        showMenuNow();
       }catch(e){
-        mainMenu.classList.remove('hidden');
-        splash.classList.add('hidden');
+        console.error('Fallback start:', e);
+        showMenuNow();
       }
     }
 
-    // Ejecuta arranque en los tres eventos posibles y añade fallback por tiempo
+    // Ejecutar por múltiples eventos y tiempo (redundancia intencional)
     document.addEventListener('DOMContentLoaded', safeStartUI, {once:true});
     window.addEventListener('load', safeStartUI, {once:true});
-    setTimeout(()=>{ try{ safeStartUI(); }catch{} }, 800);
-    setTimeout(()=>{ // último fallback: si por alguna razón sigue visible, fuerza salida
-      const splashVisible = splash && !splash.classList.contains('hidden');
-      if(splashVisible){ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); }
-    }, 1500);
+    setTimeout(()=>{ safeStartUI(); }, 800);
+    setTimeout(()=>{ showMenuNow(); }, 1500);
+
+    // Si el splash hace su animación, al terminar se oculta y muestra el menú
+    const splashInner = document.querySelector('.splashInner');
+    if(splashInner){
+      splashInner.addEventListener('animationend', ()=> showMenuNow(), {once:true});
+    }
+
+    // Guardián: chequea cada 500ms y fuerza salida si aún no hay menú visible
+    let startGuard = setInterval(()=>{
+      const stuck = splash && !splash.classList.contains('hidden');
+      if(stuck){ showMenuNow(); }
+      else{ clearInterval(startGuard); }
+    }, 500);
 
     /* Bindings y cierres */
     bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
@@ -1351,10 +1362,8 @@
     /* Persistencia sonido */
     const soundStored = loadJSON(LS.sound, {enabled:true}); soundEnabled = !!soundStored.enabled;
 
-    /* Fallback final para splash en 3s (doble seguridad) */
-    setTimeout(()=>{ 
-      if(splash && !splash.classList.contains('hidden')){ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); }
-    }, 3000);
+    /* Fallback final (doble seguridad) */
+    setTimeout(()=>{ showMenuNow(); }, 3000);
 
     /* Inicializa perfil si existe */
     if(state.user){
