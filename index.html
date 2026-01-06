@@ -106,9 +106,10 @@
     .btn{
       appearance:none; border:none; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;
       background: linear-gradient(180deg, #6cf, #3aa9ff); color:#00101a;
-      box-shadow: 0 10px 20px rgba(60,160,255,.35); transition: transform .08s ease, filter .2s ease;
-      user-select:none;
+      box-shadow: 0 10px 20px rgba(60,160,255,.35); transition: transform .12s ease, filter .2s ease, opacity .25s ease;
+      user-select:none; opacity:0; transform: translateY(6px);
     }
+    .btn.show{opacity:1; transform: translateY(0)}
     .btn:hover{transform: translateY(-1px)}
     .btn.secondary{background: linear-gradient(180deg, #f06, #ff4a9a); color:white}
     .btn.ghost{background: rgba(20,28,50,.25); color:#cfe6ff; border:1px solid var(--border)}
@@ -117,6 +118,12 @@
     .titlePro{
       font-weight:900; letter-spacing:.06em; margin-bottom:10px; color: var(--title);
       text-shadow: 0 0 12px rgba(108,220,255,.25);
+    }
+
+    /* Inputs */
+    input.input{
+      background: rgba(14,20,36,.5); border:1px solid rgba(110,160,255,.28); color:#e6f4ff;
+      border-radius:10px; padding:10px 12px; outline:none; width:100%;
     }
 
     /* Tables */
@@ -171,7 +178,7 @@
       border:1px solid rgba(160,255,200,.6); color:#e6fff2; padding:4px 8px; border-radius:999px; font-size:12px;
     }
 
-    /* Controles táctiles (solo en dispositivos táctiles) */
+    /* Controles táctiles */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
       pointer-events:auto; z-index: 6;
@@ -197,7 +204,6 @@
       background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30;
     }
     .rotateOverlay .card{max-width: 560px}
-    /* En escritorio nunca bloquear */
     .frame[data-mobile="false"] .rotateOverlay{ display:none !important; pointer-events:none !important; }
 
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
@@ -312,7 +318,7 @@
       </div>
     </div>
 
-    <!-- Modal de puntuaciones con scroll -->
+    <!-- Modal de puntuaciones -->
     <div id="scoresModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Puntuaciones</h1>
@@ -337,16 +343,14 @@
     <div id="compModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Competencia</h1>
-        <p>Entra con tu perfil y compite. El ranking muestra país y región.</p>
+        <p>Entra con tu perfil y compite. El ranking muestra tu puntuación total.</p>
         <div class="row" style="gap:8px">
-          <input id="compName" type="text" placeholder="Tu usuario (si no usarás perfil)" class="input" style="width:60%">
-          <button class="btn" id="compUseProfile" type="button">Usar perfil</button>
-          <button class="btn" id="compEnter" type="button">Entrar</button>
+          <button class="btn" id="compUseProfile" type="button">Competir con mi perfil</button>
         </div>
         <h2 style="margin-top:10px">Ranking</h2>
         <div class="scrollArea" id="compScroll">
           <table id="compTable">
-            <thead><tr><th>Usuario</th><th>Victorias</th><th>Rango</th><th>Tag</th><th>País</th><th>Región</th></tr></thead>
+            <thead><tr><th>Usuario</th><th>Victorias</th><th>Rango</th><th>Tag</th><th>País</th><th>Puntuación</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -368,23 +372,34 @@
       </div>
     </div>
 
-    <!-- Modal de perfil -->
+    <!-- Modal de perfil con autenticación -->
     <div id="profileModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Perfil del jugador</h1>
-        <p style="margin-bottom:10px">Identidad bloqueada por nombre + IP pública.</p>
-        <div class="row" style="gap:10px; justify-content:space-between; flex-wrap:wrap">
+        <p style="margin-bottom:10px">Regístrate o inicia sesión para competir y guardar tus datos.</p>
+
+        <div id="authSection">
+          <div class="row" style="gap:8px; flex-wrap:wrap">
+            <input id="authEmail" type="email" placeholder="Correo electrónico" class="input" style="width:48%">
+            <input id="authPassword" type="password" placeholder="Contraseña" class="input" style="width:48%">
+          </div>
+          <div class="row" style="gap:8px">
+            <input id="authUsername" type="text" placeholder="Usuario visible (ej. Anderson)" class="input" style="width:60%">
+          </div>
+          <div class="row" style="gap:8px">
+            <button class="btn" id="btnRegister" type="button">Registrar</button>
+            <button class="btn secondary" id="btnLogin" type="button">Iniciar sesión</button>
+            <button class="btn ghost" id="btnLogout" type="button">Cerrar sesión</button>
+          </div>
+        </div>
+
+        <div id="profileInfo" class="row" style="gap:10px; justify-content:space-between; flex-wrap:wrap">
           <div class="pill"><strong>Usuario:</strong> <span id="profileUser">—</span><span id="profileFlag" class="flag">🏳️</span></div>
-          <div class="pill"><strong>IP:</strong> <span id="profileIP">—</span></div>
+          <div class="pill"><strong>Email:</strong> <span id="profileEmail">—</span></div>
+          <div class="pill"><strong>Puntuación:</strong> <span id="profileScore">0</span></div>
           <div class="pill"><strong>Victorias:</strong> <span id="profileWins">0</span></div>
           <div class="pill"><strong>Rango:</strong> <span id="profileRank">Bronce</span></div>
           <div class="pill"><strong>Tag:</strong> <span id="profileTag">BR</span></div>
-          <div id="profileGear" class="gear hidden">⚙ Configurar</div>
-        </div>
-
-        <div id="profileCreateRow" class="row" style="justify-content:center; margin-top:10px">
-          <input id="profileNameInput" type="text" placeholder="Crear usuario" class="input">
-          <button class="btn" id="profileCreate" type="button">Crear/Guardar perfil</button>
         </div>
 
         <div class="shipSlider">
@@ -407,18 +422,18 @@
       </div>
     </div>
 
-    <!-- Modal de configuración de perfil -->
+    <!-- Modal de configuración de perfil (cambia solo username visible) -->
     <div id="settingsModal" class="overlay hidden" style="z-index: 27">
       <div class="card settingsModal">
         <h1>Configurar perfil</h1>
         <div class="row">
-          <input id="settingsNameInput" type="text" placeholder="Nuevo nombre de usuario" class="input">
+          <input id="settingsNameInput" type="text" placeholder="Nuevo nombre visible" class="input">
         </div>
         <div class="row" style="gap:8px">
           <button class="btn" id="settingsSave" type="button">Guardar</button>
           <button class="btn ghost" id="settingsCancel" type="button">Cancelar</button>
         </div>
-        <p style="margin-top:10px">Tu cuenta permanece guardada aunque cierres o abras el juego.</p>
+        <p style="margin-top:10px">Tu cuenta se sincroniza en la nube.</p>
       </div>
     </div>
 
@@ -440,13 +455,17 @@
     </div>
   </div>
 
-  <!-- Firebase SDK y Firestore (modular v9) -->
+  <!-- Firebase SDK y módulos -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
-      getFirestore, doc, setDoc,
+      getFirestore, doc, setDoc, getDoc,
       collection, query, orderBy, limit, startAfter, getDocs
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBWqJI7OKZcEjN2CeTZxPi8pWzo8rBMIkI",
@@ -461,12 +480,12 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     /* ==== Utils ==== */
     const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
     const rand = (a=0,b=1)=>Math.random()*(b-a)+a;
     const pick = arr=>arr[(Math.random()*arr.length)|0];
-    const hash = s=> crypto && crypto.subtle ? crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')) : Promise.resolve(s);
     const countryCodeToFlag = cc=>{
       if(!cc) return '🏳️';
       const code = cc.toUpperCase();
@@ -522,8 +541,6 @@
     const scoresBottom = document.getElementById('scoresBottom');
 
     const compModal = document.getElementById('compModal');
-    const compName = document.getElementById('compName');
-    const compEnter = document.getElementById('compEnter');
     const compUseProfile = document.getElementById('compUseProfile');
     const compClose = document.getElementById('compClose');
     const compShare = document.getElementById('compShare');
@@ -538,15 +555,19 @@
     const profileModal = document.getElementById('profileModal');
     const profileClose = document.getElementById('profileClose');
     const profileUser = document.getElementById('profileUser');
-    const profileIP = document.getElementById('profileIP');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileScore = document.getElementById('profileScore');
     const profileWins = document.getElementById('profileWins');
     const profileRank = document.getElementById('profileRank');
     const profileTag = document.getElementById('profileTag');
-    const profileNameInput = document.getElementById('profileNameInput');
-    const profileCreate = document.getElementById('profileCreate');
-    const profileCreateRow = document.getElementById('profileCreateRow');
-    const profileGear = document.getElementById('profileGear');
     const profileFlag = document.getElementById('profileFlag');
+
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authUsername = document.getElementById('authUsername');
+    const btnRegister = document.getElementById('btnRegister');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
 
     const shipPreview = document.getElementById('shipPreview');
     const shipCtx = shipPreview.getContext('2d');
@@ -583,7 +604,6 @@
     const LS = {
       best: 'darklight_best',
       history: 'darklight_history',
-      identity: 'darklight_identity',
       shipIndex: 'darklight_ship_index',
       sound: 'darklight_sound',
       location: 'darklight_location'
@@ -605,112 +625,83 @@
       o.stop(audio.currentTime + dur + 0.01);
     }
 
-    /* ==== Persistencia ==== */
+    /* ==== Persistencia local simple ==== */
     const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
     const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
 
-    /* ==== Rango ==== */
+    /* ==== Rangos (más difíciles) ==== */
     const rankTiers = [
-      {name:'Bronce', tag:'BR', min:0},
-      {name:'Plata', tag:'PL', min:3},
-      {name:'Oro', tag:'OR', min:6},
-      {name:'Oficial', tag:'OF', min:10},
-      {name:'Espartano', tag:'ES', min:15},
-      {name:'Guerrero', tag:'GU', min:21},
-      {name:'Maestro', tag:'MA', min:28},
-      {name:'Kraken', tag:'KR', min:37},
-      {name:'Leviatán', tag:'LV', min:49},
-      {name:'Leyenda', tag:'LG', min:65}
+      {name:'Bronce', tag:'BR', minScore:0},
+      {name:'Plata', tag:'PL', minScore:3000},
+      {name:'Oro', tag:'OR', minScore:12000},
+      {name:'Oficial', tag:'OF', minScore:30000},
+      {name:'Espartano', tag:'ES', minScore:60000},
+      {name:'Guerrero', tag:'GU', minScore:100000},
+      {name:'Maestro', tag:'MA', minScore:160000},
+      {name:'Kraken', tag:'KR', minScore:240000},
+      {name:'Leviatán', tag:'LV', minScore:340000},
+      {name:'Leyenda', tag:'LG', minScore:480000}
     ];
-    function getRank(v){ let r = rankTiers[0]; for(const t of rankTiers) if(v>=t.min) r = t; return r; }
+    function getRankByScore(score){
+      let r = rankTiers[0]; for(const t of rankTiers) if(score>=t.minScore) r = t; return r;
+    }
     const rankIndex = tag=> rankTiers.findIndex(t=>t.tag===tag);
 
-    /* ==== Geo + IP ==== */
-    async function fetchIP(){
-      try{ const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); return j.ip || '0.0.0.0'; }
-      catch{ return '0.0.0.0'; }
-    }
-    async function resolveCountryRegionByCoords(lat, lon){
-      try{
-        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-        const r = await fetch(url, {headers:{'Accept':'application/json'}});
-        const j = await r.json();
-        const addr = j.address || {};
-        return {
-          countryCode: (addr.country_code || 'DO').toUpperCase(),
-          country: addr.country || '—',
-          region: addr.state || addr.region || addr.county || '—'
-        };
-      }catch{
-        return {countryCode:'DO', country:'República Dominicana', region:'—'};
-      }
-    }
-    async function resolveCountryRegionByIP(){
+    /* ==== Geo + IP mínima (solo país para bandera) ==== */
+    async function resolveCountryByIP(){
       try{
         const r = await fetch('https://ipapi.co/json/');
         const j = await r.json();
-        return {
-          countryCode: (j.country || 'DO'),
-          country: j.country_name || '—',
-          region: j.region || j.region_code || '—',
-          city: j.city || '—'
-        };
+        return { countryCode: (j.country || 'DO'), country: j.country_name || '—' };
       }catch{
-        return {countryCode:'DO', country:'República Dominicana', region:'—', city:'—'};
+        return {countryCode:'DO', country:'República Dominicana'};
       }
     }
-    async function requestLocation(){
-      return new Promise(resolve=>{
-        if(!navigator.geolocation){
-          resolve(resolveCountryRegionByIP());
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(async pos=>{
-          const {latitude, longitude} = pos.coords;
-          const info = await resolveCountryRegionByCoords(latitude, longitude);
-          resolve(info);
-        }, async ()=>{
-          const info = await resolveCountryRegionByIP();
-          resolve(info);
-        }, {enableHighAccuracy:false, timeout:6000, maximumAge:600000});
-      });
-    }
 
-    /* ==== Firestore: ranking compartido ==== */
+    /* ==== Firestore: usuarios y ranking ==== */
     const USERS_COLLECTION = "users";
-    async function saveUserToFirestore(user, victories, country, region){
+
+    async function upsertUserProfile(uid, data){
       try{
-        await setDoc(doc(db, USERS_COLLECTION, user), {
-          victories: Number(victories||0),
-          country: country || '—',
-          region: region || '—',
-          updated: new Date().toISOString()
-        }, { merge: true });
+        await setDoc(doc(db, USERS_COLLECTION, uid), data, { merge: true });
         return true;
-      }catch(e){
-        console.warn('saveUserToFirestore error', e);
-        return false;
-      }
+      }catch(e){ console.warn('upsertUserProfile error', e); return false; }
+    }
+    async function getUserProfile(uid){
+      try{
+        const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
+        return snap.exists() ? snap.data() : null;
+      }catch(e){ console.warn('getUserProfile error', e); return null; }
     }
 
-    // Paginación Firestore
+    // Paginación Firestore (ranking por puntuación total)
     let compPage = 1;
     let compPageSize = 200;
     let compLastDoc = null;
-    let compCursorStack = []; // para volver atrás
+    let compCursorStack = [];
 
     async function loadRankingPage(next=true){
       try{
         let q;
         if(next){
           if(compLastDoc){
-            q = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), startAfter(compLastDoc), limit(compPageSize));
+            q = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), startAfter(compLastDoc), limit(compPageSize));
           }else{
-            q = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+            q = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
           }
           const snap = await getDocs(q);
           const users = [];
-          snap.forEach(d=> users.push({ u: d.id, ...d.data() }));
+          snap.forEach(d=>{
+            const x = d.data();
+            users.push({
+              u: x.username || x.email || d.id,
+              victories: Number(x.victories||0),
+              score: Number(x.score||0),
+              country: x.country || '—',
+              tag: getRankByScore(Number(x.score||0)).tag,
+              rankName: getRankByScore(Number(x.score||0)).name
+            });
+          });
           renderRanking(users);
           if(snap.docs.length>0){
             compCursorStack.push(compLastDoc);
@@ -719,27 +710,45 @@
             compPageEl.textContent = compPage;
           }
         }else{
-          // Anterior o reset
           if(compCursorStack.length>1){
-            compCursorStack.pop(); // quita actual
+            compCursorStack.pop();
             const prevCursor = compCursorStack[compCursorStack.length-1];
             const qPrev = prevCursor
-              ? query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), startAfter(prevCursor), limit(compPageSize))
-              : query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+              ? query(collection(db, USERS_COLLECTION), orderBy('score','desc'), startAfter(prevCursor), limit(compPageSize))
+              : query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
             const snapPrev = await getDocs(qPrev);
             const users = [];
-            snapPrev.forEach(d=> users.push({ u: d.id, ...d.data() }));
+            snapPrev.forEach(d=>{
+              const x = d.data();
+              users.push({
+                u: x.username || x.email || d.id,
+                victories: Number(x.victories||0),
+                score: Number(x.score||0),
+                country: x.country || '—',
+                tag: getRankByScore(Number(x.score||0)).tag,
+                rankName: getRankByScore(Number(x.score||0)).name
+              });
+            });
             renderRanking(users);
             compLastDoc = snapPrev.docs[snapPrev.docs.length-1] || null;
             compPage = Math.max(1, compPage-1);
             compPageEl.textContent = compPage;
           }else{
-            // Primera página
             compLastDoc = null; compCursorStack = [];
-            const qFirst = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+            const qFirst = query(collection(db, USERS_COLLECTION), orderBy('score','desc'), limit(compPageSize));
             const snapFirst = await getDocs(qFirst);
             const users = [];
-            snapFirst.forEach(d=> users.push({ u: d.id, ...d.data() }));
+            snapFirst.forEach(d=>{
+              const x = d.data();
+              users.push({
+                u: x.username || x.email || d.id,
+                victories: Number(x.victories||0),
+                score: Number(x.score||0),
+                country: x.country || '—',
+                tag: getRankByScore(Number(x.score||0)).tag,
+                rankName: getRankByScore(Number(x.score||0)).name
+              });
+            });
             renderRanking(users);
             compLastDoc = snapFirst.docs[snapFirst.docs.length-1] || null;
             compCursorStack.push(null);
@@ -756,21 +765,19 @@
       await loadRankingPage(true);
     }
 
-    /* ==== Toast (logros) ==== */
+    /* ==== Toast ==== */
     function pushToast(text){
       chatMsgs.innerHTML += `<div class="msg">${text}</div>`;
       chatToast.classList.remove('hidden');
       chatToast.classList.add('show');
       setTimeout(()=>{ chatToast.classList.remove('show'); setTimeout(()=>chatToast.classList.add('hidden'),300); }, 3200);
     }
-    function sendAchievement(text){
-      pushToast(`${state.user||'Tú'} ${text}`);
-    }
+    function sendAchievement(text){ pushToast(`${state.user?.username || 'Tú'} ${text}`); }
 
     /* ==== PNG ranking ==== */
     function downloadRankingPNG(){
       const rows = [...compTableBody.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>td.textContent));
-      const headers = ['Usuario','Victorias','Rango','Tag','País','Región'];
+      const headers = ['Usuario','Victorias','Rango','Tag','País','Puntuación'];
       const width = 980, rowH = 36, h = 70 + (rows.length+1)*rowH;
       const cnv = document.createElement('canvas'); cnv.width = width; cnv.height = h;
       const c = cnv.getContext('2d');
@@ -797,8 +804,9 @@
     /* ==== Estado del juego ==== */
     const state = {
       running:false, paused:false, competitive:false,
-      user:null, ip:'0.0.0.0', identityHash:null, victories:0,
+      user:null, // { uid, email, username, countryCode, country }
       score:0, best: Number(localStorage.getItem(LS.best)||0),
+      victories:0,
       lives:3, tick:0, difficulty:1, flash:0,
       level:1, target:100,
       camera:{shake:0, x:0, y:0},
@@ -811,10 +819,10 @@
       },
       bullets:[], enemies:[], parts:[], powerUps:[], stars:[], enemyBullets:[],
       input:{left:false,right:false,shoot:false},
-      location:{countryCode:'DO', country:'República Dominicana', region:'—'}
+      spaceToneIndex: 0 // para gradiente por nivel
     };
 
-    /* ==== Tamaño canvas ==== */
+    /* ==== Canvas size ==== */
     let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
     function resize(){
       const rect = frame.getBoundingClientRect();
@@ -825,24 +833,18 @@
       state.player.x = W/2; state.player.y = H-90;
     }
 
-    /* ==== Orientación móvil (landscape) ==== */
+    /* ==== Orientación móvil ==== */
     async function tryLockLandscape(){
       if(screen.orientation && screen.orientation.lock){
-        try{
-          await screen.orientation.lock('landscape');
-          rotateOverlay.classList.add('hidden');
-        }catch(e){}
+        try{ await screen.orientation.lock('landscape'); rotateOverlay.classList.add('hidden'); }catch(e){}
       }
     }
     function updateMobileOrientationUI(){
       const mobile = isMobileUA();
       frame.dataset.mobile = mobile ? 'true' : 'false';
       const portrait = window.matchMedia('(orientation: portrait)').matches || (W < H);
-      if(mobile && portrait){
-        rotateOverlay.classList.remove('hidden');
-      }else{
-        rotateOverlay.classList.add('hidden');
-      }
+      if(mobile && portrait){ rotateOverlay.classList.remove('hidden'); }
+      else { rotateOverlay.classList.add('hidden'); }
     }
     window.addEventListener('orientationchange', ()=>{ updateMobileOrientationUI(); resize(); });
     tryLockBtn.addEventListener('click', ()=>{ ensureAudio(); tryLockLandscape(); });
@@ -851,12 +853,149 @@
     updateMobileOrientationUI();
     window.addEventListener('resize', ()=>{ resize(); updateMobileOrientationUI(); });
 
-    /* ==== Audio entrada (clic/touch/teclado) ==== */
+    /* ==== Audio entrada ==== */
     ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
       window.addEventListener(evt, ensureAudio, {once:true, passive:true});
     });
 
-    /* ==== Nave y variantes ==== */
+    /* ==== Espacio por nivel (gradientes apagados) ==== */
+    const spacePalettes = [
+      ['#0b1020','#0b1426'],
+      ['#0c111f','#0a1524'],
+      ['#0c0f1c','#0a1322'],
+      ['#0d101d','#0a1521'],
+      ['#0d121c','#0a161f'],
+      ['#0d131a','#0a171e'],
+      ['#0e141a','#0a181d'],
+      ['#0e1519','#09181c'],
+      ['#0f1518','#09191b'],
+      ['#0f1618','#091a1a']
+    ];
+    function drawSpaceBackground(){
+      const idx = state.spaceToneIndex % spacePalettes.length;
+      const [c1,c2] = spacePalettes[idx];
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,c1); g.addColorStop(1,c2);
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    }
+
+    /* ==== Fondo de estrellas ==== */
+    function spawnStars(){
+      state.stars = [];
+      const layers = [0.25, 0.6, 1];
+      layers.forEach((spd,i)=>{
+        const count = Math.floor((W*H)/15000 * (i+1));
+        for(let k=0;k<count;k++){
+          state.stars.push({
+            x: rand(0,W), y: rand(0,H),
+            r: rand(0.5,2.2-i), s: spd,
+            c: i===0 ? 'rgba(140,160,200,.35)' : i===1 ? 'rgba(160,180,210,.45)' : 'rgba(220,230,240,.6)'
+          });
+        }
+      });
+    }
+    spawnStars();
+
+    /* ==== Enemigos ==== */
+    function spawnEnemy(){
+      const type = pick(['rock','zigzag','tank','swarmer','sniper']);
+      const levelFactor = 1 + (state.level-1)*0.18; // más resistencia y velocidad por nivel
+      const size = type==='tank' ? rand(42,68) : rand(22,60);
+      const baseSpeed = {rock:1, zigzag:1.2, tank:0.9, swarmer:1.4, sniper:1.0}[type] * levelFactor;
+      const speed = rand(130, 240) * baseSpeed * (0.9 + state.difficulty*0.15);
+      const colorMap = {rock:'#6cf', zigzag:'#f06', tank:'#ff9f2e', swarmer:'#9f6', sniper:'#c86cff'};
+      const baseHP = Math.max(1, (size/22)|0) + (type==='tank'?2:0);
+      state.enemies.push({
+        type,
+        x: rand(20, W-20), y: -size, r: size/2,
+        vx: rand(-48, 48), vy: Math.max(120, speed),
+        hp: Math.ceil(baseHP * (1 + (state.level-1)*0.25)), // más vida por nivel
+        wobble: rand(0,Math.PI*2),
+        color: colorMap[type],
+        fireCd: type==='sniper' ? rand(0.6,1.4) : 999
+      });
+    }
+
+    /* ==== Poderes y partículas ==== */
+    function spawnPower(x,y){
+      const kinds = ['shield','multi','burst','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
+      const kind = pick(kinds);
+      const colorMap = {
+        shield:'#9f6', multi:'#6cf', burst:'#f06', slowmo:'#cfe6ff', magnet:'#ff9f2e',
+        drone:'#c86cff', pierce:'#39a9ff', homing:'#ffd54f', ricochet:'#ff8ab4', heal:'#7cffb2',
+        overdrive:'#ff6', vortex:'#70a0ff', chain:'#ffe066', barrier:'#9dffea', charge:'#ff9fb0', teleport:'#b8ffa6',
+        phase:'#aef', gravity:'#89f', timewarp:'#cfd6ea', nano:'#7fe3a3', shock:'#ff7f2e'
+      };
+      state.powerUps.push({ x, y, r: 10, vy: 160, kind, color: colorMap[kind] });
+    }
+    function explode(x,y,color, count=18){
+      for(let i=0;i<count;i++){
+        state.parts.push({ x,y, vx: rand(-160,160), vy: rand(-200,60), life: rand(0.35,0.9), r: rand(1.5,3.8), color });
+      }
+      state.flash = Math.min(1, state.flash + 0.22);
+    }
+    function addShake(amount=10){ state.camera.shake = Math.min(0.6, state.camera.shake + amount/100); }
+
+    /* ==== Colisiones ==== */
+    const clampRect = (cx, rx, rw)=> clamp(cx, rx, rx+rw);
+    function hitCircleRect(cx, cy, r, rx, ry, rw, rh){
+      const nx = clampRect(cx, rx, rw);
+      const ny = clamp(cy, ry, ry+rh);
+      const dx = cx - nx, dy = cy - ny;
+      return dx*dx + dy*dy <= r*r;
+    }
+
+    /* ==== Dibujo ==== */
+    function applyCamera(){
+      if(state.camera.shake>0){
+        state.camera.shake = Math.max(0, state.camera.shake - 0.02);
+        state.camera.x = (Math.random()*2-1) * 10 * state.camera.shake;
+        state.camera.y = (Math.random()*2-1) * 8 * state.camera.shake;
+        ctx.save(); ctx.translate(state.camera.x, state.camera.y);
+      }else{ state.camera.x = 0; state.camera.y = 0; }
+    }
+    function restoreCamera(){ if(state.camera.x!==0 || state.camera.y!==0) ctx.restore(); }
+    function drawStars(dt){
+      const slow = state.player.slowmo>0 || state.player.timewarp>0 ? 0.35 : 1;
+      for(const s of state.stars){
+        s.y += s.s * 38 * dt * slow;
+        if(s.y > H) { s.y -= H; s.x = rand(0,W); }
+        ctx.fillStyle = s.c;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+      }
+    }
+    function drawEnemy(e, t){
+      ctx.save(); ctx.translate(e.x, e.y);
+      const wob = Math.sin(e.wobble + t*3) * 0.25; if(e.type==='zigzag') ctx.rotate(wob);
+      ctx.shadowColor = e.color; ctx.shadowBlur = 12; ctx.strokeStyle = e.color; ctx.lineWidth = e.type==='tank' ? 4 : 3;
+      ctx.beginPath();
+      const sides = e.type==='rock'?6 : e.type==='tank'?8 : e.type==='swarmer'?5 : e.type==='sniper'?4 : 6;
+      for(let i=0;i<sides;i++){ const ang = i/sides * Math.PI*2; ctx.lineTo(Math.cos(ang)*e.r, Math.sin(ang)*e.r); }
+      ctx.closePath(); ctx.stroke(); ctx.restore(); ctx.shadowBlur = 0;
+    }
+    function drawBullet(b){
+      ctx.shadowColor = '#6cf'; ctx.shadowBlur = 10;
+      ctx.fillStyle = b.chain? 'rgba(255,220,120,.9)' : 'rgba(108,220,255,.85)';
+      ctx.fillRect(b.x-2, b.y-8, 4, 14); ctx.shadowBlur = 0;
+    }
+    function drawEnemyBullet(b){
+      ctx.shadowColor = '#f66'; ctx.shadowBlur = 8;
+      ctx.fillStyle = 'rgba(255,100,120,.85)';
+      ctx.fillRect(b.x-2, b.y-6, 4, 10); ctx.shadowBlur = 0;
+    }
+    function drawPower(pu){
+      ctx.shadowColor = pu.color; ctx.shadowBlur = 12;
+      ctx.strokeStyle = pu.color; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI*2); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.fillStyle = pu.color; ctx.fillRect(pu.x-6, pu.y-2, 12, 4);
+    }
+    function drawParts(dt){
+      for(const pt of state.parts){ pt.life -= dt; pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.vy += 260 * dt; }
+      state.parts = state.parts.filter(p=>p.life>0 && p.y < H+20);
+      for(const p of state.parts){ ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
+    }
+
+    /* ==== Ship variants ==== */
     const shipPalette = { BR:'#7a7676', PL:'#9fb3c9', OR:'#ffd166', OF:'#6cf', ES:'#f06', GU:'#9f6', MA:'#c86cff', KR:'#39a9ff', LV:'#ff8ab4', LG:'#00e6b3' };
     function drawShipVariant(ctx2,x,y,tag,scale=1){
       const glow = shipPalette[tag] || '#6cf';
@@ -885,48 +1024,9 @@
     const shipOrder = ['BR','PL','OR','OF','ES','GU','MA','KR','LV','LG'];
     let shipIndex = Number(localStorage.getItem(LS.shipIndex)||0);
 
-    /* ==== Identidad ==== */
-    async function initIdentity(){
-      state.ip = await fetchIP();
-      const saved = loadJSON(LS.identity, null);
-      if(saved){ state.user = saved.user; state.identityHash = saved.hash; state.victories = saved.victories||0; }
-      const locSaved = loadJSON(LS.location, null);
-      if(locSaved){ state.location = locSaved; }
-      updateProfileUI();
-      if(!state.location || !state.location.countryCode){
-        const info = await requestLocation();
-        state.location = info;
-        saveJSON(LS.location, info);
-        updateProfileUI();
-      }
-    }
-    function updateProfileUI(){
-      profileUser.textContent = state.user || '—';
-      profileIP.textContent = state.ip || '—';
-      profileWins.textContent = state.victories || 0;
-      const r = getRank(state.victories||0);
-      profileRank.textContent = r.name; profileTag.textContent = r.tag;
-      profileCreateRow.classList.toggle('hidden', !!state.user);
-      profileGear.classList.toggle('hidden', !state.user);
-      profileFlag.textContent = countryCodeToFlag(state.location.countryCode || 'DO');
-      renderShipSlider();
-    }
-    async function lockIdentity(name){
-      const h = await hash(name+'|'+state.ip);
-      state.user = name; state.identityHash = h;
-      saveJSON(LS.identity, {user: name, ip: state.ip, hash: h, victories: state.victories});
-      updateProfileUI();
-    }
-    function identityMatches(name){
-      const id = loadJSON(LS.identity, null);
-      if(!id) return true;
-      return id.user === name && id.ip === state.ip && id.hash;
-    }
-
-    /* ==== Ship slider ==== */
     function renderShipSlider(){
       const tag = shipOrder[shipIndex];
-      const currentRank = getRank(state.victories||0);
+      const currentRank = getRankByScore(state.user?.score || 0);
       shipCtx.clearRect(0,0,shipPreview.width, shipPreview.height);
       shipCtx.fillStyle = '#0b1426'; shipCtx.fillRect(0,0,shipPreview.width, shipPreview.height);
       drawShipVariant(shipCtx, shipPreview.width/2, shipPreview.height/2, tag, 2);
@@ -950,13 +1050,580 @@
     arrowRight.addEventListener('click', ()=> changeShip(1));
     shipCard.addEventListener('click', ()=>{
       const tag = shipOrder[shipIndex];
-      const currentTag = getRank(state.victories||0).tag;
+      const currentTag = getRankByScore(state.user?.score || 0).tag;
       const unlocked = rankIndex(tag) <= rankIndex(currentTag);
       if(!unlocked){ pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name} para desbloquear`); return; }
       pushToast(tag===currentTag ? 'Tu nave actual está lista.' : 'Nave desbloqueada (se asigna al alcanzar el rango).');
     });
 
-    /* ==== Help icons ==== */
+    /* ==== Ranking render (puntuación) ==== */
+    function renderRanking(users){
+      const rows = (users||[])
+        .map(info=>{
+          return `<tr><td>${info.u}</td><td>${info.victories}</td><td>${info.rankName}</td><td>${info.tag}</td><td>${info.country||'—'}</td><td>${info.score||0}</td></tr>`;
+        }).join('');
+      compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
+    }
+
+    /* ==== INPUT ==== */
+    const keys = new Set();
+    function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
+
+    function enableKeyboard(){
+      window.addEventListener('keydown', (e)=>{
+        if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
+        if(isTypingTarget(e)) return;
+        ensureAudio();
+        keys.add(e.key);
+        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
+        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
+        if(e.key === ' ') state.input.shoot = true;
+        if(e.key.toLowerCase() === 'p') togglePause();
+      });
+      window.addEventListener('keyup', (e)=>{
+        if(isTypingTarget(e)) return;
+        keys.delete(e.key);
+        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
+        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
+        if(e.key === ' ') state.input.shoot = false;
+      });
+    }
+
+    function enableTouch(){
+      touchControls.hidden = false;
+      let stickDrag = false, stickOrigin = {x:0,y:0};
+      stick.addEventListener('pointerdown', (e)=>{
+        ensureAudio();
+        stickDrag = true; stick.setPointerCapture(e.pointerId);
+        const rect = stick.getBoundingClientRect();
+        stickOrigin.x = rect.left + rect.width/2;
+        stickOrigin.y = rect.top + rect.height/2;
+      });
+      stick.addEventListener('pointermove', (e)=>{
+        if(!stickDrag) return;
+        const dx = e.clientX - stickOrigin.x;
+        const dy = e.clientY - stickOrigin.y;
+        const max = 40;
+        const nx = clamp(dx, -max, max);
+        const ny = clamp(dy, -max, max);
+        knob.style.left = (40 + nx) + 'px';
+        knob.style.top  = (40 + ny) + 'px';
+        state.input.left = nx < -8; state.input.right = nx > 8;
+      });
+      stick.addEventListener('pointerup', ()=>{
+        stickDrag = false;
+        knob.style.left = '40px'; knob.style.top = '40px';
+        state.input.left = false; state.input.right = false;
+      });
+      fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
+      fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
+    }
+
+    /* ==== Mouse control ==== */
+    let mouseDown = false;
+    function updateMouseControl(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const leftSide = x < rect.width/2;
+      const rightSide = x >= rect.width/2;
+      state.input.left = leftSide && mouseDown;
+      state.input.right = rightSide && mouseDown;
+      state.input.shoot = mouseDown && (y < rect.height/2);
+    }
+    canvas.addEventListener('mousedown', (e)=>{ ensureAudio(); mouseDown = true; updateMouseControl(e); });
+    window.addEventListener('mousemove', (e)=>{ if(!mouseDown) return; updateMouseControl(e); });
+    window.addEventListener('mouseup', ()=>{ mouseDown = false; state.input.left = false; state.input.right = false; state.input.shoot = false; });
+
+    if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
+
+    /* ==== Overlays ==== */
+    function showOverlay(title, text, buttons=true){
+      overlayTitle.textContent = title;
+      overlayText.textContent = text;
+      overlayResume.classList.toggle('hidden', !buttons);
+      overlayRestart.classList.toggle('hidden', !buttons);
+      overlayMenu.classList.toggle('hidden', !buttons);
+      gameOverlay.classList.remove('hidden');
+    }
+    function hideOverlay(){ gameOverlay.classList.add('hidden'); }
+    gameOverlay.addEventListener('click', ()=>{
+      if(state.running){ state.paused = false; hideOverlay(); }
+    });
+
+    /* ==== Nivel y metas triples ==== */
+    function nextTargetTriple(prevTarget){
+      return Math.floor(prevTarget * 3); // triplica meta por nivel
+    }
+
+    /* ==== Balas enemigo ==== */
+    function spawnEnemyBullet(ex,ey){ state.enemyBullets.push({x:ex, y:ey, vy: 300 + state.difficulty*40, life: 3}); }
+
+    /* ==== Targeting ==== */
+    function nearestEnemy(x,y){ let best=null, bd=1e9; for(const e of state.enemies){ const d = Math.hypot(e.x-x, e.y-y); if(d<bd){ bd=d; best=e; } } return best; }
+
+    /* ==== Control de partida ==== */
+    function resetStateForRun(){
+      state.score = 0; state.lives = 3; state.tick = 0; state.difficulty = 1; state.flash = 0;
+      state.level = 1; state.target = 100;
+      state.spaceToneIndex = 0;
+      levelEl.textContent = state.level; targetEl.textContent = state.target;
+      state.camera.shake = 0; state.camera.x = 0; state.camera.y = 0;
+      state.player = { x: W/2, y: H-90, w:56, h:22, speed:460, cooldown:0,
+        multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
+        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0,
+        phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
+      state.bullets.length = 0; state.enemies.length = 0; state.parts.length = 0; state.powerUps.length = 0; state.enemyBullets.length = 0;
+      spawnStars();
+      scoreEl.textContent = 'Puntos: 0'; livesEl.textContent = 'Vidas: 3'; powerEl.textContent = 'Power: —';
+      hideOverlay();
+    }
+    function startGame(competitive=false){
+      state.competitive = competitive;
+      state.running = true; state.paused = false;
+      resetStateForRun();
+      mainMenu.classList.add('hidden');
+      beep(720,.12,'sawtooth',.05);
+    }
+    function togglePause(){
+      if(!state.running) return;
+      state.paused = !state.paused;
+      if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); }
+    }
+    function finishRun(win=false){
+      state.running = false;
+      state.best = Math.max(state.best, state.score); localStorage.setItem(LS.best, String(state.best)); bestEl.textContent = state.best;
+      const history = loadJSON(LS.history, []); history.unshift({date: new Date().toISOString(), score: state.score, level: state.level});
+      saveJSON(LS.history, history.slice(0, 200));
+      if(state.competitive && state.user){
+        // Actualiza Firestore sin bloquear loop
+        const newVictories = state.victories + (win?1:0);
+        const newScore = (state.user.score||0) + state.score;
+        state.victories = newVictories;
+        state.user.score = newScore;
+        const rank = getRankByScore(newScore);
+        void upsertUserProfile(state.user.uid, {
+          email: state.user.email,
+          username: state.user.username,
+          score: newScore,
+          victories: newVictories,
+          country: state.user.country,
+          updated: new Date().toISOString(),
+          rankTag: rank.tag,
+          rankName: rank.name
+        });
+        sendAchievement(win?'ganó una partida':'terminó una partida');
+        updateProfileUI();
+      }
+      showOverlay(win?'¡Victoria!':'Game Over', `Puntaje: ${state.score}. Récord: ${state.best}`);
+      beep(win?960:220, .18, 'square', .07);
+    }
+
+    /* ==== Loop ==== */
+    let last = performance.now();
+    function loop(now){
+      const dtRaw = Math.min(0.033, (now - last)/1000); last = now;
+      const p = state.player;
+      const dt = p.slowmo>0 || p.timewarp>0 ? dtRaw*0.6 : dtRaw;
+
+      drawSpaceBackground(); // gradiente por nivel
+      ctx.globalAlpha = 1;
+      if(state.flash > 0) state.flash = Math.max(0, state.flash - dt*0.7);
+      ctx.fillStyle = `rgba(255,255,255,${state.flash * 0.35})`; ctx.fillRect(0,0,W,H);
+
+      applyCamera();
+      drawStars(dt);
+
+      if(state.running && !state.paused){
+        state.tick += dt;
+        // Dificultad progresiva más agresiva por nivel
+        state.difficulty += dt * (0.03 + state.level*0.004);
+
+        ['slowmo','magnet','homing','ricochet','overdrive','vortex','chain','barrier','charge','phase','gravity','timewarp','nano'].forEach(k=> p[k]=Math.max(0,p[k]-dt));
+        if(p.nano>0 && Math.random()<0.01){ state.lives = Math.min(9, state.lives+1); p.nano = Math.max(0, p.nano-0.5); }
+        if(p.shock>0 && Math.random()<0.002){
+          for(const e of state.enemies){ const d = Math.hypot(e.x-p.x, e.y-p.y); if(d<140){ e.hp -= 1; e.vx += (e.x-p.x)/d*120; e.vy += (e.y-p.y)/d*80; } }
+        }
+
+        let dir = 0; if(state.input.left) dir -= 1; if(state.input.right) dir += 1;
+        let speed = p.speed * (p.overdrive>0 ? 1.15 : 1);
+        if(p.charge>0 && dir!==0){ speed *= 1.35; }
+        p.x = clamp(p.x + dir * speed * dt, 20, W-20);
+        if(p.teleport>0 && Math.random()<0.002){ p.x = W/2; p.teleport = 0; addShake(10); }
+
+        p.cooldown = Math.max(0, p.cooldown - dt);
+
+        if(p.drone && Math.random() < 0.06){
+          state.bullets.push({ x: p.x + 20*Math.cos(state.tick*5), y: p.y-26, vy: -430, life: 1, pierceLeft: p.pierce||0, chain: p.chain>0 });
+        }
+
+        const baseCd = p.overdrive>0 ? 0.06 : 0.12;
+        const canShoot = state.input.shoot && p.cooldown <= 0;
+        if(canShoot){
+          const spread = p.multi > 1 ? 10 : 0;
+          const count = p.multi;
+          for(let i=0;i<count;i++){
+            const offset = (i - (count-1)/2) * spread;
+            const vyBoost = p.timewarp>0 ? -620 : -560;
+            state.bullets.push({ x: p.x + offset, y: p.y-18, vy: vyBoost, life: 2, pierceLeft: p.pierce||0, chain: p.chain>0 });
+          }
+          p.cooldown = p.burst>0 ? 0.06 : baseCd;
+          if(p.burst>0) p.burst -= 1;
+          beep(880, .05, 'square', .04);
+        }
+
+        for(const b of state.bullets){
+          if(p.homing>0){ const target = nearestEnemy(b.x, b.y-30); if(target){ const ang = Math.atan2(target.y - b.y, target.x - b.x); b.x += Math.cos(ang) * 60 * dt; } }
+          b.y += b.vy * dt; b.life -= dt;
+          if(p.ricochet>0){ if(b.x<4){ b.x=4; b.vx = Math.abs(b.vx||40); } if(b.x>W-4){ b.x=W-4; b.vx = -Math.abs(b.vx||40); } if(b.vx){ b.x += b.vx*dt; } }
+        }
+        state.bullets = state.bullets.filter(b=>b.life>0 && b.y>-20);
+
+        if(p.vortex>0 || p.gravity>0){
+          for(const e of state.enemies){
+            const dx = p.x - e.x, dy = p.y - e.y; const d = Math.hypot(dx,dy);
+            const radius = p.gravity>0 ? 260 : 220;
+            if(d<radius){ e.x += (dx/d) * 60 * dt; e.y += (dy/d) * 40 * dt; }
+          }
+        }
+
+        const spawnRate = 0.016 * (1 + state.difficulty*0.35);
+        if(Math.random() < spawnRate) spawnEnemy();
+        for(const e of state.enemies){
+          const levelSpeedBoost = 1 + (state.level-1)*0.06;
+          e.vy = Math.max(e.vy, (120 + state.difficulty*10) * levelSpeedBoost);
+          e.y += e.vy * dt;
+          e.x = clamp(e.x + e.vx * dt, 16, W-16);
+          if(e.type==='zigzag'){ e.vx += Math.sin(state.tick*3 + e.wobble)*10; }
+          if(e.type==='swarmer'){ e.vx += Math.sin(state.tick*5 + e.wobble)*12; e.vy += Math.sin(state.tick*2)*4; }
+          if(e.type==='tank'){ e.vx *= 0.995; e.vy = Math.max(e.vy*0.998, 120); }
+          if(e.type==='sniper'){ e.fireCd -= dt; if(e.fireCd<=0){ spawnEnemyBullet(e.x, e.y+e.r*0.7); e.fireCd = rand(0.8, 1.6); } }
+        }
+
+        for(const eb of state.enemyBullets){ eb.y += eb.vy * dt; eb.life -= dt; }
+        for(const eb of state.enemyBullets){
+          if(hitCircleRect(eb.x, eb.y, 6, p.x - 20, p.y - 10, 40, 20)){
+            eb.life = 0; addShake(12);
+            if(p.barrier>0){ p.barrier = Math.max(0, p.barrier - 2); beep(320,.08,'sawtooth',.05); }
+            else if(p.shield>0 || p.phase>0){ p.shield = Math.max(0, p.shield - 2); p.phase = Math.max(0, p.phase - 1); beep(300,.08,'sawtooth',.05); state.flash = Math.min(1, state.flash + 0.18); }
+            else { state.lives -= 1; beep(160,.12,'square',.06); state.flash = 1; if(state.lives<=0) finishRun(false); }
+          }
+        }
+        for(let i=state.enemyBullets.length-1;i>=0;i--) if(state.enemyBullets[i].life<=0 || state.enemyBullets[i].y>H+20) state.enemyBullets.splice(i,1);
+
+        for(const e of state.enemies){
+          for(const b of state.bullets){
+            if(hitCircleRect(e.x, e.y, e.r, b.x-2, b.y-8, 4, 14)){
+              e.hp -= 1; explode(b.x, b.y, 'rgba(108,220,255,.8)', 6); addShake(8); beep(560,.04,'triangle',.035);
+              if(b.chain){ for(const e2 of state.enemies){ const d = Math.hypot(e2.x-e.x, e2.y-e.y); if(e2!==e && d<90) e2.hp -= 1; } }
+              if((b.pierceLeft||0) > 0){ b.pierceLeft -= 1; b.y -= 4; } else { b.life = 0; }
+              if(e.hp<=0){
+                explode(e.x, e.y, e.color, 24); addShake(18);
+                if(Math.random() < 0.24) spawnPower(e.x, e.y);
+                e.r = 0; state.score += 10 + Math.floor(state.level*2.5); // más puntos por nivel
+              }
+            }
+          }
+        }
+        state.enemies = state.enemies.filter(e=>e.r>0 && e.y < H+60);
+
+        for(const pu of state.powerUps){ pu.y += pu.vy * dt; pu.vy += 40 * dt;
+          if(p.magnet>0){ const dx = p.x - pu.x, dy = p.y - pu.y; const d = Math.hypot(dx,dy); if(d<170){ pu.x += (dx/d) * 130 * dt; pu.y += (dy/d) * 130 * dt; } } }
+        for(const pu of state.powerUps){
+          if(hitCircleRect(pu.x, pu.y, pu.r, p.x - 20, p.y - 12, 40, 24)){
+            if(p.heal>0){ state.lives += 1; p.heal = 0; } else grantPower(pu.kind);
+            powerEl.textContent = `Power: ${pu.kind[0].toUpperCase()+pu.kind.slice(1)}`;
+            explode(pu.x, pu.y, pu.color, 12); beep(980,.06,'sine',.05); pu.r = 0;
+          }
+        }
+        state.powerUps = state.powerUps.filter(pu=>pu.r>0 && pu.y < H+20);
+
+        for(const e of state.enemies){
+          if(hitCircleRect(e.x, e.y, e.r, p.x - 24, p.y - 14, 48, 28)){
+            explode(e.x, e.y, e.color, 18); addShake(16); e.r = 0;
+            if(p.barrier>0){ p.barrier = Math.max(0, p.barrier - 2.5); beep(320,.08,'sawtooth',.05); }
+            else if(p.shield>0 || p.phase>0){ p.shield = Math.max(0, p.shield - 2.5); p.phase = Math.max(0, p.phase - 1); beep(300,.08,'sawtooth',.05); state.flash = Math.min(1, state.flash + 0.18); }
+            else { state.lives -= 1; beep(160,.12,'square',.06); state.flash = 1; if(state.lives <= 0){ finishRun(false); } }
+          }
+        }
+
+        const pw =
+          p.barrier>0   ? 'Barrera'     :
+          (p.shield>0 || p.phase>0) ? 'Escudo/Fase' :
+          p.burst>0     ? 'Ráfaga'      :
+          p.multi>1     ? `Multi x${p.multi}` :
+          (p.slowmo>0 || p.timewarp>0) ? 'Timewarp' :
+          p.magnet>0    ? 'Imán'        :
+          p.drone       ? 'Dron'        :
+          p.pierce>0    ? 'Perforante'  :
+          p.homing>0    ? 'Teledirigido':
+          p.ricochet>0  ? 'Rebote'      :
+          p.heal>0      ? 'Curación'    :
+          p.overdrive>0 ? 'Overdrive'   :
+          (p.vortex>0 || p.gravity>0) ? 'Gravedad' :
+          p.chain>0     ? 'Cadena'      :
+          p.charge>0    ? 'Carga'       :
+          p.teleport>0  ? 'Teleport'    :
+          p.nano>0      ? 'Nano-reparación' :
+          p.shock>0     ? 'Onda de choque'  : '—';
+        scoreEl.textContent = `Puntos: ${state.score}`;
+        livesEl.textContent = `Vidas: ${state.lives}`;
+        powerEl.textContent = `Power: ${pw}`;
+
+        // Nivel up con meta triple
+        if(state.score >= state.target){
+          const completedLevel = state.level;
+          state.level++; levelEl.textContent = state.level;
+          state.target = nextTargetTriple(state.target); targetEl.textContent = state.target;
+          state.difficulty += 0.9;
+          state.spaceToneIndex = (state.spaceToneIndex + 1) % spacePalettes.length;
+          const pool = ['burst','shield','multi','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
+          const reward = pool[(state.level-1) % pool.length];
+          grantPower(reward); powerEl.textContent = `Power: ${reward[0].toUpperCase()+reward.slice(1)}`;
+          showOverlay(`Nivel ${completedLevel} completado`, `Nuevo objetivo: ${state.target} puntos`, false);
+          setTimeout(hideOverlay, 1500);
+          beep(960,.12,'triangle',.06); setTimeout(()=>beep(720,.1,'sine',.05),120);
+          if(state.competitive && state.user){
+            state.victories += 1;
+            const newVictories = state.victories;
+            const newScore = (state.user.score||0) + 100; // bonus pequeño por subir nivel
+            state.user.score = newScore;
+            const rank = getRankByScore(newScore);
+            void upsertUserProfile(state.user.uid, {
+              email: state.user.email,
+              username: state.user.username,
+              score: newScore,
+              victories: newVictories,
+              country: state.user.country,
+              updated: new Date().toISOString(),
+              rankTag: rank.tag,
+              rankName: rank.name
+            });
+            sendAchievement('subió de nivel y ganó 1 victoria');
+            updateProfileUI();
+          }
+        }
+
+        // Condición de victoria extra en modo competitivo (opcional)
+        if(state.competitive && state.score >= state.target + 640){ finishRun(true); }
+      }
+
+      drawParts(dt);
+      for(const e of state.enemies) drawEnemy(e, state.tick);
+      for(const b of state.bullets) drawBullet(b);
+      for(const eb of state.enemyBullets) drawEnemyBullet(eb);
+      for(const pu of state.powerUps) drawPower(pu);
+      const currentTag = getRankByScore(state.user?.score || 0).tag;
+      drawShipVariant(ctx, state.player.x, state.player.y, currentTag, 1.2);
+
+      restoreCamera();
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    /* ==== UI, transiciones y bindings ==== */
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      try{
+        // Transición suave: muestra menú y anima botones
+        mainMenu.classList.remove('hidden');
+        setTimeout(()=>{
+          splash.classList.add('hidden');
+          updateMobileOrientationUI();
+          // Anima botones del menú
+          [menuPlay, menuHow, menuScores, menuCompete, menuProfile, menuSound].forEach((b,i)=>{
+            setTimeout(()=> b.classList.add('show'), 120*i);
+          });
+        }, 1200);
+      }catch(e){
+        mainMenu.classList.remove('hidden');
+        splash.classList.add('hidden');
+      }
+
+      // Geo país para bandera
+      const geo = await resolveCountryByIP();
+      state.userCountry = geo.country;
+      state.userCountryCode = geo.countryCode;
+    });
+
+    function bindPress(el, fn){
+      el.addEventListener('click', fn);
+      el.addEventListener('touchstart', (e)=>{ e.preventDefault(); fn(); }, {passive:false});
+    }
+
+    bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
+    bindPress(menuHow, ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
+    bindPress(menuScores, ()=> openScores());
+    bindPress(menuCompete, ()=> openComp());
+    bindPress(menuProfile, ()=> openProfile());
+    bindPress(menuSound, ()=> soundModal.classList.remove('hidden'));
+    bindPress(soundClose, ()=> soundModal.classList.add('hidden'));
+    bindPress(soundOn, ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
+    bindPress(soundOff, ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
+
+    bindPress(overlayResume, ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
+    bindPress(overlayRestart, ()=> startGame(state.competitive));
+    bindPress(overlayMenu, ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
+
+    /* ==== Puntuaciones ==== */
+    function openScores(){
+      const best = Number(localStorage.getItem(LS.best)||0);
+      const history = loadJSON(LS.history, []);
+      scoresSummary.innerHTML = `<div class="pill"><strong>Récord:</strong> ${best}</div><div class="pill"><strong>Partidas:</strong> ${history.length}</div>`;
+      scoresTableBody.innerHTML = history.map(h=>{
+        const d = new Date(h.date);
+        return `<tr><td>${d.toLocaleString()}</td><td>${h.score}</td><td>${h.level}</td></tr>`;
+      }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
+      scoresModal.classList.remove('hidden');
+      scoresScroll.scrollTop = 0;
+    }
+    bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
+    bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); openScores(); });
+    bindPress(scoresTop, ()=> scoresScroll.scrollTo({top:0, behavior:'smooth'}));
+    bindPress(scoresBottom, ()=> scoresScroll.scrollTo({top:scoresScroll.scrollHeight, behavior:'smooth'}));
+    function enableDragScroll(area){
+      let dragStartY = 0, startScrollTop = 0, dragging = false;
+      area.addEventListener('pointerdown', (e)=>{ dragging=true; area.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=area.scrollTop; area.setPointerCapture(e.pointerId); });
+      area.addEventListener('pointermove', (e)=>{ if(!dragging) return; area.scrollTop = startScrollTop - (e.clientY - dragStartY); });
+      area.addEventListener('pointerup', ()=>{ dragging=false; area.classList.remove('dragging'); });
+    }
+    enableDragScroll(scoresScroll);
+    enableDragScroll(howScroll);
+
+    /* ==== Competencia ==== */
+    async function openComp(){
+      compModal.classList.remove('hidden');
+      compPage = 1; compLastDoc = null; compCursorStack = [];
+      compPageEl.textContent = compPage;
+      await loadRankingFirstPage();
+      compScroll.scrollTop = 0;
+    }
+    bindPress(compClose, ()=> compModal.classList.add('hidden'));
+    bindPress(compShare, ()=> downloadRankingPNG());
+    bindPress(compTop, ()=> compScroll.scrollTo({top:0, behavior:'smooth'}));
+    bindPress(compBottom, ()=> compScroll.scrollTo({top:compScroll.scrollHeight, behavior:'smooth'}));
+    enableDragScroll(compScroll);
+    bindPress(compNextPage, async ()=>{ await loadRankingPage(true); compScroll.scrollTop = 0; });
+    bindPress(compPrevPage, async ()=>{ await loadRankingPage(false); compScroll.scrollTop = 0; });
+
+    bindPress(compUseProfile, ()=>{
+      if(!state.user){ alert('Primero inicia sesión o regístrate en Perfil.'); return; }
+      compModal.classList.add('hidden');
+      startGame(true);
+    });
+
+    /* ==== Perfil + Auth ==== */
+    function openProfile(){
+      updateProfileUI();
+      profileModal.classList.remove('hidden');
+    }
+    bindPress(profileClose, ()=> profileModal.classList.add('hidden'));
+
+    bindPress(btnRegister, async ()=>{
+      const email = (authEmail.value||'').trim();
+      const password = (authPassword.value||'').trim();
+      const username = (authUsername.value||'').trim();
+      if(!email || !password || !username){ alert('Ingresa email, contraseña y usuario.'); return; }
+      try{
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
+        const geo = await resolveCountryByIP();
+        const profile = {
+          uid, email, username,
+          score: 0, victories: 0,
+          country: geo.country,
+          updated: new Date().toISOString(),
+          rankTag: 'BR', rankName: 'Bronce'
+        };
+        await upsertUserProfile(uid, profile);
+        state.user = profile;
+        updateProfileUI();
+        alert('Registro completado.');
+      }catch(e){
+        alert('Error al registrar: ' + (e.message||e));
+      }
+    });
+
+    bindPress(btnLogin, async ()=>{
+      const email = (authEmail.value||'').trim();
+      const password = (authPassword.value||'').trim();
+      if(!email || !password){ alert('Ingresa email y contraseña.'); return; }
+      try{
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
+        const prof = await getUserProfile(uid);
+        if(prof){
+          state.user = prof;
+        }else{
+          // Si no existe doc, crea básico
+          const geo = await resolveCountryByIP();
+          const profile = { uid, email, username: authUsername.value||email, score:0, victories:0, country: geo.country, updated:new Date().toISOString(), rankTag:'BR', rankName:'Bronce' };
+          await upsertUserProfile(uid, profile);
+          state.user = profile;
+        }
+        updateProfileUI();
+        alert('Sesión iniciada.');
+      }catch(e){
+        alert('Error al iniciar sesión: ' + (e.message||e));
+      }
+    });
+
+    bindPress(btnLogout, async ()=>{
+      try{
+        await signOut(auth);
+        state.user = null;
+        updateProfileUI();
+        alert('Sesión cerrada.');
+      }catch(e){
+        alert('Error al cerrar sesión: ' + (e.message||e));
+      }
+    });
+
+    bindPress(settingsCancel, ()=> settingsModal.classList.add('hidden'));
+    bindPress(settingsSave, async ()=>{
+      if(!state.user){ alert('Inicia sesión primero.'); return; }
+      const newName = (settingsNameInput.value||'').trim();
+      if(!newName){ alert('Escribe un nombre visible.'); return; }
+      state.user.username = newName;
+      const rank = getRankByScore(state.user.score||0);
+      await upsertUserProfile(state.user.uid, {
+        username: newName,
+        rankTag: rank.tag, rankName: rank.name,
+        updated: new Date().toISOString()
+      });
+      settingsModal.classList.add('hidden');
+      updateProfileUI();
+      alert('Nombre actualizado.');
+    });
+
+    function updateProfileUI(){
+      const u = state.user;
+      profileUser.textContent = u?.username || '—';
+      profileEmail.textContent = u?.email || '—';
+      profileScore.textContent = u?.score || 0;
+      profileWins.textContent = u?.victories || 0;
+      const rank = getRankByScore(u?.score || 0);
+      profileRank.textContent = rank.name; profileTag.textContent = rank.tag;
+      profileFlag.textContent = countryCodeToFlag(state.userCountryCode || 'DO');
+      renderShipSlider();
+    }
+
+    /* ==== Sonido ==== */
+    const soundStored = loadJSON(LS.sound, {enabled:true});
+    soundEnabled = !!soundStored.enabled;
+
+    /* ==== Escape: cerrar overlays ==== */
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        [howModal, scoresModal, compModal, profileModal, settingsModal, soundModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
+        if(!state.running) mainMenu.classList.remove('hidden');
+      }
+      if(e.key.toLowerCase() === 'g' && state.user){ // abrir config rápido
+        settingsNameInput.value = state.user.username || '';
+        settingsModal.classList.remove('hidden');
+      }
+    });
+
+    /* ==== Ayuda: iconos ==== */
     const powersList = [
       {key:'shield', label:'Escudo'}, {key:'barrier', label:'Barrera'}, {key:'multi', label:'Multi'},
       {key:'burst', label:'Ráfaga'}, {key:'overdrive', label:'Overdrive'}, {key:'pierce', label:'Perforante'},
@@ -1028,648 +1695,6 @@
       };
       return map[key]||'—';
     }
-
-    /* ==== Scroll drag reutilizable ==== */
-    function enableDragScroll(area){
-      let dragStartY = 0, startScrollTop = 0, dragging = false;
-      area.addEventListener('pointerdown', (e)=>{ dragging=true; area.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=area.scrollTop; area.setPointerCapture(e.pointerId); });
-      area.addEventListener('pointermove', (e)=>{ if(!dragging) return; area.scrollTop = startScrollTop - (e.clientY - dragStartY); });
-      area.addEventListener('pointerup', ()=>{ dragging=false; area.classList.remove('dragging'); });
-    }
-    enableDragScroll(howScroll);
-
-    /* ==== Ranking render ==== */
-    function renderRanking(users){
-      const rows = (users||[])
-        .map(info=>{
-          const victories = Number(info.victories||0);
-          const r = getRank(victories);
-          return `<tr><td>${info.u}</td><td>${victories}</td><td>${r.name}</td><td>${r.tag}</td><td>${info.country||'—'}</td><td>${info.region||'—'}</td></tr>`;
-        }).join('');
-      compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
-    }
-
-    /* ==== INPUT: teclado + táctil + mouse ==== */
-    const keys = new Set();
-    function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
-
-    function enableKeyboard(){
-      window.addEventListener('keydown', (e)=>{
-        if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
-        if(isTypingTarget(e)) return;
-        ensureAudio();
-        keys.add(e.key);
-        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
-        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
-        if(e.key === ' ') state.input.shoot = true;
-        if(e.key.toLowerCase() === 'p') togglePause();
-      });
-      window.addEventListener('keyup', (e)=>{
-        if(isTypingTarget(e)) return;
-        keys.delete(e.key);
-        state.input.left  = keys.has('ArrowLeft') || keys.has('a') || keys.has('A');
-        state.input.right = keys.has('ArrowRight') || keys.has('d') || keys.has('D');
-        if(e.key === ' ') state.input.shoot = false;
-      });
-    }
-
-    function enableTouch(){
-      touchControls.hidden = false;
-      let stickDrag = false, stickOrigin = {x:0,y:0};
-      stick.addEventListener('pointerdown', (e)=>{
-        ensureAudio();
-        stickDrag = true; stick.setPointerCapture(e.pointerId);
-        const rect = stick.getBoundingClientRect();
-        stickOrigin.x = rect.left + rect.width/2;
-        stickOrigin.y = rect.top + rect.height/2;
-      });
-      stick.addEventListener('pointermove', (e)=>{
-        if(!stickDrag) return;
-        const dx = e.clientX - stickOrigin.x;
-        const dy = e.clientY - stickOrigin.y;
-        const max = 40;
-        const nx = clamp(dx, -max, max);
-        const ny = clamp(dy, -max, max);
-        knob.style.left = (40 + nx) + 'px';
-        knob.style.top  = (40 + ny) + 'px';
-        state.input.left = nx < -8; state.input.right = nx > 8;
-      });
-      stick.addEventListener('pointerup', ()=>{
-        stickDrag = false;
-        knob.style.left = '40px'; knob.style.top = '40px';
-        state.input.left = false; state.input.right = false;
-      });
-      fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
-      fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
-    }
-
-    /* ==== Mouse: control completo por clic y arrastre ==== */
-    let mouseDown = false;
-    function updateMouseControl(e){
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const leftSide = x < rect.width/2;
-      const rightSide = x >= rect.width/2;
-      state.input.left = leftSide && mouseDown;
-      state.input.right = rightSide && mouseDown;
-      state.input.shoot = mouseDown && (y < rect.height/2);
-    }
-    canvas.addEventListener('mousedown', (e)=>{
-      ensureAudio();
-      mouseDown = true;
-      updateMouseControl(e);
-    });
-    window.addEventListener('mousemove', (e)=>{
-      if(!mouseDown) return;
-      updateMouseControl(e);
-    });
-    window.addEventListener('mouseup', ()=>{
-      mouseDown = false;
-      state.input.left = false;
-      state.input.right = false;
-      state.input.shoot = false;
-    });
-
-    if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
-
-    /* ==== Overlays ==== */
-    function showOverlay(title, text, buttons=true){
-      overlayTitle.textContent = title;
-      overlayText.textContent = text;
-      overlayResume.classList.toggle('hidden', !buttons);
-      overlayRestart.classList.toggle('hidden', !buttons);
-      overlayMenu.classList.toggle('hidden', !buttons);
-      gameOverlay.classList.remove('hidden');
-    }
-    function hideOverlay(){ gameOverlay.classList.add('hidden'); }
-    gameOverlay.addEventListener('click', ()=>{
-      if(state.running){ state.paused = false; hideOverlay(); }
-    });
-
-    /* ==== Fondo de estrellas ==== */
-    function spawnStars(){
-      state.stars = [];
-      const layers = [0.25, 0.6, 1];
-      layers.forEach((spd,i)=>{
-        const count = Math.floor((W*H)/15000 * (i+1));
-        for(let k=0;k<count;k++){
-          state.stars.push({
-            x: rand(0,W), y: rand(0,H),
-            r: rand(0.5,2.2-i), s: spd,
-            c: i===0 ? 'rgba(140,220,255,.35)' : i===1 ? 'rgba(160,200,255,.45)' : 'rgba(255,255,255,.6)'
-          });
-        }
-      });
-    }
-    spawnStars();
-
-    /* ==== Entidades ==== */
-    function spawnEnemy(){
-      const type = pick(['rock','zigzag','tank','swarmer','sniper']);
-      const size = type==='tank' ? rand(42,68) : rand(22,60);
-      const baseSpeed = {rock:1, zigzag:1.2, tank:0.9, swarmer:1.4, sniper:1.0}[type];
-      const speed = rand(130, 240) * baseSpeed * (0.9 + state.difficulty*0.15);
-      const colorMap = {rock:'#6cf', zigzag:'#f06', tank:'#ff9f2e', swarmer:'#9f6', sniper:'#c86cff'};
-      state.enemies.push({
-        type,
-        x: rand(20, W-20), y: -size, r: size/2,
-        vx: rand(-48, 48), vy: Math.max(120, speed),
-        hp: Math.max(1, (size/22)|0) + (type==='tank'?2:0),
-        wobble: rand(0,Math.PI*2),
-        color: colorMap[type],
-        fireCd: type==='sniper' ? rand(0.6,1.4) : 999
-      });
-    }
-    function spawnPower(x,y){
-      const kinds = ['shield','multi','burst','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
-      const kind = pick(kinds);
-      const colorMap = {
-        shield:'#9f6', multi:'#6cf', burst:'#f06', slowmo:'#cfe6ff', magnet:'#ff9f2e',
-        drone:'#c86cff', pierce:'#39a9ff', homing:'#ffd54f', ricochet:'#ff8ab4', heal:'#7cffb2',
-        overdrive:'#ff6', vortex:'#70a0ff', chain:'#ffe066', barrier:'#9dffea', charge:'#ff9fb0', teleport:'#b8ffa6',
-        phase:'#aef', gravity:'#89f', timewarp:'#cfd6ea', nano:'#7fe3a3', shock:'#ff7f2e'
-      };
-      state.powerUps.push({ x, y, r: 10, vy: 160, kind, color: colorMap[kind] });
-    }
-    function explode(x,y,color, count=18){
-      for(let i=0;i<count;i++){
-        state.parts.push({ x,y, vx: rand(-160,160), vy: rand(-200,60), life: rand(0.35,0.9), r: rand(1.5,3.8), color });
-      }
-      state.flash = Math.min(1, state.flash + 0.22);
-    }
-    function addShake(amount=10){ state.camera.shake = Math.min(0.6, state.camera.shake + amount/100); }
-
-    /* ==== Colisiones ==== */
-    function hitCircleRect(cx, cy, r, rx, ry, rw, rh){
-      const nx = clamp(cx, rx, rx+rw);
-      const ny = clamp(cy, ry, ry+rh);
-      const dx = cx - nx, dy = cy - ny;
-      return dx*dx + dy*dy <= r*r;
-    }
-
-    /* ==== Dibujo ==== */
-    function applyCamera(){
-      if(state.camera.shake>0){
-        state.camera.shake = Math.max(0, state.camera.shake - 0.02);
-        state.camera.x = (Math.random()*2-1) * 10 * state.camera.shake;
-        state.camera.y = (Math.random()*2-1) * 8 * state.camera.shake;
-        ctx.save(); ctx.translate(state.camera.x, state.camera.y);
-      }else{ state.camera.x = 0; state.camera.y = 0; }
-    }
-    function restoreCamera(){ if(state.camera.x!==0 || state.camera.y!==0) ctx.restore(); }
-    function drawStars(dt){
-      const slow = state.player.slowmo>0 || state.player.timewarp>0 ? 0.35 : 1;
-      for(const s of state.stars){
-        s.y += s.s * 38 * dt * slow;
-        if(s.y > H) { s.y -= H; s.x = rand(0,W); }
-        ctx.fillStyle = s.c;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
-      }
-    }
-    function drawEnemy(e, t){
-      ctx.save(); ctx.translate(e.x, e.y);
-      const wob = Math.sin(e.wobble + t*3) * 0.25; if(e.type==='zigzag') ctx.rotate(wob);
-      ctx.shadowColor = e.color; ctx.shadowBlur = 12; ctx.strokeStyle = e.color; ctx.lineWidth = e.type==='tank' ? 4 : 3;
-      ctx.beginPath();
-      const sides = e.type==='rock'?6 : e.type==='tank'?8 : e.type==='swarmer'?5 : e.type==='sniper'?4 : 6;
-      for(let i=0;i<sides;i++){ const ang = i/sides * Math.PI*2; ctx.lineTo(Math.cos(ang)*e.r, Math.sin(ang)*e.r); }
-      ctx.closePath(); ctx.stroke(); ctx.restore(); ctx.shadowBlur = 0;
-    }
-    function drawBullet(b){
-      ctx.shadowColor = '#6cf'; ctx.shadowBlur = 10;
-      ctx.fillStyle = b.chain? 'rgba(255,220,120,.9)' : 'rgba(108,220,255,.85)';
-      ctx.fillRect(b.x-2, b.y-8, 4, 14); ctx.shadowBlur = 0;
-    }
-    function drawEnemyBullet(b){
-      ctx.shadowColor = '#f66'; ctx.shadowBlur = 8;
-      ctx.fillStyle = 'rgba(255,100,120,.85)';
-      ctx.fillRect(b.x-2, b.y-6, 4, 10); ctx.shadowBlur = 0;
-    }
-    function drawPower(pu){
-      ctx.shadowColor = pu.color; ctx.shadowBlur = 12;
-      ctx.strokeStyle = pu.color; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI*2); ctx.stroke();
-      ctx.shadowBlur = 0; ctx.fillStyle = pu.color; ctx.fillRect(pu.x-6, pu.y-2, 12, 4);
-    }
-    function drawParts(dt){
-      for(const pt of state.parts){ pt.life -= dt; pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.vy += 260 * dt; }
-      state.parts = state.parts.filter(p=>p.life>0 && p.y < H+20);
-      for(const p of state.parts){ ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1; }
-    }
-    function drawPlayerShip(){
-      const r = getRank(state.victories||0);
-      drawShipVariant(ctx, state.player.x, state.player.y, r.tag, 1.2);
-      const p = state.player;
-      if(p.barrier>0){
-        ctx.strokeStyle = 'rgba(160,255,255,.6)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(p.x, p.y-3, 28, 0, Math.PI*2); ctx.stroke();
-      } else if(p.shield>0 || p.phase>0){
-        const alpha = Math.min(.6, Math.max(.18, (p.shield+p.phase)/8));
-        ctx.strokeStyle = `rgba(160,255,200,${alpha})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y-2, 24 + 2*Math.sin(state.tick*5), 0, Math.PI*2); ctx.stroke();
-      }
-      if(p.drone){
-        ctx.fillStyle = 'rgba(200,110,255,.85)'; ctx.beginPath();
-        const dx = 20*Math.cos(state.tick*5), dy = -28 + 6*Math.sin(state.tick*5);
-        ctx.arc(state.player.x + dx, state.player.y + dy, 6, 0, Math.PI*2); ctx.fill();
-      }
-    }
-
-    /* ==== Poderes ==== */
-    function grantPower(kind){
-      const p = state.player;
-      if(kind==='shield')   p.shield = Math.max(p.shield, 6);
-      if(kind==='multi')    p.multi = Math.min(5, p.multi+1);
-      if(kind==='burst')    p.burst = Math.max(p.burst, 28);
-      if(kind==='slowmo')   p.slowmo = Math.max(p.slowmo, 6);
-      if(kind==='magnet')   p.magnet = Math.max(p.magnet, 6);
-      if(kind==='drone')    p.drone = true;
-      if(kind==='pierce')   p.pierce = Math.max(p.pierce, 8);
-      if(kind==='homing')   p.homing = Math.max(p.homing, 6);
-      if(kind==='ricochet') p.ricochet = Math.max(p.ricochet, 6);
-      if(kind==='heal')     p.heal = 1;
-      if(kind==='overdrive')p.overdrive = Math.max(p.overdrive, 6);
-      if(kind==='vortex')   p.vortex = Math.max(p.vortex, 6);
-      if(kind==='chain')    p.chain = Math.max(p.chain, 6);
-      if(kind==='barrier')  p.barrier = Math.max(p.barrier, 6);
-      if(kind==='charge')   p.charge = Math.max(p.charge, 6);
-      if(kind==='teleport') p.teleport = Math.max(p.teleport, 1);
-      if(kind==='phase')    p.phase = Math.max(p.phase, 4);
-      if(kind==='gravity')  p.gravity = Math.max(p.gravity, 6);
-      if(kind==='timewarp') p.timewarp = Math.max(p.timewarp, 6);
-      if(kind==='nano')     p.nano = Math.max(p.nano, 6);
-      if(kind==='shock')    p.shock = Math.max(p.shock, 1);
-    }
-
-    /* ==== Niveles ==== */
-    function checkLevelUp(){
-      if(state.score >= state.target && state.running && !state.paused){
-        const completedLevel = state.level;
-        state.level++; levelEl.textContent = state.level;
-        const inc = 170 + Math.floor(state.level*42);
-        state.target += inc; targetEl.textContent = state.target;
-        state.difficulty += 0.72;
-        const pool = ['burst','shield','multi','slowmo','magnet','drone','pierce','homing','ricochet','heal','overdrive','vortex','chain','barrier','charge','teleport','phase','gravity','timewarp','nano','shock'];
-        const reward = pool[(state.level-1) % pool.length];
-        grantPower(reward); powerEl.textContent = `Power: ${reward[0].toUpperCase()+reward.slice(1)}`;
-        showOverlay(`Nivel ${completedLevel} completado`, `Nuevo objetivo: ${state.target} puntos`, false);
-        setTimeout(hideOverlay, 1500);
-        beep(960,.12,'triangle',.06); setTimeout(()=>beep(720,.1,'sine',.05),120);
-        if(state.competitive && state.user){
-          state.victories += 1;
-          // No bloquea el loop: se dispara sin await
-          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
-          sendAchievement('subió de nivel y ganó 1 victoria');
-        }
-      }
-    }
-
-    /* ==== Enemigos disparos ==== */
-    function spawnEnemyBullet(ex,ey){ state.enemyBullets.push({x:ex, y:ey, vy: 300 + state.difficulty*40, life: 3}); }
-
-    /* ==== Targeting ==== */
-    function nearestEnemy(x,y){ let best=null, bd=1e9; for(const e of state.enemies){ const d = Math.hypot(e.x-x, e.y-y); if(d<bd){ bd=d; best=e; } } return best; }
-
-    /* ==== Control de partida ==== */
-    function resetStateForRun(){
-      state.score = 0; state.lives = 3; state.tick = 0; state.difficulty = 1; state.flash = 0;
-      state.level = 1; state.target = 100;
-      levelEl.textContent = state.level; targetEl.textContent = state.target;
-      state.camera.shake = 0; state.camera.x = 0; state.camera.y = 0;
-      state.player = { x: W/2, y: H-90, w:56, h:22, speed:460, cooldown:0,
-        multi:1, shield:0, burst:0, slowmo:0, magnet:0, drone:false,
-        pierce:0, homing:0, ricochet:0, heal:0, overdrive:0, vortex:0, chain:0, barrier:0, charge:0, teleport:0,
-        phase:0, gravity:0, timewarp:0, nano:0, shock:0 };
-      state.bullets.length = 0; state.enemies.length = 0; state.parts.length = 0; state.powerUps.length = 0; state.enemyBullets.length = 0;
-      spawnStars();
-      scoreEl.textContent = 'Puntos: 0'; livesEl.textContent = 'Vidas: 3'; powerEl.textContent = 'Power: —';
-      hideOverlay();
-    }
-    function startGame(competitive=false){
-      state.competitive = competitive;
-      state.running = true; state.paused = false;
-      resetStateForRun();
-      mainMenu.classList.add('hidden');
-      beep(720,.12,'sawtooth',.05);
-    }
-    function togglePause(){
-      if(!state.running) return;
-      state.paused = !state.paused;
-      if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); }
-    }
-    async function finishRun(win=false){
-      state.running = false;
-      state.best = Math.max(state.best, state.score); localStorage.setItem(LS.best, String(state.best)); bestEl.textContent = state.best;
-      const history = loadJSON(LS.history, []); history.unshift({date: new Date().toISOString(), score: state.score, level: state.level});
-      saveJSON(LS.history, history.slice(0, 200));
-      if(state.competitive && state.user){
-        if(win){
-          state.victories += 1;
-          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
-          sendAchievement('ganó una partida');
-        }else{
-          void saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
-        }
-      }
-      showOverlay(win?'¡Victoria!':'Game Over', `Puntaje: ${state.score}. Récord: ${state.best}`);
-      beep(win?960:220, .18, 'square', .07);
-    }
-
-    /* ==== Loop ==== */
-    let last = performance.now();
-    function loop(now){
-      const dtRaw = Math.min(0.033, (now - last)/1000); last = now;
-      const p = state.player;
-      const dt = p.slowmo>0 || p.timewarp>0 ? dtRaw*0.6 : dtRaw;
-
-      ctx.clearRect(0,0,W,H);
-      if(state.flash > 0) state.flash = Math.max(0, state.flash - dt*0.7);
-      ctx.fillStyle = `rgba(255,255,255,${state.flash * 0.35})`; ctx.fillRect(0,0,W,H);
-
-      applyCamera();
-      drawStars(dt);
-
-      if(state.running && !state.paused){
-        state.tick += dt;
-        state.difficulty += dt * (0.02 + state.level*0.002);
-
-        ['slowmo','magnet','homing','ricochet','overdrive','vortex','chain','barrier','charge','phase','gravity','timewarp','nano'].forEach(k=> p[k]=Math.max(0,p[k]-dt));
-        if(p.nano>0 && Math.random()<0.01){ state.lives = Math.min(9, state.lives+1); p.nano = Math.max(0, p.nano-0.5); }
-        if(p.shock>0 && Math.random()<0.002){
-          for(const e of state.enemies){ const d = Math.hypot(e.x-p.x, e.y-p.y); if(d<140){ e.hp -= 1; e.vx += (e.x-p.x)/d*120; e.vy += (e.y-p.y)/d*80; } }
-        }
-
-        let dir = 0; if(state.input.left) dir -= 1; if(state.input.right) dir += 1;
-        let speed = p.speed * (p.overdrive>0 ? 1.15 : 1);
-        if(p.charge>0 && dir!==0){ speed *= 1.35; }
-        p.x = clamp(p.x + dir * speed * dt, 20, W-20);
-        if(p.teleport>0 && Math.random()<0.002){ p.x = W/2; p.teleport = 0; addShake(10); }
-
-        p.cooldown = Math.max(0, p.cooldown - dt);
-
-        if(p.drone && Math.random() < 0.06){
-          state.bullets.push({ x: p.x + 20*Math.cos(state.tick*5), y: p.y-26, vy: -430, life: 1, pierceLeft: p.pierce||0, chain: p.chain>0 });
-        }
-
-        const baseCd = p.overdrive>0 ? 0.06 : 0.12;
-        const canShoot = state.input.shoot && p.cooldown <= 0;
-        if(canShoot){
-          const spread = p.multi > 1 ? 10 : 0;
-          const count = p.multi;
-          for(let i=0;i<count;i++){
-            const offset = (i - (count-1)/2) * spread;
-            const vyBoost = p.timewarp>0 ? -620 : -560;
-            state.bullets.push({ x: p.x + offset, y: p.y-18, vy: vyBoost, life: 2, pierceLeft: p.pierce||0, chain: p.chain>0 });
-          }
-          p.cooldown = p.burst>0 ? 0.06 : baseCd;
-          if(p.burst>0) p.burst -= 1;
-          beep(880, .05, 'square', .04);
-        }
-
-        for(const b of state.bullets){
-          if(p.homing>0){ const target = nearestEnemy(b.x, b.y-30); if(target){ const ang = Math.atan2(target.y - b.y, target.x - b.x); b.x += Math.cos(ang) * 60 * dt; } }
-          b.y += b.vy * dt; b.life -= dt;
-          if(p.ricochet>0){ if(b.x<4){ b.x=4; b.vx = Math.abs(b.vx||40); } if(b.x>W-4){ b.x=W-4; b.vx = -Math.abs(b.vx||40); } if(b.vx){ b.x += b.vx*dt; } }
-        }
-        state.bullets = state.bullets.filter(b=>b.life>0 && b.y>-20);
-
-        if(p.vortex>0 || p.gravity>0){
-          for(const e of state.enemies){
-            const dx = p.x - e.x, dy = p.y - e.y; const d = Math.hypot(dx,dy);
-            const radius = p.gravity>0 ? 260 : 220;
-            if(d<radius){ e.x += (dx/d) * 60 * dt; e.y += (dy/d) * 40 * dt; }
-          }
-        }
-
-        const spawnRate = 0.016 * (1 + state.difficulty*0.35);
-        if(Math.random() < spawnRate) spawnEnemy();
-        for(const e of state.enemies){
-          e.vy = Math.max(e.vy, 120 + state.difficulty*10);
-          e.y += e.vy * dt;
-          e.x = clamp(e.x + e.vx * dt, 16, W-16);
-          if(e.type==='zigzag'){ e.vx += Math.sin(state.tick*3 + e.wobble)*10; }
-          if(e.type==='swarmer'){ e.vx += Math.sin(state.tick*5 + e.wobble)*12; e.vy += Math.sin(state.tick*2)*4; }
-          if(e.type==='tank'){ e.vx *= 0.995; e.vy = Math.max(e.vy*0.998, 120); }
-          if(e.type==='sniper'){ e.fireCd -= dt; if(e.fireCd<=0){ spawnEnemyBullet(e.x, e.y+e.r*0.7); e.fireCd = rand(0.8, 1.6); } }
-        }
-
-        for(const eb of state.enemyBullets){ eb.y += eb.vy * dt; eb.life -= dt; }
-        for(const eb of state.enemyBullets){
-          if(hitCircleRect(eb.x, eb.y, 6, p.x - 20, p.y - 10, 40, 20)){
-            eb.life = 0; addShake(12);
-            if(p.barrier>0){ p.barrier = Math.max(0, p.barrier - 2); beep(320,.08,'sawtooth',.05); }
-            else if(p.shield>0 || p.phase>0){ p.shield = Math.max(0, p.shield - 2); p.phase = Math.max(0, p.phase - 1); beep(300,.08,'sawtooth',.05); state.flash = Math.min(1, state.flash + 0.18); }
-            else { state.lives -= 1; beep(160,.12,'square',.06); state.flash = 1; if(state.lives<=0) finishRun(false); }
-          }
-        }
-        for(let i=state.enemyBullets.length-1;i>=0;i--) if(state.enemyBullets[i].life<=0 || state.enemyBullets[i].y>H+20) state.enemyBullets.splice(i,1);
-
-        for(const e of state.enemies){
-          for(const b of state.bullets){
-            if(hitCircleRect(e.x, e.y, e.r, b.x-2, b.y-8, 4, 14)){
-              e.hp -= 1; explode(b.x, b.y, 'rgba(108,220,255,.8)', 6); addShake(8); beep(560,.04,'triangle',.035);
-              if(b.chain){ for(const e2 of state.enemies){ const d = Math.hypot(e2.x-e.x, e2.y-e.y); if(e2!==e && d<90) e2.hp -= 1; } }
-              if((b.pierceLeft||0) > 0){ b.pierceLeft -= 1; b.y -= 4; } else { b.life = 0; }
-              if(e.hp<=0){
-                explode(e.x, e.y, e.color, 24); addShake(18);
-                if(Math.random() < 0.24) spawnPower(e.x, e.y);
-                e.r = 0; state.score += 10 + Math.floor(state.level*1.7);
-              }
-            }
-          }
-        }
-        state.enemies = state.enemies.filter(e=>e.r>0 && e.y < H+60);
-
-        for(const pu of state.powerUps){ pu.y += pu.vy * dt; pu.vy += 40 * dt;
-          if(p.magnet>0){ const dx = p.x - pu.x, dy = p.y - pu.y; const d = Math.hypot(dx,dy); if(d<170){ pu.x += (dx/d) * 130 * dt; pu.y += (dy/d) * 130 * dt; } } }
-        for(const pu of state.powerUps){
-          if(hitCircleRect(pu.x, pu.y, pu.r, p.x - 20, p.y - 12, 40, 24)){
-            if(p.heal>0){ state.lives += 1; p.heal = 0; } else grantPower(pu.kind);
-            powerEl.textContent = `Power: ${pu.kind[0].toUpperCase()+pu.kind.slice(1)}`;
-            explode(pu.x, pu.y, pu.color, 12); beep(980,.06,'sine',.05); pu.r = 0;
-          }
-        }
-        state.powerUps = state.powerUps.filter(pu=>pu.r>0 && pu.y < H+20);
-
-        for(const e of state.enemies){
-          if(hitCircleRect(e.x, e.y, e.r, p.x - 24, p.y - 14, 48, 28)){
-            explode(e.x, e.y, e.color, 18); addShake(16); e.r = 0;
-            if(p.barrier>0){ p.barrier = Math.max(0, p.barrier - 2.5); beep(320,.08,'sawtooth',.05); }
-            else if(p.shield>0 || p.phase>0){ p.shield = Math.max(0, p.shield - 2.5); p.phase = Math.max(0, p.phase - 1); beep(300,.08,'sawtooth',.05); state.flash = Math.min(1, state.flash + 0.18); }
-            else { state.lives -= 1; beep(160,.12,'square',.06); state.flash = 1; if(state.lives <= 0){ finishRun(false); } }
-          }
-        }
-
-        const pw =
-          p.barrier>0   ? 'Barrera'     :
-          (p.shield>0 || p.phase>0) ? 'Escudo/Fase' :
-          p.burst>0     ? 'Ráfaga'      :
-          p.multi>1     ? `Multi x${p.multi}` :
-          (p.slowmo>0 || p.timewarp>0) ? 'Timewarp' :
-          p.magnet>0    ? 'Imán'        :
-          p.drone       ? 'Dron'        :
-          p.pierce>0    ? 'Perforante'  :
-          p.homing>0    ? 'Teledirigido':
-          p.ricochet>0  ? 'Rebote'      :
-          p.heal>0      ? 'Curación'    :
-          p.overdrive>0 ? 'Overdrive'   :
-          (p.vortex>0 || p.gravity>0) ? 'Gravedad' :
-          p.chain>0     ? 'Cadena'      :
-          p.charge>0    ? 'Carga'       :
-          p.teleport>0  ? 'Teleport'    :
-          p.nano>0      ? 'Nano-reparación' :
-          p.shock>0     ? 'Onda de choque'  : '—';
-        scoreEl.textContent = `Puntos: ${state.score}`;
-        livesEl.textContent = `Vidas: ${state.lives}`;
-        powerEl.textContent = `Power: ${pw}`;
-
-        checkLevelUp();
-
-        if(state.competitive && state.score >= state.target + 320){ finishRun(true); }
-      }
-
-      drawParts(dt);
-      for(const e of state.enemies) drawEnemy(e, state.tick);
-      for(const b of state.bullets) drawBullet(b);
-      for(const eb of state.enemyBullets) drawEnemyBullet(eb);
-      for(const pu of state.powerUps) drawPower(pu);
-      drawPlayerShip();
-
-      restoreCamera();
-      requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-
-    /* ==== Flujos UI + clics/touch asegurados ==== */
-    // Evita congelamiento: muestra el menú sí o sí, y oculta splash luego
-    document.addEventListener('DOMContentLoaded', ()=>{
-      try{
-        mainMenu.classList.remove('hidden');
-        setTimeout(()=>{
-          splash.classList.add('hidden');
-          updateMobileOrientationUI();
-        }, 1200);
-      }catch(e){
-        // En caso de error, que nunca bloquee:
-        mainMenu.classList.remove('hidden');
-        splash.classList.add('hidden');
-      }
-    });
-
-    // Bind genérico click + touch
-    function bindPress(el, fn){
-      el.addEventListener('click', fn);
-      el.addEventListener('touchstart', (e)=>{ e.preventDefault(); fn(); }, {passive:false});
-    }
-
-    // Botones menú
-    bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
-    bindPress(menuHow, ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
-    bindPress(menuScores, ()=> openScores());
-    bindPress(menuCompete, ()=> openComp());
-    bindPress(menuProfile, ()=> openProfile());
-    bindPress(menuSound, ()=> soundModal.classList.remove('hidden'));
-    bindPress(soundClose, ()=> soundModal.classList.add('hidden'));
-    bindPress(soundOn, ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
-    bindPress(soundOff, ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
-
-    // Overlay juego botones
-    bindPress(overlayResume, ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
-    bindPress(overlayRestart, ()=> startGame(state.competitive));
-    bindPress(overlayMenu, ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
-
-    /* ==== Puntuaciones: scroll y acciones ==== */
-    function openScores(){
-      const best = Number(localStorage.getItem(LS.best)||0);
-      const history = loadJSON(LS.history, []);
-      scoresSummary.innerHTML = `<div class="pill"><strong>Récord:</strong> ${best}</div><div class="pill"><strong>Partidas:</strong> ${history.length}</div>`;
-      scoresTableBody.innerHTML = history.map(h=>{
-        const d = new Date(h.date);
-        return `<tr><td>${d.toLocaleString()}</td><td>${h.score}</td><td>${h.level}</td></tr>`;
-      }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
-      scoresModal.classList.remove('hidden');
-      scoresScroll.scrollTop = 0;
-    }
-    bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
-    bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); openScores(); });
-    bindPress(scoresTop, ()=> scoresScroll.scrollTo({top:0, behavior:'smooth'}));
-    bindPress(scoresBottom, ()=> scoresScroll.scrollTo({top:scoresScroll.scrollHeight, behavior:'smooth'}));
-    enableDragScroll(scoresScroll);
-
-    /* ==== Competencia: abrir, scroll, paginación ==== */
-    async function openComp(){
-      compModal.classList.remove('hidden');
-      compPage = 1; compLastDoc = null; compCursorStack = [];
-      compPageEl.textContent = compPage;
-      await loadRankingFirstPage();
-      compScroll.scrollTop = 0;
-    }
-    bindPress(compClose, ()=> compModal.classList.add('hidden'));
-    bindPress(compShare, ()=> downloadRankingPNG());
-    bindPress(compUseProfile, ()=>{
-      if(!state.user){ alert('Crea tu perfil primero.'); return; }
-      compModal.classList.add('hidden');
-      startGame(true);
-    });
-    bindPress(compEnter, async ()=>{
-      const name = (compName.value||'').trim();
-      if(!name){ alert('Ingresa un usuario o usa tu perfil.'); return; }
-      if(!identityMatches(name)){ alert('La identidad está bloqueada por nombre + IP. Usa tu usuario registrado.'); return; }
-      await lockIdentity(name);
-      // Guarda inicial en Firestore
-      void saveUserToFirestore(name, 0, state.location.country, state.location.region);
-      compModal.classList.add('hidden');
-      startGame(true);
-    });
-
-    bindPress(compTop, ()=> compScroll.scrollTo({top:0, behavior:'smooth'}));
-    bindPress(compBottom, ()=> compScroll.scrollTo({top:compScroll.scrollHeight, behavior:'smooth'}));
-    enableDragScroll(compScroll);
-
-    bindPress(compNextPage, async ()=>{ await loadRankingPage(true); compScroll.scrollTop = 0; });
-    bindPress(compPrevPage, async ()=>{ await loadRankingPage(false); compScroll.scrollTop = 0; });
-
-    /* ==== Perfil ==== */
-    function openProfile(){
-      updateProfileUI();
-      profileModal.classList.remove('hidden');
-    }
-    bindPress(profileClose, ()=> profileModal.classList.add('hidden'));
-    bindPress(profileCreate, async ()=>{
-      const name = (profileNameInput.value||'').trim();
-      if(!name){ alert('Escribe un nombre de usuario.'); return; }
-      await lockIdentity(name);
-      void saveUserToFirestore(name, state.victories||0, state.location.country, state.location.region);
-      alert('Perfil guardado.');
-    });
-    bindPress(profileGear, ()=>{
-      settingsNameInput.value = state.user || '';
-      settingsModal.classList.remove('hidden');
-    });
-    bindPress(settingsCancel, ()=> settingsModal.classList.add('hidden'));
-    bindPress(settingsSave, async ()=>{
-      const newName = (settingsNameInput.value||'').trim();
-      if(!newName){ alert('Escribe un nombre de usuario.'); return; }
-      await lockIdentity(newName);
-      void saveUserToFirestore(newName, state.victories||0, state.location.country, state.location.region);
-      settingsModal.classList.add('hidden');
-      updateProfileUI();
-      alert('Perfil actualizado.');
-    });
-
-    /* ==== Sonido ==== */
-    const soundStored = loadJSON(LS.sound, {enabled:true});
-    soundEnabled = !!soundStored.enabled;
-
-    /* ==== Init identidad ==== */
-    initIdentity();
-
-    /* ==== Escape: cerrar overlays ==== */
-    window.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape'){
-        [howModal, scoresModal, compModal, profileModal, settingsModal, soundModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
-        if(!state.running) mainMenu.classList.remove('hidden');
-      }
-    });
   </script>
 </body>
 </html>
