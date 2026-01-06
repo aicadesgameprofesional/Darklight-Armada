@@ -35,9 +35,10 @@
 
     /* HUD */
     .hud{
-      position:absolute; inset:0; padding:14px; pointer-events:none;
+      position:absolute; inset:0; padding:14px;
       display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
       font-weight:600; text-shadow: 0 0 12px rgba(255,255,255,.12);
+      pointer-events:none; /* los botones no están en HUD; aquí solo info */
     }
     .hud .left, .hud .right {display:flex; flex-direction:column; gap:6px}
     .pill{
@@ -51,10 +52,10 @@
     .dot.power{background: var(--accent3)}
 
     /* Overlays base */
-    .overlay{position:absolute; inset:0; display:grid; place-items:center}
+    .overlay{position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto}
     .hidden{display:none}
 
-    /* Intro profesional (texto corregido con 'c' al final como pediste) */
+    /* Intro profesional */
     .splash{ background:#000; overflow:hidden; }
     .splashInner{
       text-align:center; color:#9fd0ff;
@@ -100,6 +101,7 @@
       appearance:none; border:none; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;
       background: linear-gradient(180deg, #6cf, #3aa9ff); color:#00101a;
       box-shadow: 0 10px 20px rgba(60,160,255,.35); transition: transform .08s ease, filter .2s ease;
+      user-select:none;
     }
     .btn:hover{transform: translateY(-1px)}
     .btn.secondary{background: linear-gradient(180deg, #f06, #ff4a9a); color:white}
@@ -184,6 +186,7 @@
     /* Controles táctiles (solo en dispositivos táctiles) */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
+      pointer-events:auto;
     }
     .stick{
       width:140px; height:140px; border-radius:50%; background: rgba(20,28,50,.35);
@@ -200,15 +203,25 @@
       user-select:none; touch-action:none;
     }
 
+    /* Overlay “gira tu dispositivo” para móviles en vertical */
+    .rotateOverlay{
+      position:absolute; inset:0; display:none; place-items:center;
+      background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 20;
+    }
+    .rotateOverlay .card{max-width: 560px}
+    @media (orientation: portrait){
+      .frame[data-mobile="true"] .rotateOverlay{ display:grid; }
+    }
+
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
   </style>
 </head>
 <body>
-  <div class="frame" id="frame">
+  <div class="frame" id="frame" data-mobile="false">
     <canvas id="game"></canvas>
 
     <!-- HUD -->
-    <div class="hud">
+    <div class="hud" aria-hidden="true">
       <div class="left">
         <div class="pill"><span class="dot score"></span> <span id="score">Puntos: 0</span></div>
         <div class="pill"><span class="dot lives"></span> <span id="lives">Vidas: 3</span></div>
@@ -227,11 +240,11 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional (con 'c' como indicaste) -->
+    <!-- Intro profesional (© como pediste) -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
         <h1>Aicade Games</h1>
-        <p>Todos los derechos reservados c 2026, RD</p>
+        <p>Todos los derechos reservados © 2026, RD</p>
       </div>
     </div>
 
@@ -241,14 +254,14 @@
         <div class="titlePro" style="font-size: clamp(28px, 5vw, 56px)">Darklight Armada: Neon Fury</div>
         <h2>Menú principal</h2>
         <div class="row">
-          <button class="btn" id="menuPlay">Jugar</button>
-          <button class="btn ghost" id="menuHow">Cómo jugar</button>
-          <button class="btn secondary" id="menuScores">Puntos</button>
-          <button class="btn warn" id="menuCompete">Competencia</button>
-          <button class="btn ghost" id="menuProfile">Perfil</button>
-          <button class="btn ghost" id="menuSound">Sonidos</button>
+          <button class="btn" id="menuPlay" type="button">Jugar</button>
+          <button class="btn ghost" id="menuHow" type="button">Cómo jugar</button>
+          <button class="btn secondary" id="menuScores" type="button">Puntos</button>
+          <button class="btn warn" id="menuCompete" type="button">Competencia</button>
+          <button class="btn ghost" id="menuProfile" type="button">Perfil</button>
+          <button class="btn ghost" id="menuSound" type="button">Sonidos</button>
         </div>
-        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">PC: Flechas o A/D para moverte, Espacio para disparar, P pausa. Móvil: Joystick + FIRE.</p>
+        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">PC: Flechas o A/D, Espacio dispara, P pausa. Móvil: Joystick + FIRE.</p>
       </div>
     </div>
 
@@ -256,11 +269,11 @@
     <div id="gameOverlay" class="overlay hidden">
       <div class="card">
         <h1 id="overlayTitle">Pausa</h1>
-        <p id="overlayText">Pulsa P o toca para continuar.</p>
+        <p id="overlayText">Pulsa P, clic o toca para continuar.</p>
         <div class="row">
-          <button class="btn" id="overlayResume">Continuar</button>
-          <button class="btn secondary" id="overlayRestart">Reiniciar</button>
-          <button class="btn ghost" id="overlayMenu">Menú</button>
+          <button class="btn" id="overlayResume" type="button">Continuar</button>
+          <button class="btn secondary" id="overlayRestart" type="button">Reiniciar</button>
+          <button class="btn ghost" id="overlayMenu" type="button">Menú</button>
         </div>
       </div>
     </div>
@@ -287,9 +300,9 @@
           </div>
         </div>
         <div class="row" style="justify-content:space-between">
-          <button class="btn ghost" id="howScrollTop">Arriba</button>
-          <button class="btn ghost" id="howScrollBottom">Abajo</button>
-          <button class="btn" id="howClose">Cerrar</button>
+          <button class="btn ghost" id="howScrollTop" type="button">Arriba</button>
+          <button class="btn ghost" id="howScrollBottom" type="button">Abajo</button>
+          <button class="btn" id="howClose" type="button">Cerrar</button>
         </div>
       </div>
     </div>
@@ -300,11 +313,11 @@
         <h1>Sonidos</h1>
         <p>Activa o desactiva efectos de sonido.</p>
         <div class="row">
-          <button class="btn" id="soundOn">Encender</button>
-          <button class="btn ghost" id="soundOff">Apagar</button>
+          <button class="btn" id="soundOn" type="button">Encender</button>
+          <button class="btn ghost" id="soundOff" type="button">Apagar</button>
         </div>
         <div class="row">
-          <button class="btn" id="soundClose">Cerrar</button>
+          <button class="btn" id="soundClose" type="button">Cerrar</button>
         </div>
       </div>
     </div>
@@ -320,8 +333,8 @@
           <tbody></tbody>
         </table>
         <div class="row">
-          <button class="btn" id="scoresClose">Cerrar</button>
-          <button class="btn ghost" id="scoresClear">Limpiar historial</button>
+          <button class="btn" id="scoresClose" type="button">Cerrar</button>
+          <button class="btn ghost" id="scoresClear" type="button">Limpiar historial</button>
         </div>
       </div>
     </div>
@@ -333,8 +346,8 @@
         <p>Entra con tu perfil y compite. El ranking muestra país y región.</p>
         <div class="row" style="gap:8px">
           <input id="compName" type="text" placeholder="Tu usuario (si no usarás perfil)" class="input" style="width:60%">
-          <button class="btn" id="compUseProfile">Usar perfil</button>
-          <button class="btn" id="compEnter">Entrar</button>
+          <button class="btn" id="compUseProfile" type="button">Usar perfil</button>
+          <button class="btn" id="compEnter" type="button">Entrar</button>
         </div>
         <h2 style="margin-top:10px">Ranking</h2>
         <table id="compTable">
@@ -342,8 +355,8 @@
           <tbody></tbody>
         </table>
         <div class="row">
-          <button class="btn" id="compClose">Cerrar</button>
-          <button class="btn ghost" id="compShare">Compartir ranking (PNG)</button>
+          <button class="btn" id="compClose" type="button">Cerrar</button>
+          <button class="btn ghost" id="compShare" type="button">Compartir ranking (PNG)</button>
         </div>
       </div>
     </div>
@@ -365,12 +378,12 @@
         <!-- Crear perfil (solo si no existe) -->
         <div id="profileCreateRow" class="row" style="justify-content:center; margin-top:10px">
           <input id="profileNameInput" type="text" placeholder="Crear usuario" class="input">
-          <button class="btn" id="profileCreate">Crear/Guardar perfil</button>
+          <button class="btn" id="profileCreate" type="button">Crear/Guardar perfil</button>
         </div>
 
         <!-- Navegador de naves -->
         <div class="shipSlider">
-          <div id="arrowLeft" class="arrow">◀</div>
+          <div id="arrowLeft" class="arrow" role="button" tabindex="0">◀</div>
           <div class="shipCard" id="shipCard">
             <div id="lockOverlay" class="lockOverlay hidden">
               BLOQUEADA
@@ -380,11 +393,11 @@
             <canvas id="shipPreview" width="480" height="180" style="width:100%; border-radius:12px;"></canvas>
             <div style="margin-top:8px; text-align:center; color:#cfe6ff" id="shipTitle">Nave: —</div>
           </div>
-          <div id="arrowRight" class="arrow">▶</div>
+          <div id="arrowRight" class="arrow" role="button" tabindex="0">▶</div>
         </div>
 
         <div class="row" style="justify-content:center; margin-top:10px">
-          <button class="btn" id="profileClose">Cerrar</button>
+          <button class="btn" id="profileClose" type="button">Cerrar</button>
         </div>
       </div>
     </div>
@@ -397,8 +410,8 @@
           <input id="settingsNameInput" type="text" placeholder="Nuevo nombre de usuario" class="input">
         </div>
         <div class="row" style="gap:8px">
-          <button class="btn" id="settingsSave">Guardar</button>
-          <button class="btn ghost" id="settingsCancel">Cancelar</button>
+          <button class="btn" id="settingsSave" type="button">Guardar</button>
+          <button class="btn ghost" id="settingsCancel" type="button">Cancelar</button>
         </div>
         <p style="margin-top:10px">Tu cuenta permanece guardada aunque cierres o abras el juego.</p>
       </div>
@@ -409,12 +422,23 @@
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
       <div class="fire" id="fireBtn">FIRE</div>
     </div>
+
+    <!-- Overlay rotación -->
+    <div id="rotateOverlay" class="rotateOverlay">
+      <div class="card">
+        <h1>Gira tu dispositivo</h1>
+        <p>Para jugar mejor, usa orientación horizontal. El juego se adapta automáticamente.</p>
+        <div class="row">
+          <button class="btn" id="tryLock" type="button">Intentar ajustar a horizontal</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     /* ==== Config backend opcional ==== */
-    const BACKEND_API = ''; // 'https://tu-backend.com/ranking' (REST JSON global)
-    const BACKEND_WS  = ''; // 'wss://tu-backend.com/ws' (WebSocket logros/chat)
+    const BACKEND_API = ''; // 'https://tu-backend.com/ranking'
+    const BACKEND_WS  = ''; // 'wss://tu-backend.com/ws'
 
     /* ==== Utils ==== */
     const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
@@ -427,6 +451,7 @@
       return String.fromCodePoint(...[...code].map(c=>127397 + c.charCodeAt()));
     };
     const isTouchDevice = ()=> ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    const isMobileUA = ()=> /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     /* ==== DOM refs ==== */
     const frame = document.getElementById('frame');
@@ -519,7 +544,10 @@
     const knob = document.getElementById('knob');
     const fireBtn = document.getElementById('fireBtn');
 
-    /* ==== Estado de sonido (creación diferida del AudioContext para evitar bloqueo de autoplay) ==== */
+    const rotateOverlay = document.getElementById('rotateOverlay');
+    const tryLockBtn = document.getElementById('tryLock');
+
+    /* ==== Audio ==== */
     let soundEnabled = true;
     const LS = {
       best: 'darklight_best',
@@ -551,7 +579,7 @@
     const loadJSON = (k, def)=>{ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(def)); }catch{ return def; } };
     const saveJSON = (k, v)=> localStorage.setItem(k, JSON.stringify(v));
 
-    /* ==== Rango/Rankings ==== */
+    /* ==== Rango ==== */
     const rankTiers = [
       {name:'Bronce', tag:'BR', min:0},
       {name:'Plata', tag:'PL', min:3},
@@ -701,6 +729,7 @@
       input:{left:false,right:false,shoot:false},
       location:{countryCode:'DO', country:'República Dominicana', region:'—'}
     };
+
     /* ==== Tamaño canvas ==== */
     let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
     function resize(){
@@ -711,7 +740,40 @@
       shipPreview.width = Math.floor(rect.width*0.6); shipPreview.height = 180;
       state.player.x = W/2; state.player.y = H-90;
     }
+
+    /* ==== Orientación móvil (landscape) ==== */
+    async function tryLockLandscape(){
+      if(screen.orientation && screen.orientation.lock){
+        try{
+          await screen.orientation.lock('landscape');
+          rotateOverlay.classList.add('hidden');
+        }catch(e){
+          // Si falla, mostramos overlay (CSS ya lo hace en portrait)
+        }
+      }
+    }
+    function updateMobileOrientationUI(){
+      const mobile = isMobileUA() || isTouchDevice();
+      frame.dataset.mobile = mobile ? 'true' : 'false';
+      // Si está en portrait y es móvil, mostramos overlay (CSS media query lo activa)
+      // Intento de lock automático al cargar (algunos navegadores requieren gesto)
+      if(mobile && screen.orientation){
+        if(screen.orientation.type.includes('portrait')){
+          rotateOverlay.classList.remove('hidden');
+        }else{
+          rotateOverlay.classList.add('hidden');
+        }
+      }
+    }
+    window.addEventListener('orientationchange', ()=>{ updateMobileOrientationUI(); resize(); });
+    tryLockBtn.addEventListener('click', ()=>{ ensureAudio(); tryLockLandscape(); });
+
     resize(); window.addEventListener('resize', resize);
+
+    /* ==== Audio entrada (clic/touch/teclado) ==== */
+    ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+      window.addEventListener(evt, ensureAudio, {once:true, passive:true});
+    });
 
     /* ==== Nave y variantes ==== */
     const shipPalette = { BR:'#7a7676', PL:'#9fb3c9', OR:'#ffd166', OF:'#6cf', ES:'#f06', GU:'#9f6', MA:'#c86cff', KR:'#39a9ff', LV:'#ff8ab4', LG:'#00e6b3' };
@@ -803,15 +865,15 @@
       localStorage.setItem(LS.shipIndex, String(shipIndex));
       renderShipSlider();
     }
-    arrowLeft.onclick = ()=> changeShip(-1);
-    arrowRight.onclick = ()=> changeShip(1);
-    shipCard.onclick = ()=>{
+    arrowLeft.addEventListener('click', ()=> changeShip(-1));
+    arrowRight.addEventListener('click', ()=> changeShip(1));
+    shipCard.addEventListener('click', ()=>{
       const tag = shipOrder[shipIndex];
       const currentTag = getRank(state.victories||0).tag;
       const unlocked = rankIndex(tag) <= rankIndex(currentTag);
       if(!unlocked){ pushToast(`BLOQUEADA — alcanza ${rankTiers.find(t=>t.tag===tag).name} para desbloquear`); return; }
       pushToast(tag===currentTag ? 'Tu nave actual está lista.' : 'Nave desbloqueada (se asigna al alcanzar el rango).');
-    };
+    });
 
     /* ==== Help icons ==== */
     const powersList = [
@@ -891,8 +953,9 @@
     howScroll.addEventListener('pointerdown', (e)=>{ dragging=true; howScroll.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=howScroll.scrollTop; howScroll.setPointerCapture(e.pointerId); });
     howScroll.addEventListener('pointermove', (e)=>{ if(!dragging) return; howScroll.scrollTop = startScrollTop - (e.clientY - dragStartY); });
     howScroll.addEventListener('pointerup', ()=>{ dragging=false; howScroll.classList.remove('dragging'); });
-    howScrollTop.onclick = ()=> howScroll.scrollTo({top:0, behavior:'smooth'});
-    howScrollBottom.onclick = ()=> howScroll.scrollTo({top:howScroll.scrollHeight, behavior:'smooth'});
+    howScrollTop.addEventListener('click', ()=> howScroll.scrollTo({top:0, behavior:'smooth'}));
+    howScrollBottom.addEventListener('click', ()=> howScroll.scrollTo({top:howScroll.scrollHeight, behavior:'smooth'}));
+    howClose.addEventListener('click', ()=> howModal.classList.add('hidden'));
 
     /* ==== Ranking render ==== */
     function renderRanking(usersObj){
@@ -906,7 +969,7 @@
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* ==== INPUT: teclado (PC) + táctil (móvil) ==== */
+    /* ==== INPUT: teclado (PC) + táctil (móvil) + mouse ==== */
     const keys = new Set();
     function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
     function enableKeyboard(){
@@ -957,6 +1020,10 @@
       fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
       fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
     }
+    // Mouse: disparo con clic sobre el canvas
+    canvas.addEventListener('mousedown', (e)=>{ if(state.running){ ensureAudio(); state.input.shoot = true; } });
+    window.addEventListener('mouseup', ()=>{ state.input.shoot = false; });
+
     if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
 
     /* ==== Overlays ==== */
@@ -1179,7 +1246,7 @@
     function togglePause(){
       if(!state.running) return;
       state.paused = !state.paused;
-      if(state.paused){ showOverlay('Pausa','Pulsa P o toca para continuar.'); } else { hideOverlay(); }
+      if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); }
     }
     function finishRun(win=false){
       state.running = false;
@@ -1360,19 +1427,12 @@
     }
     requestAnimationFrame(loop);
 
-    /* ==== Flujos UI ==== */
-    // Quitar splash y mostrar menú
-    setTimeout(()=>{ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); }, 1200);
+    /* ==== Flujos UI + clics mouse asegurados ==== */
+    setTimeout(()=>{ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); updateMobileOrientationUI(); }, 1200);
 
-    // Activar audio en primer gesto
-    ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
-      window.addEventListener(evt, ensureAudio, {once:true, passive:true});
-    });
-
-    // Menú principal
+    // Botones menú
     menuPlay.addEventListener('click', ()=> { ensureAudio(); startGame(false); });
     menuHow.addEventListener('click', ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
-    howClose.addEventListener('click', ()=> howModal.classList.add('hidden'));
     menuScores.addEventListener('click', ()=> openScores());
     menuCompete.addEventListener('click', ()=> openComp());
     menuProfile.addEventListener('click', ()=> openProfile());
@@ -1470,8 +1530,7 @@
     initIdentity();
     initChat();
 
-    /* ==== Fix: asegurar que botones siempre funcionen, incluso si overlays quedan abiertos ==== */
-    // Cerrar cualquier overlay si se presiona Escape
+    /* ==== Escape: cerrar overlays ==== */
     window.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape'){
         [howModal, scoresModal, compModal, profileModal, settingsModal, soundModal, gameOverlay].forEach(el=> el.classList.add('hidden'));
