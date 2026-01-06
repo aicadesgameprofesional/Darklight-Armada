@@ -38,7 +38,7 @@
       position:absolute; inset:0; padding:14px;
       display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
       font-weight:600; text-shadow: 0 0 12px rgba(255,255,255,.12);
-      pointer-events:none; /* los botones no están en HUD; aquí solo info */
+      pointer-events:none;
     }
     .hud .left, .hud .right {display:flex; flex-direction:column; gap:6px}
     .pill{
@@ -240,7 +240,7 @@
       <div id="chatMsgs"></div>
     </div>
 
-    <!-- Intro profesional (© como pediste) -->
+    <!-- Intro profesional (©) -->
     <div id="splash" class="overlay splash scanlines">
       <div class="splashInner">
         <h1>Aicade Games</h1>
@@ -261,7 +261,9 @@
           <button class="btn ghost" id="menuProfile" type="button">Perfil</button>
           <button class="btn ghost" id="menuSound" type="button">Sonidos</button>
         </div>
-        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">PC: Flechas o A/D, Espacio dispara, P pausa. Móvil: Joystick + FIRE.</p>
+        <p style="margin-top:12px; font-size:.9em; color:#cfd6ea">
+          PC: Flechas o A/D, Espacio dispara, P pausa. Mouse: clic arriba dispara; clic izquierda/derecha mueve. Móvil: Joystick + FIRE.
+        </p>
       </div>
     </div>
 
@@ -287,7 +289,8 @@
             <div>
               <h2>Controles</h2>
               <ul>
-                <li><strong>PC:</strong> Flechas o A/D para moverte. Espacio para disparar. P para pausar.</li>
+                <li><strong>Teclado:</strong> Flechas o A/D para moverte. Espacio dispara. P pausa.</li>
+                <li><strong>Mouse:</strong> Clic arriba dispara; clic izquierda/derecha mueve; mantener clic mantiene la acción.</li>
                 <li><strong>Móvil/Tablet:</strong> Joystick para moverte y botón FIRE para disparar.</li>
               </ul>
               <h2>Objetivo</h2>
@@ -375,13 +378,11 @@
           <div id="profileGear" class="gear hidden">⚙ Configurar</div>
         </div>
 
-        <!-- Crear perfil (solo si no existe) -->
         <div id="profileCreateRow" class="row" style="justify-content:center; margin-top:10px">
           <input id="profileNameInput" type="text" placeholder="Crear usuario" class="input">
           <button class="btn" id="profileCreate" type="button">Crear/Guardar perfil</button>
         </div>
 
-        <!-- Navegador de naves -->
         <div class="shipSlider">
           <div id="arrowLeft" class="arrow" role="button" tabindex="0">◀</div>
           <div class="shipCard" id="shipCard">
@@ -417,7 +418,7 @@
       </div>
     </div>
 
-    <!-- Controles táctiles (solo si es táctil; oculto por defecto en PC) -->
+    <!-- Controles táctiles -->
     <div class="controls" id="touchControls" hidden>
       <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
       <div class="fire" id="fireBtn">FIRE</div>
@@ -748,15 +749,13 @@
           await screen.orientation.lock('landscape');
           rotateOverlay.classList.add('hidden');
         }catch(e){
-          // Si falla, mostramos overlay (CSS ya lo hace en portrait)
+          // algunos navegadores requieren gesto: overlay sigue activo en portrait
         }
       }
     }
     function updateMobileOrientationUI(){
       const mobile = isMobileUA() || isTouchDevice();
       frame.dataset.mobile = mobile ? 'true' : 'false';
-      // Si está en portrait y es móvil, mostramos overlay (CSS media query lo activa)
-      // Intento de lock automático al cargar (algunos navegadores requieren gesto)
       if(mobile && screen.orientation){
         if(screen.orientation.type.includes('portrait')){
           rotateOverlay.classList.remove('hidden');
@@ -969,9 +968,10 @@
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
-    /* ==== INPUT: teclado (PC) + táctil (móvil) + mouse ==== */
+    /* ==== INPUT: teclado + táctil + mouse ==== */
     const keys = new Set();
     function isTypingTarget(e){ return e.target && (e.target.tagName==='INPUT' || e.target.isContentEditable); }
+
     function enableKeyboard(){
       window.addEventListener('keydown', (e)=>{
         if(!isTypingTarget(e) && ['ArrowLeft','ArrowRight','a','d','A','D',' '].includes(e.key)) e.preventDefault();
@@ -991,6 +991,7 @@
         if(e.key === ' ') state.input.shoot = false;
       });
     }
+
     function enableTouch(){
       touchControls.hidden = false;
       let stickDrag = false, stickOrigin = {x:0,y:0};
@@ -1020,9 +1021,34 @@
       fireBtn.addEventListener('pointerdown', ()=>{ ensureAudio(); state.input.shoot = true; });
       fireBtn.addEventListener('pointerup',   ()=>{ state.input.shoot = false; });
     }
-    // Mouse: disparo con clic sobre el canvas
-    canvas.addEventListener('mousedown', (e)=>{ if(state.running){ ensureAudio(); state.input.shoot = true; } });
-    window.addEventListener('mouseup', ()=>{ state.input.shoot = false; });
+
+    /* ==== Mouse: control completo por clic y arrastre ==== */
+    let mouseDown = false;
+    function updateMouseControl(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const leftSide = x < rect.width/2;
+      const rightSide = x >= rect.width/2;
+      state.input.left = leftSide && mouseDown;
+      state.input.right = rightSide && mouseDown;
+      state.input.shoot = mouseDown && (y < rect.height/2);
+    }
+    canvas.addEventListener('mousedown', (e)=>{
+      ensureAudio();
+      mouseDown = true;
+      updateMouseControl(e);
+    });
+    window.addEventListener('mousemove', (e)=>{
+      if(!mouseDown) return;
+      updateMouseControl(e);
+    });
+    window.addEventListener('mouseup', ()=>{
+      mouseDown = false;
+      state.input.left = false;
+      state.input.right = false;
+      state.input.shoot = false;
+    });
 
     if(isTouchDevice()){ enableTouch(); } else { enableKeyboard(); }
 
@@ -1037,7 +1063,12 @@
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
 
-    /* ==== Stars ==== */
+    /* Permitir cerrar overlay con clic/tap en cualquier parte de la tarjeta */
+    gameOverlay.addEventListener('click', ()=>{
+      if(state.running){ state.paused = false; hideOverlay(); }
+    });
+
+    /* ==== Fondo de estrellas ==== */
     function spawnStars(){
       state.stars = [];
       const layers = [0.25, 0.6, 1];
@@ -1441,7 +1472,7 @@
     soundOn.addEventListener('click', ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
     soundOff.addEventListener('click', ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
 
-    // Overlay juego
+    // Overlay juego botones
     overlayResume.addEventListener('click', ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
     overlayRestart.addEventListener('click', ()=> startGame(state.competitive));
     overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
