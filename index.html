@@ -51,7 +51,7 @@
     .dot.lives{background: var(--accent2)}
     .dot.power{background: var(--accent3)}
 
-    /* Overlays base (si está visible, captura eventos en su interior) */
+    /* Overlays base */
     .overlay{
       position:absolute; inset:0; display:grid; place-items:center;
       pointer-events:auto; z-index: 10;
@@ -124,6 +124,16 @@
     th, td{padding:8px 10px; border-bottom:1px solid rgba(110,160,255,.22); text-align:left}
     th{color:#9fd0ff}
 
+    /* Scroll areas reutilizables */
+    .scrollArea{
+      max-height: 64vh; overflow:auto; border-radius:12px; border:1px solid rgba(110,160,255,.25);
+      background: rgba(10,14,26,.45); padding:12px; position:relative; cursor:grab;
+    }
+    .scrollArea.dragging{cursor:grabbing}
+    .scrollControls{
+      display:flex; justify-content:space-between; gap:10px; margin-top:10px;
+    }
+
     /* Chat toast */
     .chatToast{
       position:absolute; left:12px; bottom:12px; max-width: 44%;
@@ -161,35 +171,6 @@
       border:1px solid rgba(160,255,200,.6); color:#e6fff2; padding:4px 8px; border-radius:999px; font-size:12px;
     }
 
-    /* Help modal scrollable */
-    .scrollArea{
-      max-height: 64vh; overflow:auto; border-radius:12px; border:1px solid rgba(110,160,255,.25);
-      background: rgba(10,14,26,.45); padding:12px; position:relative; cursor:grab;
-    }
-    .scrollArea.dragging{cursor:grabbing}
-
-    /* Help icons grid */
-    .iconGrid{
-      display:grid; grid-template-columns: repeat(4, minmax(160px,1fr)); gap:12px; margin-top:14px
-    }
-    .iconCard{
-      display:flex; gap:10px; align-items:center; padding:8px; border-radius:10px; background: rgba(20,28,50,.35);
-      border:1px solid var(--border);
-    }
-    .iconCanvas{ width:44px; height:44px; border-radius:8px; background: rgba(10,14,26,.6)}
-
-    /* Gear + country flag */
-    .gear{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
-      background: rgba(20,28,50,.35); border:1px solid var(--border); color:#dfe6fb; cursor:pointer; }
-    .flag{ font-size:18px; margin-left:6px }
-
-    /* Settings modal */
-    .settingsModal .row { justify-content:center }
-    .input{
-      padding:10px; border-radius:10px; border:1px solid var(--border);
-      background:rgba(20,28,50,.35); color:#dff7ff; width: 60%;
-    }
-
     /* Controles táctiles (solo en dispositivos táctiles) */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
@@ -210,13 +191,12 @@
       user-select:none; touch-action:none;
     }
 
-    /* Overlay “gira tu dispositivo” para móviles en vertical */
+    /* Overlay “gira tu dispositivo” */
     .rotateOverlay{
       position:absolute; inset:0; display:none; place-items:center;
       background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30;
     }
     .rotateOverlay .card{max-width: 560px}
-    /* No bloquear jamás en desktop/no-móvil */
     .frame[data-mobile="false"] .rotateOverlay{ display:none !important; pointer-events:none !important; }
 
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
@@ -308,7 +288,7 @@
             </div>
           </div>
         </div>
-        <div class="row" style="justify-content:space-between">
+        <div class="scrollControls">
           <button class="btn ghost" id="howScrollTop" type="button">Arriba</button>
           <button class="btn ghost" id="howScrollBottom" type="button">Abajo</button>
           <button class="btn" id="howClose" type="button">Cerrar</button>
@@ -331,24 +311,28 @@
       </div>
     </div>
 
-    <!-- Modal de puntuaciones -->
+    <!-- Modal de puntuaciones con scroll -->
     <div id="scoresModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Puntuaciones</h1>
         <p>Récord local y últimas partidas.</p>
         <div id="scoresSummary" class="row" style="justify-content:space-between"></div>
-        <table id="scoresTable">
-          <thead><tr><th>Fecha</th><th>Puntos</th><th>Nivel</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <div class="row">
+        <div class="scrollArea" id="scoresScroll">
+          <table id="scoresTable">
+            <thead><tr><th>Fecha</th><th>Puntos</th><th>Nivel</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="scrollControls">
+          <button class="btn ghost" id="scoresTop" type="button">Arriba</button>
+          <button class="btn ghost" id="scoresBottom" type="button">Abajo</button>
           <button class="btn" id="scoresClose" type="button">Cerrar</button>
           <button class="btn ghost" id="scoresClear" type="button">Limpiar historial</button>
         </div>
       </div>
     </div>
 
-    <!-- Modal de competencia -->
+    <!-- Modal de competencia con scroll + paginación -->
     <div id="compModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Competencia</h1>
@@ -359,13 +343,26 @@
           <button class="btn" id="compEnter" type="button">Entrar</button>
         </div>
         <h2 style="margin-top:10px">Ranking</h2>
-        <table id="compTable">
-          <thead><tr><th>Usuario</th><th>Victorias</th><th>Rango</th><th>Tag</th><th>País</th><th>Región</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <div class="row">
-          <button class="btn" id="compClose" type="button">Cerrar</button>
-          <button class="btn ghost" id="compShare" type="button">Compartir ranking (PNG)</button>
+        <div class="scrollArea" id="compScroll">
+          <table id="compTable">
+            <thead><tr><th>Usuario</th><th>Victorias</th><th>Rango</th><th>Tag</th><th>País</th><th>Región</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="scrollControls" style="flex-wrap:wrap">
+          <div style="display:flex; gap:8px">
+            <button class="btn ghost" id="compTop" type="button">Arriba</button>
+            <button class="btn ghost" id="compBottom" type="button">Abajo</button>
+          </div>
+          <div style="display:flex; gap:8px">
+            <button class="btn ghost" id="compPrevPage" type="button">Anterior</button>
+            <button class="btn ghost" id="compNextPage" type="button">Siguiente</button>
+            <div class="pill"><strong>Página:</strong> <span id="compPage">1</span></div>
+          </div>
+          <div style="display:flex; gap:8px">
+            <button class="btn" id="compClose" type="button">Cerrar</button>
+            <button class="btn ghost" id="compShare" type="button">Compartir ranking (PNG)</button>
+          </div>
         </div>
       </div>
     </div>
@@ -442,10 +439,25 @@
     </div>
   </div>
 
-  <script>
-    /* ==== Config backend opcional ==== */
-    const BACKEND_API = ''; // 'https://tu-backend.com/ranking'
-    const BACKEND_WS  = ''; // 'wss://tu-backend.com/ws'
+  <!-- Firebase SDK y Firestore -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getFirestore, doc, setDoc, getDoc,
+      collection, query, orderBy, limit, startAfter, getDocs, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBWqJI7OKZcEjN2CeTZxPi8pWzo8rBMIkI",
+      authDomain: "nearmemarketplace-ce82b.firebaseapp.com",
+      projectId: "nearmemarketplace-ce82b",
+      storageBucket: "nearmemarketplace-ce82b.firebasestorage.app",
+      messagingSenderId: "711845990024",
+      appId: "1:711845990024:web:7948ad5e5606765514d93d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     /* ==== Utils ==== */
     const clamp = (v,min,max)=>Math.max(min, Math.min(max, v));
@@ -458,7 +470,7 @@
       return String.fromCodePoint(...[...code].map(c=>127397 + c.charCodeAt()));
     };
     const isMobileUA = ()=> /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (Math.min(screen.width, screen.height) < 768);
-    const isTouchDevice = ()=> isMobileUA(); // estrictamente móvil
+    const isTouchDevice = ()=> isMobileUA();
 
     /* ==== DOM refs ==== */
     const frame = document.getElementById('frame');
@@ -502,6 +514,9 @@
     const scoresTableBody = document.querySelector('#scoresTable tbody');
     const scoresClose = document.getElementById('scoresClose');
     const scoresClear = document.getElementById('scoresClear');
+    const scoresScroll = document.getElementById('scoresScroll');
+    const scoresTop = document.getElementById('scoresTop');
+    const scoresBottom = document.getElementById('scoresBottom');
 
     const compModal = document.getElementById('compModal');
     const compName = document.getElementById('compName');
@@ -510,6 +525,12 @@
     const compClose = document.getElementById('compClose');
     const compShare = document.getElementById('compShare');
     const compTableBody = document.querySelector('#compTable tbody');
+    const compScroll = document.getElementById('compScroll');
+    const compTop = document.getElementById('compTop');
+    const compBottom = document.getElementById('compBottom');
+    const compPrevPage = document.getElementById('compPrevPage');
+    const compNextPage = document.getElementById('compNextPage');
+    const compPageEl = document.getElementById('compPage');
 
     const profileModal = document.getElementById('profileModal');
     const profileClose = document.getElementById('profileClose');
@@ -559,7 +580,7 @@
     const LS = {
       best: 'darklight_best',
       history: 'darklight_history',
-      users: 'darklight_comp_users',
+      users: 'darklight_comp_users', // ya no se usa para ranking global, solo caché opcional
       identity: 'darklight_identity',
       shipIndex: 'darklight_ship_index',
       sound: 'darklight_sound',
@@ -653,32 +674,87 @@
       });
     }
 
-    /* ==== Backend ranking ==== */
-    async function loadRankingFromBackend(){
-      if(!BACKEND_API) return null;
-      try{ const r = await fetch(BACKEND_API); return await r.json(); }catch{ return null; }
-    }
-    async function saveRankingToBackend(users){
-      if(!BACKEND_API) return false;
-      try{ await fetch(BACKEND_API, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(users)}); return true; }
-      catch{ return false; }
+    /* ==== Firestore: ranking compartido ==== */
+    const USERS_COLLECTION = "users";
+    async function saveUserToFirestore(user, victories, country, region){
+      try{
+        await setDoc(doc(db, USERS_COLLECTION, user), {
+          victories: Number(victories||0),
+          country: country || '—',
+          region: region || '—',
+          updated: new Date().toISOString()
+        }, { merge: true });
+        return true;
+      }catch(e){
+        console.warn('saveUserToFirestore error', e);
+        return false;
+      }
     }
 
-    /* ==== WebSocket chat ==== */
-    let ws = null;
-    function initChat(){
-      if(!BACKEND_WS) return;
-      ws = new WebSocket(BACKEND_WS);
-      ws.onopen = ()=> pushToast('Conectado al chat de logros.');
-      ws.onmessage = (ev)=>{
-        try{
-          const msg = JSON.parse(ev.data);
-          if(msg.type==='achievement') pushToast(`${msg.user} ${msg.text}`);
-          if(msg.type==='broadcast') pushToast(msg.text);
-        }catch{}
-      };
-      ws.onclose = ()=> pushToast('Desconectado del chat.');
+    // Paginación Firestore
+    let compPage = 1;
+    let compPageSize = 200;
+    let compLastDoc = null;
+    let compCursorStack = []; // para volver atrás
+
+    async function loadRankingPage(next=true){
+      try{
+        let q;
+        if(next){
+          if(compLastDoc){
+            q = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), startAfter(compLastDoc), limit(compPageSize));
+          }else{
+            q = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+          }
+          const snap = await getDocs(q);
+          const users = [];
+          snap.forEach(d=> users.push({ u: d.id, ...d.data() }));
+          renderRanking(users);
+          if(users.length>0){
+            compCursorStack.push(compLastDoc);
+            compLastDoc = snap.docs[snap.docs.length-1];
+            compPage += 1;
+            compPageEl.textContent = compPage;
+          }
+        }else{
+          // anterior
+          if(compCursorStack.length>1){
+            compCursorStack.pop(); // quita actual
+            const prevCursor = compCursorStack[compCursorStack.length-1];
+            const qPrev = prevCursor
+              ? query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), startAfter(prevCursor), limit(compPageSize))
+              : query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+            const snapPrev = await getDocs(qPrev);
+            const users = [];
+            snapPrev.forEach(d=> users.push({ u: d.id, ...d.data() }));
+            renderRanking(users);
+            compLastDoc = snapPrev.docs[snapPrev.docs.length-1] || null;
+            compPage = Math.max(1, compPage-1);
+            compPageEl.textContent = compPage;
+          }else{
+            // volver a la primera página
+            compLastDoc = null; compCursorStack = [];
+            const qFirst = query(collection(db, USERS_COLLECTION), orderBy('victories','desc'), limit(compPageSize));
+            const snapFirst = await getDocs(qFirst);
+            const users = [];
+            snapFirst.forEach(d=> users.push({ u: d.id, ...d.data() }));
+            renderRanking(users);
+            compLastDoc = snapFirst.docs[snapFirst.docs.length-1] || null;
+            compCursorStack.push(null);
+            compPage = 1; compPageEl.textContent = compPage;
+          }
+        }
+      }catch(e){
+        console.warn('loadRankingPage error', e);
+      }
     }
+
+    async function loadRankingFirstPage(){
+      compPage = 1; compLastDoc = null; compCursorStack = [];
+      await loadRankingPage(true);
+    }
+
+    /* ==== WebSocket chat (opcional, aquí desactivado) ==== */
     function pushToast(text){
       chatMsgs.innerHTML += `<div class="msg">${text}</div>`;
       chatToast.classList.remove('hidden');
@@ -686,7 +762,7 @@
       setTimeout(()=>{ chatToast.classList.remove('show'); setTimeout(()=>chatToast.classList.add('hidden'),300); }, 3200);
     }
     function sendAchievement(text){
-      if(ws && ws.readyState===1) ws.send(JSON.stringify({type:'achievement', user: state.user || 'Anónimo', text}));
+      // broadcasting opcional con WebSocket si deseas
       pushToast(`${state.user||'Tú'} ${text}`);
     }
 
@@ -754,9 +830,7 @@
         try{
           await screen.orientation.lock('landscape');
           rotateOverlay.classList.add('hidden');
-        }catch(e){
-          // overlay seguirá hasta que el usuario gire a landscape
-        }
+        }catch(e){}
       }
     }
     function updateMobileOrientationUI(){
@@ -954,24 +1028,23 @@
       return map[key]||'—';
     }
 
-    /* ==== Scroll help ==== */
-    let dragStartY = 0, startScrollTop = 0, dragging = false;
-    howScroll.addEventListener('pointerdown', (e)=>{ dragging=true; howScroll.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=howScroll.scrollTop; howScroll.setPointerCapture(e.pointerId); });
-    howScroll.addEventListener('pointermove', (e)=>{ if(!dragging) return; howScroll.scrollTop = startScrollTop - (e.clientY - dragStartY); });
-    howScroll.addEventListener('pointerup', ()=>{ dragging=false; howScroll.classList.remove('dragging'); });
-    howScrollTop.addEventListener('click', ()=> howScroll.scrollTo({top:0, behavior:'smooth'}));
-    howScrollBottom.addEventListener('click', ()=> howScroll.scrollTo({top:howScroll.scrollHeight, behavior:'smooth'}));
-    howClose.addEventListener('click', ()=> howModal.classList.add('hidden'));
+    /* ==== Scroll drag reutilizable ==== */
+    function enableDragScroll(area){
+      let dragStartY = 0, startScrollTop = 0, dragging = false;
+      area.addEventListener('pointerdown', (e)=>{ dragging=true; area.classList.add('dragging'); dragStartY=e.clientY; startScrollTop=area.scrollTop; area.setPointerCapture(e.pointerId); });
+      area.addEventListener('pointermove', (e)=>{ if(!dragging) return; area.scrollTop = startScrollTop - (e.clientY - dragStartY); });
+      area.addEventListener('pointerup', ()=>{ dragging=false; area.classList.remove('dragging'); });
+    }
+    enableDragScroll(howScroll);
 
     /* ==== Ranking render ==== */
-    function renderRanking(usersObj){
-      const users = usersObj || loadJSON(LS.users, {});
-      const rows = Object.entries(users)
-        .map(([u,info])=>({u, v: info.victories||0, r:getRank(info.victories||0), country:(info.country||'—'), region:(info.region||'—')}))
-        .sort((a,b)=>b.v - a.v)
-        .slice(0, 100)
-        .map(r=>`<tr><td>${r.u}</td><td>${r.v}</td><td>${r.r.name}</td><td>${r.r.tag}</td><td>${r.country}</td><td>${r.region}</td></tr>`)
-        .join('');
+    function renderRanking(users){
+      const rows = (users||[])
+        .map(info=>{
+          const victories = Number(info.victories||0);
+          const r = getRank(victories);
+          return `<tr><td>${info.u}</td><td>${victories}</td><td>${r.name}</td><td>${r.tag}</td><td>${info.country||'—'}</td><td>${info.region||'—'}</td></tr>`;
+        }).join('');
       compTableBody.innerHTML = rows || `<tr><td colspan="6">Sin jugadores aún</td></tr>`;
     }
 
@@ -1069,7 +1142,6 @@
       gameOverlay.classList.remove('hidden');
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
-
     gameOverlay.addEventListener('click', ()=>{
       if(state.running){ state.paused = false; hideOverlay(); }
     });
@@ -1243,10 +1315,7 @@
         beep(960,.12,'triangle',.06); setTimeout(()=>beep(720,.1,'sine',.05),120);
         if(state.competitive && state.user){
           state.victories += 1;
-          const users = loadJSON(LS.users, {}); users[state.user] = users[state.user] || {victories:0, ip: state.ip, country: state.location.country, region: state.location.region};
-          users[state.user].victories = state.victories; saveJSON(LS.users, users);
-          saveJSON(LS.identity, {user: state.user, ip: state.ip, hash: state.identityHash, victories: state.victories});
-          saveRankingToBackend(users);
+          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
           sendAchievement('subió de nivel y ganó 1 victoria');
         }
       }
@@ -1285,16 +1354,19 @@
       state.paused = !state.paused;
       if(state.paused){ showOverlay('Pausa','Pulsa P, clic o toca para continuar.'); } else { hideOverlay(); }
     }
-    function finishRun(win=false){
+    async function finishRun(win=false){
       state.running = false;
       state.best = Math.max(state.best, state.score); localStorage.setItem(LS.best, String(state.best)); bestEl.textContent = state.best;
       const history = loadJSON(LS.history, []); history.unshift({date: new Date().toISOString(), score: state.score, level: state.level});
-      saveJSON(LS.history, history.slice(0, 60));
+      saveJSON(LS.history, history.slice(0, 200));
       if(state.competitive && state.user){
-        const users = loadJSON(LS.users, {}); users[state.user] = users[state.user] || {victories:0, ip: state.ip, country: state.location.country, region: state.location.region};
-        if(win){ users[state.user].victories += 1; state.victories = users[state.user].victories; sendAchievement('ganó una partida'); }
-        saveJSON(LS.users, users); saveJSON(LS.identity, {user: state.user, ip: state.ip, hash: state.identityHash, victories: state.victories});
-        saveRankingToBackend(users);
+        if(win){
+          state.victories += 1;
+          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
+          sendAchievement('ganó una partida');
+        }else{
+          await saveUserToFirestore(state.user, state.victories, state.location.country, state.location.region);
+        }
       }
       showOverlay(win?'¡Victoria!':'Game Over', `Puntaje: ${state.score}. Récord: ${state.best}`);
       beep(win?960:220, .18, 'square', .07);
@@ -1472,12 +1544,13 @@
       updateMobileOrientationUI();
     }, 1200);
 
-    // Botones menú
-    const clickEvent = ('ontouchstart' in window || navigator.maxTouchPoints>0) ? 'touchstart' : 'click';
+    // Bind genérico click + touch
     function bindPress(el, fn){
       el.addEventListener('click', fn);
       el.addEventListener('touchstart', (e)=>{ e.preventDefault(); fn(); }, {passive:false});
     }
+
+    // Botones menú
     bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
     bindPress(menuHow, ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
     bindPress(menuScores, ()=> openScores());
@@ -1493,7 +1566,7 @@
     bindPress(overlayRestart, ()=> startGame(state.competitive));
     bindPress(overlayMenu, ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
 
-    // Puntuaciones
+    /* ==== Puntuaciones: scroll y acciones ==== */
     function openScores(){
       const best = Number(localStorage.getItem(LS.best)||0);
       const history = loadJSON(LS.history, []);
@@ -1503,17 +1576,21 @@
         return `<tr><td>${d.toLocaleString()}</td><td>${h.score}</td><td>${h.level}</td></tr>`;
       }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
       scoresModal.classList.remove('hidden');
+      scoresScroll.scrollTop = 0;
     }
     bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
     bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); openScores(); });
+    bindPress(scoresTop, ()=> scoresScroll.scrollTo({top:0, behavior:'smooth'}));
+    bindPress(scoresBottom, ()=> scoresScroll.scrollTo({top:scoresScroll.scrollHeight, behavior:'smooth'}));
+    enableDragScroll(scoresScroll);
 
-    // Competencia
+    /* ==== Competencia: abrir, scroll, paginación ==== */
     async function openComp(){
-      let users = loadJSON(LS.users, {});
-      const remote = await loadRankingFromBackend();
-      if(remote && typeof remote==='object'){ users = remote; saveJSON(LS.users, users); }
-      renderRanking(users);
       compModal.classList.remove('hidden');
+      compPage = 1; compLastDoc = null; compCursorStack = [];
+      compPageEl.textContent = compPage;
+      await loadRankingFirstPage();
+      compScroll.scrollTop = 0;
     }
     bindPress(compClose, ()=> compModal.classList.add('hidden'));
     bindPress(compShare, ()=> downloadRankingPNG());
@@ -1527,15 +1604,19 @@
       if(!name){ alert('Ingresa un usuario o usa tu perfil.'); return; }
       if(!identityMatches(name)){ alert('La identidad está bloqueada por nombre + IP. Usa tu usuario registrado.'); return; }
       await lockIdentity(name);
-      const users = loadJSON(LS.users, {});
-      users[name] = users[name] || {victories:0, ip: state.ip, country: state.location.country, region: state.location.region};
-      saveJSON(LS.users, users);
-      await saveRankingToBackend(users);
+      await saveUserToFirestore(name, 0, state.location.country, state.location.region);
       compModal.classList.add('hidden');
       startGame(true);
     });
 
-    // Perfil
+    bindPress(compTop, ()=> compScroll.scrollTo({top:0, behavior:'smooth'}));
+    bindPress(compBottom, ()=> compScroll.scrollTo({top:compScroll.scrollHeight, behavior:'smooth'}));
+    enableDragScroll(compScroll);
+
+    bindPress(compNextPage, async ()=>{ await loadRankingPage(true); compScroll.scrollTop = 0; });
+    bindPress(compPrevPage, async ()=>{ await loadRankingPage(false); compScroll.scrollTop = 0; });
+
+    /* ==== Perfil ==== */
     function openProfile(){
       updateProfileUI();
       profileModal.classList.remove('hidden');
@@ -1545,10 +1626,7 @@
       const name = (profileNameInput.value||'').trim();
       if(!name){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(name);
-      const users = loadJSON(LS.users, {});
-      users[name] = users[name] || {victories:0, ip: state.ip, country: state.location.country, region: state.location.region};
-      saveJSON(LS.users, users);
-      await saveRankingToBackend(users);
+      await saveUserToFirestore(name, state.victories||0, state.location.country, state.location.region);
       alert('Perfil guardado.');
     });
     bindPress(profileGear, ()=>{
@@ -1560,10 +1638,7 @@
       const newName = (settingsNameInput.value||'').trim();
       if(!newName){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(newName);
-      const users = loadJSON(LS.users, {});
-      users[newName] = users[newName] || {victories: state.victories||0, ip: state.ip, country: state.location.country, region: state.location.region};
-      saveJSON(LS.users, users);
-      await saveRankingToBackend(users);
+      await saveUserToFirestore(newName, state.victories||0, state.location.country, state.location.region);
       settingsModal.classList.add('hidden');
       updateProfileUI();
       alert('Perfil actualizado.');
@@ -1573,9 +1648,8 @@
     const soundStored = loadJSON(LS.sound, {enabled:true});
     soundEnabled = !!soundStored.enabled;
 
-    /* ==== Init identidad + chat ==== */
+    /* ==== Init identidad ==== */
     initIdentity();
-    initChat();
 
     /* ==== Escape: cerrar overlays ==== */
     window.addEventListener('keydown', (e)=>{
