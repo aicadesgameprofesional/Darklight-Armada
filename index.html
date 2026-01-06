@@ -51,12 +51,18 @@
     .dot.lives{background: var(--accent2)}
     .dot.power{background: var(--accent3)}
 
-    /* Overlays base */
-    .overlay{position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto}
-    .hidden{display:none}
+    /* Overlays base (si está visible, captura eventos en su interior) */
+    .overlay{
+      position:absolute; inset:0; display:grid; place-items:center;
+      pointer-events:auto; z-index: 10;
+    }
+    .hidden{
+      display:none !important;
+      pointer-events:none !important;
+    }
 
     /* Intro profesional */
-    .splash{ background:#000; overflow:hidden; }
+    .splash{ background:#000; overflow:hidden; z-index: 20; }
     .splashInner{
       text-align:center; color:#9fd0ff;
       animation: splashIn 1.6s ease both;
@@ -126,6 +132,7 @@
       font-size: 12px; pointer-events:none;
       opacity:0; transform: translateY(10px);
       transition: opacity .3s ease, transform .3s ease;
+      z-index: 5;
     }
     .chatToast.show{opacity:1; transform: translateY(0)}
     .chatToast h3{margin:0 0 6px; font-size:14px; color:#cfe6ff}
@@ -186,7 +193,7 @@
     /* Controles táctiles (solo en dispositivos táctiles) */
     .controls{
       position:absolute; inset:0; display:flex; justify-content:space-between; align-items:flex-end; padding:14px;
-      pointer-events:auto;
+      pointer-events:auto; z-index: 6;
     }
     .stick{
       width:140px; height:140px; border-radius:50%; background: rgba(20,28,50,.35);
@@ -206,12 +213,11 @@
     /* Overlay “gira tu dispositivo” para móviles en vertical */
     .rotateOverlay{
       position:absolute; inset:0; display:none; place-items:center;
-      background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 20;
+      background: rgba(0,0,0,.85); color:#cfe6ff; text-align:center; z-index: 30;
     }
     .rotateOverlay .card{max-width: 560px}
-    @media (orientation: portrait){
-      .frame[data-mobile="true"] .rotateOverlay{ display:grid; }
-    }
+    /* No bloquear jamás en desktop/no-móvil */
+    .frame[data-mobile="false"] .rotateOverlay{ display:none !important; pointer-events:none !important; }
 
     @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
   </style>
@@ -249,7 +255,7 @@
     </div>
 
     <!-- Menú principal -->
-    <div id="mainMenu" class="overlay hidden">
+    <div id="mainMenu" class="overlay hidden" style="z-index: 15">
       <div class="card">
         <div class="titlePro" style="font-size: clamp(28px, 5vw, 56px)">Darklight Armada: Neon Fury</div>
         <h2>Menú principal</h2>
@@ -268,7 +274,7 @@
     </div>
 
     <!-- Overlay de juego -->
-    <div id="gameOverlay" class="overlay hidden">
+    <div id="gameOverlay" class="overlay hidden" style="z-index: 25">
       <div class="card">
         <h1 id="overlayTitle">Pausa</h1>
         <p id="overlayText">Pulsa P, clic o toca para continuar.</p>
@@ -281,7 +287,7 @@
     </div>
 
     <!-- Modal: Cómo jugar -->
-    <div id="howModal" class="overlay hidden">
+    <div id="howModal" class="overlay hidden" style="z-index: 26">
       <div class="card" style="text-align:left">
         <h1>Cómo jugar</h1>
         <div class="scrollArea" id="howScroll">
@@ -311,7 +317,7 @@
     </div>
 
     <!-- Modal de sonidos -->
-    <div id="soundModal" class="overlay hidden">
+    <div id="soundModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Sonidos</h1>
         <p>Activa o desactiva efectos de sonido.</p>
@@ -326,7 +332,7 @@
     </div>
 
     <!-- Modal de puntuaciones -->
-    <div id="scoresModal" class="overlay hidden">
+    <div id="scoresModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Puntuaciones</h1>
         <p>Récord local y últimas partidas.</p>
@@ -343,7 +349,7 @@
     </div>
 
     <!-- Modal de competencia -->
-    <div id="compModal" class="overlay hidden">
+    <div id="compModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Competencia</h1>
         <p>Entra con tu perfil y compite. El ranking muestra país y región.</p>
@@ -365,7 +371,7 @@
     </div>
 
     <!-- Modal de perfil -->
-    <div id="profileModal" class="overlay hidden">
+    <div id="profileModal" class="overlay hidden" style="z-index: 26">
       <div class="card">
         <h1>Perfil del jugador</h1>
         <p style="margin-bottom:10px">Identidad bloqueada por nombre + IP pública.</p>
@@ -404,7 +410,7 @@
     </div>
 
     <!-- Modal de configuración de perfil -->
-    <div id="settingsModal" class="overlay hidden">
+    <div id="settingsModal" class="overlay hidden" style="z-index: 27">
       <div class="card settingsModal">
         <h1>Configurar perfil</h1>
         <div class="row">
@@ -451,8 +457,8 @@
       const code = cc.toUpperCase();
       return String.fromCodePoint(...[...code].map(c=>127397 + c.charCodeAt()));
     };
-    const isTouchDevice = ()=> ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
-    const isMobileUA = ()=> /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isMobileUA = ()=> /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (Math.min(screen.width, screen.height) < 768);
+    const isTouchDevice = ()=> isMobileUA(); // estrictamente móvil
 
     /* ==== DOM refs ==== */
     const frame = document.getElementById('frame');
@@ -749,25 +755,26 @@
           await screen.orientation.lock('landscape');
           rotateOverlay.classList.add('hidden');
         }catch(e){
-          // algunos navegadores requieren gesto: overlay sigue activo en portrait
+          // overlay seguirá hasta que el usuario gire a landscape
         }
       }
     }
     function updateMobileOrientationUI(){
-      const mobile = isMobileUA() || isTouchDevice();
+      const mobile = isMobileUA();
       frame.dataset.mobile = mobile ? 'true' : 'false';
-      if(mobile && screen.orientation){
-        if(screen.orientation.type.includes('portrait')){
-          rotateOverlay.classList.remove('hidden');
-        }else{
-          rotateOverlay.classList.add('hidden');
-        }
+      const portrait = window.matchMedia('(orientation: portrait)').matches || (W < H);
+      if(mobile && portrait){
+        rotateOverlay.classList.remove('hidden');
+      }else{
+        rotateOverlay.classList.add('hidden');
       }
     }
     window.addEventListener('orientationchange', ()=>{ updateMobileOrientationUI(); resize(); });
     tryLockBtn.addEventListener('click', ()=>{ ensureAudio(); tryLockLandscape(); });
 
-    resize(); window.addEventListener('resize', resize);
+    resize();
+    updateMobileOrientationUI();
+    window.addEventListener('resize', ()=>{ resize(); updateMobileOrientationUI(); });
 
     /* ==== Audio entrada (clic/touch/teclado) ==== */
     ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
@@ -1063,7 +1070,6 @@
     }
     function hideOverlay(){ gameOverlay.classList.add('hidden'); }
 
-    /* Permitir cerrar overlay con clic/tap en cualquier parte de la tarjeta */
     gameOverlay.addEventListener('click', ()=>{
       if(state.running){ state.paused = false; hideOverlay(); }
     });
@@ -1323,6 +1329,7 @@
         if(p.charge>0 && dir!==0){ speed *= 1.35; }
         p.x = clamp(p.x + dir * speed * dt, 20, W-20);
         if(p.teleport>0 && Math.random()<0.002){ p.x = W/2; p.teleport = 0; addShake(10); }
+
         p.cooldown = Math.max(0, p.cooldown - dt);
 
         if(p.drone && Math.random() < 0.06){
@@ -1458,24 +1465,33 @@
     }
     requestAnimationFrame(loop);
 
-    /* ==== Flujos UI + clics mouse asegurados ==== */
-    setTimeout(()=>{ splash.classList.add('hidden'); mainMenu.classList.remove('hidden'); updateMobileOrientationUI(); }, 1200);
+    /* ==== Flujos UI + clics/touch asegurados ==== */
+    setTimeout(()=>{
+      splash.classList.add('hidden');
+      mainMenu.classList.remove('hidden');
+      updateMobileOrientationUI();
+    }, 1200);
 
     // Botones menú
-    menuPlay.addEventListener('click', ()=> { ensureAudio(); startGame(false); });
-    menuHow.addEventListener('click', ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
-    menuScores.addEventListener('click', ()=> openScores());
-    menuCompete.addEventListener('click', ()=> openComp());
-    menuProfile.addEventListener('click', ()=> openProfile());
-    menuSound.addEventListener('click', ()=> soundModal.classList.remove('hidden'));
-    soundClose.addEventListener('click', ()=> soundModal.classList.add('hidden'));
-    soundOn.addEventListener('click', ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
-    soundOff.addEventListener('click', ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
+    const clickEvent = ('ontouchstart' in window || navigator.maxTouchPoints>0) ? 'touchstart' : 'click';
+    function bindPress(el, fn){
+      el.addEventListener('click', fn);
+      el.addEventListener('touchstart', (e)=>{ e.preventDefault(); fn(); }, {passive:false});
+    }
+    bindPress(menuPlay, ()=> { ensureAudio(); startGame(false); });
+    bindPress(menuHow, ()=> { howModal.classList.remove('hidden'); renderHelpIcons(); });
+    bindPress(menuScores, ()=> openScores());
+    bindPress(menuCompete, ()=> openComp());
+    bindPress(menuProfile, ()=> openProfile());
+    bindPress(menuSound, ()=> soundModal.classList.remove('hidden'));
+    bindPress(soundClose, ()=> soundModal.classList.add('hidden'));
+    bindPress(soundOn, ()=>{ soundEnabled = true; saveJSON(LS.sound, {enabled:true}); beep(660,.08,'square',.05); });
+    bindPress(soundOff, ()=>{ soundEnabled = false; saveJSON(LS.sound, {enabled:false}); });
 
     // Overlay juego botones
-    overlayResume.addEventListener('click', ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
-    overlayRestart.addEventListener('click', ()=> startGame(state.competitive));
-    overlayMenu.addEventListener('click', ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
+    bindPress(overlayResume, ()=>{ if(state.running){ state.paused = false; hideOverlay(); }});
+    bindPress(overlayRestart, ()=> startGame(state.competitive));
+    bindPress(overlayMenu, ()=>{ hideOverlay(); mainMenu.classList.remove('hidden'); state.running=false; });
 
     // Puntuaciones
     function openScores(){
@@ -1488,8 +1504,8 @@
       }).join('') || `<tr><td colspan="3">Sin partidas registradas</td></tr>`;
       scoresModal.classList.remove('hidden');
     }
-    scoresClose.addEventListener('click', ()=> scoresModal.classList.add('hidden'));
-    scoresClear.addEventListener('click', ()=>{ saveJSON(LS.history, []); openScores(); });
+    bindPress(scoresClose, ()=> scoresModal.classList.add('hidden'));
+    bindPress(scoresClear, ()=>{ saveJSON(LS.history, []); openScores(); });
 
     // Competencia
     async function openComp(){
@@ -1499,14 +1515,14 @@
       renderRanking(users);
       compModal.classList.remove('hidden');
     }
-    compClose.addEventListener('click', ()=> compModal.classList.add('hidden'));
-    compShare.addEventListener('click', ()=> downloadRankingPNG());
-    compUseProfile.addEventListener('click', ()=>{
+    bindPress(compClose, ()=> compModal.classList.add('hidden'));
+    bindPress(compShare, ()=> downloadRankingPNG());
+    bindPress(compUseProfile, ()=>{
       if(!state.user){ alert('Crea tu perfil primero.'); return; }
       compModal.classList.add('hidden');
       startGame(true);
     });
-    compEnter.addEventListener('click', async ()=>{
+    bindPress(compEnter, async ()=>{
       const name = (compName.value||'').trim();
       if(!name){ alert('Ingresa un usuario o usa tu perfil.'); return; }
       if(!identityMatches(name)){ alert('La identidad está bloqueada por nombre + IP. Usa tu usuario registrado.'); return; }
@@ -1524,8 +1540,8 @@
       updateProfileUI();
       profileModal.classList.remove('hidden');
     }
-    profileClose.addEventListener('click', ()=> profileModal.classList.add('hidden'));
-    profileCreate.addEventListener('click', async ()=>{
+    bindPress(profileClose, ()=> profileModal.classList.add('hidden'));
+    bindPress(profileCreate, async ()=>{
       const name = (profileNameInput.value||'').trim();
       if(!name){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(name);
@@ -1535,12 +1551,12 @@
       await saveRankingToBackend(users);
       alert('Perfil guardado.');
     });
-    profileGear.addEventListener('click', ()=>{
+    bindPress(profileGear, ()=>{
       settingsNameInput.value = state.user || '';
       settingsModal.classList.remove('hidden');
     });
-    settingsCancel.addEventListener('click', ()=> settingsModal.classList.add('hidden'));
-    settingsSave.addEventListener('click', async ()=>{
+    bindPress(settingsCancel, ()=> settingsModal.classList.add('hidden'));
+    bindPress(settingsSave, async ()=>{
       const newName = (settingsNameInput.value||'').trim();
       if(!newName){ alert('Escribe un nombre de usuario.'); return; }
       await lockIdentity(newName);
