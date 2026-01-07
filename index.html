@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>N-E-O-N SHIP FURY — Online 2 jugadores + ubicación real</title>
+<title>N-E-O-N SHIP FURY — Battle Mode</title>
 <style>
   :root{
     --bg:#03040a;
@@ -130,9 +130,9 @@
 
   /* Overlays centrados */
   #pauseOverlay,#gameOverOverlay,#waitingOnline{
-    position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); z-index:8; padding:16px
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); z-index:8; padding:16px
   }
-  .overlay-panel{ background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:16px; padding:16px; width:95%; max-width:520px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
+  .overlay-panel{ background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:16px; padding:16px; width:95%; max-width:520px; margin:0 auto; transform:translateY(-5%); box-shadow:0 8px 30px rgba(0,0,0,.35); }
 
   .go-stats{ display:flex; flex-direction:column; gap:8px; color:#eaf3ff }
   .go-title{ font-weight:900; letter-spacing:.12em; text-transform:uppercase; font-size:20px }
@@ -141,16 +141,37 @@
   .toggle-dot{width:14px; height:14px; border-radius:50%; background:#ff6677}
   .toggle.on .toggle-dot{ background:#55ff88 }
 
-  /* Online: etiquetas pequeñas */
-  .name-tag{
+  /* Online: nombres diminutos sobre naves */
+  .name-tag, .enemy-ship, .drone { display: none !important; }
+  .drone{
+    position:absolute;
+    width:24px;
+    height:24px;
+    background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15 6H9L12 2ZM12 22L9 18H15L12 22ZM22 12L18 9V15L22 12ZM2 12L6 15V9L2 12Z" fill="%232df7ff"/></svg>');
+    animation:droneFloat 1.4s ease-in-out infinite;
+    filter:drop-shadow(0 0 6px rgba(45,247,255,.6));
+  }
+  @keyframes droneFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
+  }
+.name-tag{
+    display:none; /* Ocultar naves amarillas */
     position:absolute; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
     padding:2px 6px; border-radius:8px; background:rgba(12,14,28,.75); border:1px solid rgba(255,255,255,.14);
     color:#eaf3ff; pointer-events:none; z-index:9; white-space:nowrap; transform:translate(-50%, -140%);
     box-shadow:0 0 12px rgba(45,247,255,.18), 0 0 18px rgba(255,58,140,.12);
   }
 
-  table{width:100%; border-collapse:collapse}
-  th,td{border-bottom:1px dashed var(--line); padding:8px; font-size:13px; text-align:left}
+  /* Estilos para posiciones ranking */
+  tr[data-position="1"] td:first-child { color: gold; font-weight: 900; }
+  tr[data-position="2"] td:first-child { color: silver; font-weight: 800; }
+  tr[data-position="3"] td:first-child { color: #cd7f32; font-weight: 700; }
+  tr[data-position] td:nth-child(2) { font-size: 0.9em; }
+tr[data-position] td:first-child { display: none !important; }
+tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; margin-right: 4px; }
+tr[data-position] td:first-child { display: none; }
+tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; margin-right: 4px; }
 
   @media (max-width:900px){
     .menu-wrap{grid-template-columns:1fr}
@@ -183,7 +204,7 @@
 
       <div class="arcade-buttons">
         <button class="btn" id="btnPlay">Jugar (normal)</button>
-        <button class="btn" id="btnCompetition">Ranking</button>
+        <button class="btn" id="btnCompetition">Competencia</button>
         <button class="btn" id="btnHow">Cómo jugar</button>
         <button class="btn" id="btnProfile">Perfil</button>
         <button class="btn" id="btnHistory">Historial</button>
@@ -212,10 +233,7 @@
           <div class="ship-label" id="psShipLabel">Nave Bronce</div>
         </div>
       </div>
-      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-        <button class="btn" id="btnPlayOnline">Jugar online (2 jugadores)</button>
-      </div>
-      <div style="margin-top:6px; color:var(--muted)">El juego online inicia cuando se conecten dos jugadores a la misma sala.</div>
+      <div style="margin-top:6px; color:var(--muted)">Rango y nave cambian solo en Competencia.</div>
     </div>
   </div>
 </section>
@@ -228,7 +246,8 @@
       <div><strong>Jefes:</strong> Cada 5 niveles. Barra de vida y patrones.</div>
       <div><strong>Poderes (20s):</strong> Caída rara. Misiles desactivan balas. Corazón suma +1 vida.</div>
       <div><strong>Asteroides especiales:</strong> Disparan, se dividen, explotan y algunos disparan mini-asteroides.</div>
-      <div><strong>Online:</strong> Salas de 2 jugadores. Espera hasta que entre otro y el juego inicia automáticamente.</div>
+      <div><strong>Progreso Normal:</strong> Si pierdes, regresas al último nivel alcanzado; en Historial puedes reiniciar a nivel 1.</div>
+      <div><strong>Competencia:</strong> Salas aleatorias de 5 jugadores. El juego inicia solo con mínimo 2 conectados.</div>
     </div>
     <div style="margin-top:10px; display:flex; gap:10px; justify-content:center">
       <button class="btn" data-close="#modalHow">Cerrar</button>
@@ -258,22 +277,8 @@
           <div style="border-top:1px dashed var(--line); margin-top:10px; padding-top:10px">
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
               <button class="btn" id="btnGetIP">Actualizar IP</button>
-              <button class="btn" id="btnAcceptGeo">Detectar país (pedir ubicación)</button>
-              <span id="pfCountryNote" style="color:var(--muted); font-size:12px">El país se guarda al aceptar permisos de ubicación.</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="border-top:1px dashed var(--line); padding-top:10px">
-          <h4 class="title" style="font-size:16px">Editar perfil</h4>
-          <div class="list">
-            <div><strong>Nombre:</strong> <input id="editName" class="btn" style="text-transform:none; letter-spacing:normal; background:rgba(20,24,48,.6)" placeholder="Nuevo nombre" /></div>
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-              <button class="btn" id="btnDetectCountry">Detectar país (pedir ubicación)</button>
-              <span id="editCountryText" style="color:var(--muted); font-size:12px">País actual: —</span>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap">
-              <button class="btn" id="btnSaveProfile">Guardar cambios</button>
+              <button class="btn" id="btnAcceptGeo">Aceptar ubicación (guardar país)</button>
+              <span style="color:var(--muted); font-size:12px">El país se guardará solo si aceptas ubicación.</span>
             </div>
           </div>
         </div>
@@ -292,6 +297,21 @@
             <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap">
               <button class="btn" id="prevShip">◀</button>
               <button class="btn" id="nextShip">▶</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editar perfil -->
+        <div style="border-top:1px dashed var(--line); padding-top:10px">
+          <h4 class="title" style="font-size:16px">Editar perfil</h4>
+          <div class="list">
+            <div><strong>Nombre:</strong> <input id="editName" class="btn" style="text-transform:none; letter-spacing:normal; background:rgba(20,24,48,.6)" placeholder="Nuevo nombre" /></div>
+            <div style="display:flex; gap:10px; align-items:center">
+              <button class="btn" id="btnDetectCountry">Detectar país (aceptar ubicación)</button>
+              <span id="editCountryText" style="color:var(--muted); font-size:12px">País actual: —</span>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:8px">
+              <button class="btn" id="btnSaveProfile">Guardar cambios</button>
             </div>
           </div>
         </div>
@@ -315,17 +335,29 @@
 
 <div class="modal screen" id="modalCompetition">
   <div class="panel">
-    <h3 class="title">Ranking de jugadores</h3>
-    <div class="list" style="max-height:55vh; overflow:auto">
+    <h3 class="title">Competencia online</h3>
+    <div class="list" style="max-height:50vh; overflow:auto">
       <table>
-        <thead><tr><th>Usuario</th><th>Rango</th><th>Puntos</th><th>País</th></tr></thead>
-        <tbody id="rankTable"></tbody>
+        <thead><tr><th>Usuario</th><th>Rango</th><th>Puntos</th></tr></thead>
+        <tbody id="rankTable">
+          <tr data-position="1"><td style="color:gold">🥇</td><td>-</td><td>-</td></tr>
+          <tr data-position="2"><td>2</td><td style="color:silver">🥈</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="3"><td>3</td><td style="color:#cd7f32">🥉</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="4"><td>4</td><td style="color:#a0a0ff">4°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="5"><td>5</td><td style="color:#a0a0ff">5°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="6"><td>6</td><td style="color:#888">6°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="7"><td>7</td><td style="color:#888">7°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="8"><td>8</td><td style="color:#666">8°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="9"><td>9</td><td style="color:#666">9°</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr data-position="10"><td>10</td><td style="color:#555">10°</td><td>-</td><td>-</td><td>-</td></tr>
+        </tbody>
       </table>
     </div>
     <div style="margin-top:10px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+      <button class="btn" id="btnPlayOnline">Jugar online</button>
       <button class="btn" data-close="#modalCompetition">Cerrar</button>
     </div>
-    <div style="margin-top:6px; color:var(--muted); text-align:center">El ranking muestra las puntuaciones más altas y rangos.</div>
+    <div style="margin-top:6px; color:var(--muted); text-align:center">Salas aleatorias de 5 jugadores. Se inicia solo con mínimo 2 conectados.</div>
   </div>
 </div>
 
@@ -409,7 +441,7 @@
   <div id="waitingOnline" class="screen">
     <div class="overlay-panel" style="text-align:center">
       <h3 class="title">Esperando jugadores</h3>
-      <div class="list"><div>Conectando a la sala...</div><div>El juego inicia automáticamente cuando se conecten 2 jugadores.</div></div>
+      <div class="list"><div>Conectando al modo batalla...</div><div>Se inicia al haber mínimo 2 jugadores conectados.</div></div>
       <div style="margin-top:10px"><button class="btn" id="btnCancelOnline">Cancelar</button></div>
     </div>
   </div>
@@ -429,10 +461,8 @@
     if (a && a.style.display!=='none') hideScreen(a);
     if (b){ b.style.display='block'; requestAnimationFrame(()=> showScreen(b)); }
   }
-  function openModal(id){ const el = qs(id); el.style.display='flex'; showScreen(el); }
-  function closeModal(id){ hideScreen(qs(id)); }
 
-  setTimeout(()=>{ qs('#splash').style.display='none'; qs('#menu').style.display='block'; showScreen(qs('#menu')); renderSpaceBG(); updateIPText(); }, 1400);
+  setTimeout(()=>{ qs('#splash').style.display='none'; qs('#menu').style.display='block'; showScreen(qs('#menu')); renderSpaceBG(); updateIPText(); }, 1500);
 
   const playerData = {
     username: null, email: null, uid: null,
@@ -490,29 +520,28 @@
   }
   function getRankConfByName(name){ return ranks.find(r=>r.name===name) || ranks[0]; }
 
-  // Ubicación real: solicita permisos y resuelve país
-  async function requestGeolocationCountry(){
-    if (!('geolocation' in navigator)) throw new Error('Geolocalización no disponible en este navegador.');
-    const pos = await new Promise((resolve, reject)=>{
-      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy:true, timeout:10000, maximumAge:0 });
-    });
-    const { latitude, longitude } = pos.coords;
-    // Reverse geocoding libre (no requiere clave)
-    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=es`;
-    const data = await fetch(url).then(r=>r.json());
-    const country = data.countryName || data.principalSubdivision || data.locality || 'Desconocido';
-    return { country, lat: latitude, lon: longitude };
-  }
-
-  // IP
+  // IP y País (país se guarda solo si aceptas)
   async function fetchIP(){ try{ const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json()); playerData.ip = ip.ip || null; }catch(e){ playerData.ip=null; } }
+  async function fetchCountryByIP(){ try{ const geo = await fetch('https://ipapi.co/json/').then(r=>r.json()); return geo.country_name || null; }catch(e){ return null; } }
   async function updateIPText(){
+    if (!playerData.ip) await fetchIP();
     const geoText = `${playerData.country || '—'} / ${playerData.ip || '—'}`;
     qs('#psGeo').textContent = geoText;
     qs('#pfGeo').textContent = geoText;
     qs('#editCountryText').textContent = `País actual: ${playerData.country || '—'}`;
   }
+  async function acceptLocation(){
+    const ok = confirm('¿Aceptar ubicación para detectar y guardar tu país?');
+    if (!ok) return;
+    const country = await fetchCountryByIP();
+    playerData.country = country || 'Desconocido';
+    playerData.geoAccepted = true;
+    updateIPText();
+    await persistGlobal();
+    alert('Ubicación aceptada. País: ' + (playerData.country||'—'));
+  }
 
+  // UI estado
   function refreshPlayerStateUI(){
     qs('#psUser').textContent = playerData.username || '—';
     qs('#psPoints').textContent = playerData.pointsGlobal;
@@ -527,7 +556,7 @@
     updateIPText();
   }
 
-  // Fondo
+  // Fondo batalla épico
   function renderSpaceBG(){
     const c = qs('#spaceBG'); const ctx = c.getContext('2d');
     let W=innerWidth, H=innerHeight; c.width=W; c.height=H;
@@ -582,7 +611,6 @@
       appId: "1:711845990024:web:7948ad5e5606765514d93d"
     };
     fb = { app: firebase.initializeApp(firebaseConfig), auth: firebase.auth(), db: firebase.firestore() };
-
     fb.auth.onAuthStateChanged(async (user)=>{
       if (user){
         playerData.uid = user.uid;
@@ -599,17 +627,20 @@
           playerData.shipStoredIndex = d.shipStoredIndex || 0;
           playerData.country = d.country || playerData.country || null;
           playerData.ip = playerData.ip || d.ip || null;
+          qs('#pfConnected').textContent='Sí'; qs('#pfUID').textContent=user.uid;
+          qs('#pfGlobal').textContent=playerData.pointsGlobal; qs('#pfRankText').textContent=playerData.rankName;
+          updateIPText(); refreshPlayerStateUI(); drawShipPreview3D(); refreshProfileRankBlock(); loadLeaderboard();
+          await db.collection('users').doc(user.uid).set({ ip: playerData.ip||null, updatedAt: Date.now() }, {merge:true});
         }else{
           playerData.username = user.email?.split('@')[0] || 'Jugador';
+          qs('#pfConnected').textContent='Sí'; qs('#pfUID').textContent=user.uid;
+          updateIPText(); refreshPlayerStateUI();
           await db.collection('users').doc(user.uid).set({
             username: playerData.username, pointsGlobal: 0, levelGlobal: 1,
             rankName: 'Bronce', rankColor: '#a87432', shipStoredIndex: 0,
             ip: playerData.ip || null, country: playerData.country || null, createdAt: Date.now()
           }, {merge:true});
         }
-        qs('#pfConnected').textContent='Sí'; qs('#pfUID').textContent=user.uid;
-        qs('#pfGlobal').textContent=playerData.pointsGlobal; qs('#pfRankText').textContent=playerData.rankName;
-        updateIPText(); refreshPlayerStateUI(); drawShipPreview3D(); refreshProfileRankBlock(); loadLeaderboard();
       } else {
         playerData.uid = null; qs('#pfConnected').textContent='No'; qs('#pfUID').textContent='—'; refreshPlayerStateUI();
       }
@@ -629,7 +660,7 @@
         rankName: playerData.rankName,
         rankColor: playerData.rankColor,
         shipStoredIndex: playerData.shipStoredIndex,
-        country: playerData.country || 'Desconocido',
+        country: playerData.geoAccepted ? (playerData.country || 'Desconocido') : 'Desconocido',
         ip: playerData.ip || null,
         updatedAt: Date.now()
       }, {merge:true});
@@ -642,24 +673,22 @@
     const pass = qs('#pfPassword').value.trim();
     const username = (qs('#pfUsername').value.trim()) || email.split('@')[0];
 
-    // Pedir ubicación real
-    try{
-      const geo = await requestGeolocationCountry();
-      playerData.country = geo.country; playerData.geoAccepted = true;
-      qs('#pfCountryNote').textContent = `País detectado: ${geo.country}`;
-    }catch(e){
-      alert('No se pudo obtener ubicación. Puedes intentarlo en Editar perfil.');
+    // Solicitar aceptación de ubicación para guardar país
+    if (!playerData.geoAccepted){
+      const ok = confirm('Para registrar tu país, acepta ubicación. ¿Aceptar ahora?');
+      if (ok){ await acceptLocation(); }
     }
 
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     playerData.uid = cred.user.uid; playerData.email=email; playerData.username=username;
     await fetchIP();
+    const countryToSave = playerData.geoAccepted ? (playerData.country || 'Desconocido') : 'Desconocido';
     await db.collection('users').doc(playerData.uid).set({
       username, email,
       pointsGlobal: 0, levelGlobal: 1,
       rankName: 'Bronce', rankColor: '#a87432',
       shipStoredIndex: 0,
-      ip: playerData.ip||null, country: playerData.country || 'Desconocido',
+      ip: playerData.ip||null, country: countryToSave,
       createdAt: Date.now()
     }, {merge:true});
     qs('#pfConnected').textContent='Sí'; qs('#pfUID').textContent=playerData.uid;
@@ -682,14 +711,14 @@
       playerData.rankName = d.rankName || 'Bronce';
       playerData.rankColor = d.rankColor || '#a87432';
       playerData.shipStoredIndex = d.shipStoredIndex || 0;
-      playerData.country = d.country || playerData.country || null;
+      playerData.country = d.country || null;
       await db.collection('users').doc(uid).set({ ip: playerData.ip||null, updatedAt: Date.now() }, {merge:true});
     } else {
       playerData.username = email.split('@')[0];
       await db.collection('users').doc(uid).set({
         username: playerData.username, pointsGlobal: 0, levelGlobal: 1,
         rankName: 'Bronce', rankColor: '#a87432', shipStoredIndex: 0,
-        ip: playerData.ip || null, country: playerData.country || 'Desconocido',
+        ip: playerData.ip || null, country: playerData.geoAccepted ? (playerData.country||'Desconocido') : 'Desconocido',
         createdAt: Date.now()
       }, {merge:true});
     }
@@ -700,113 +729,135 @@
   }
   async function logout(){ try{ const {auth}= await ensureFirebase(); await auth.signOut(); }catch(e){} playerData.uid=null; qs('#pfConnected').textContent='No'; qs('#pfUID').textContent='—'; refreshPlayerStateUI(); refreshProfileRankBlock(); }
 
-  // Guardar cambios del perfil
+  // Guardar cambios del perfil (nombre y país por aceptación)
   qs('#btnSaveProfile').addEventListener('click', async ()=>{
     if (!playerData.uid){ alert('Inicia sesión para guardar cambios.'); return; }
     const newName = qs('#editName').value.trim();
     if (newName) playerData.username = newName;
     await persistGlobal();
     const {db} = await ensureFirebase();
-    await db.collection('users').doc(playerData.uid).set({ username: playerData.username, country: playerData.country || 'Desconocido', updatedAt: Date.now() }, {merge:true});
+    await db.collection('users').doc(playerData.uid).set({ username: playerData.username, country: playerData.geoAccepted ? (playerData.country||'Desconocido') : 'Desconocido', updatedAt: Date.now() }, {merge:true});
     refreshPlayerStateUI();
     alert('Perfil actualizado.');
   });
-  qs('#btnDetectCountry').addEventListener('click', async ()=>{
-    try{
-      const geo = await requestGeolocationCountry();
-      playerData.country = geo.country; playerData.geoAccepted = true;
-      qs('#editCountryText').textContent = `País actual: ${geo.country}`;
-      await persistGlobal();
-      alert('País actualizado: ' + geo.country);
-    }catch(e){
-      alert('Permisos denegados o error al obtener ubicación.');
-    }
-  });
-  qs('#btnAcceptGeo').addEventListener('click', async ()=>{
-    try{
-      const geo = await requestGeolocationCountry();
-      playerData.country = geo.country; playerData.geoAccepted = true;
-      qs('#pfCountryNote').textContent = `País detectado: ${geo.country}`;
-      await persistGlobal(); updateIPText();
-    }catch(e){ alert('No se pudo obtener ubicación.'); }
-  });
+  qs('#btnDetectCountry').addEventListener('click', ()=> acceptLocation());
 
   qs('#btnRegister').addEventListener('click', ()=>register().catch(err=>alert(err.message)));
   qs('#btnLogin').addEventListener('click', ()=>login().catch(err=>alert(err.message)));
   qs('#btnLogout').addEventListener('click', ()=>logout().catch(()=>{}));
   qs('#btnGetIP').addEventListener('click', async ()=>{ await fetchIP(); updateIPText(); alert('IP actualizada: '+(playerData.ip||'—')); });
+  qs('#btnAcceptGeo').addEventListener('click', ()=> acceptLocation());
 
   // Menú botones
+  function openModal(id){ const el = qs(id); el.style.display='flex'; showScreen(el); if(id==='#modalProfile'){ drawShipPreview3D(); refreshProfileRankBlock(); } }
+  function closeModal(id){ hideScreen(qs(id)); }
   qsa('[data-close]').forEach(btn=> btn.addEventListener('click', ()=>{ const id = btn.getAttribute('data-close'); closeModal(id); showScreen(qs('#menu')); qs('#menu').style.display='block'; }));
   qs('#btnHow').addEventListener('click', ()=> openModal('#modalHow'));
-  qs('#btnProfile').addEventListener('click', ()=> { openModal('#modalProfile'); drawShipPreview3D(); refreshProfileRankBlock(); });
-  qs('#btnCompetition').addEventListener('click', ()=> { openModal('#modalCompetition'); loadLeaderboard(); });
+  qs('#btnProfile').addEventListener('click', ()=> openModal('#modalProfile'));
+  qs('#btnCompetition').addEventListener('click', ()=> { if (!playerData.uid) { alert('Inicia sesión para Competencia.'); return; } openModal('#modalCompetition'); loadLeaderboard(); });
   qs('#btnPlay').addEventListener('click', ()=> startGame('Normal'));
   qs('#btnHistory').addEventListener('click', openHistory);
-  qs('#btnQuit').addEventListener('click', async ()=>{ await logout(); alert('Sesión cerrada. Hasta pronto.'); });
 
-  // Online: salas de 2 jugadores con presencia y sincronización básica
-  const MAX_ROOM_PLAYERS = 4;
+  // Online: Salas de 5 jugadores (auto-match) y mínimo 2 para iniciar
+  const MAX_ROOM_PLAYERS = 5;
+  let currentRoomId = null;
+  const remotePlayers = []; // {id, name, rank, x,y, color}
+  const nameTags = new Map(); // id -> element
 
-async function connectOnline(roomId){
-  const wait = qs('#waitingOnline');
-  const {db} = await ensureFirebase();
-  const roomsRef = db.collection('rooms').doc(roomId);
-
-  roomUnsub = roomsRef.onSnapshot(async snap=>{
-    const d = snap.data(); if (!d) return;
-    const members = d.members || [];
-    const connected = members.length;
-
-    // marcarme ready
-    const meId = playerData.uid;
-    const updatedMembers = members.map(m=>{
-      if (m.uid === meId && !m.ready) return {...m, ready:true};
-      return m;
+  async function autoMatchRoom(){
+    const {db} = await ensureFirebase();
+    const roomsRef = db.collection('rooms');
+    const snap = await roomsRef.where('status','==','open').limit(20).get();
+    let target = null;
+    snap.forEach(doc=>{
+      const d = doc.data();
+      if ((d.members?.length || 0) < MAX_ROOM_PLAYERS) target = {id: doc.id, data:d};
     });
-    if (JSON.stringify(updatedMembers) !== JSON.stringify(members)){
-      await roomsRef.set({ members: updatedMembers }, {merge:true});
+    if (!target){
+      const newRoom = await roomsRef.add({
+        status: 'open',
+        createdAt: Date.now(),
+        members: []
+      });
+      target = {id:newRoom.id, data:{members:[], status:'open'}};
     }
-
-    // Condición de inicio: al menos 2 jugadores listos
-    const readyCount = updatedMembers.filter(m=>m.ready).length;
-    if (readyCount >= 2 && !running){
-      hideScreen(wait);
-      startGame('Competencia');
-      tickPresence();
+    currentRoomId = target.id;
+    await roomsRef.doc(currentRoomId).set({
+      status: 'open',
+      updatedAt: Date.now(),
+      members: firebase.firestore.FieldValue.arrayUnion({
+        uid: playerData.uid,
+        name: playerData.username || 'Jugador',
+        rank: computeRank(playerData.levelGlobal).name,
+        joinedAt: Date.now()
+      })
+    }, {merge:true});
+    const doc = await roomsRef.doc(currentRoomId).get();
+    const mcount = (doc.data().members||[]).length;
+    if (mcount >= MAX_ROOM_PLAYERS){
+      await roomsRef.doc(currentRoomId).set({ status: 'full', updatedAt: Date.now() }, {merge:true});
     }
-  });
-}
+    return currentRoomId;
+  }
 
+  function addNameTag(id, text, color='#eaf3ff'){
+    let el = nameTags.get(id);
+    if (!el){ el = document.createElement('div'); el.className='name-tag'; document.body.appendChild(el); nameTags.set(id, el); }
+    el.textContent = text; el.style.borderColor = 'rgba(255,255,255,.18)'; el.style.boxShadow = `0 0 12px ${color}33`;
+  }
+  function positionNameTag(id, x, y){ const el = nameTags.get(id); if (!el) return; el.style.left = x+'px'; el.style.top = y+'px'; }
+  function removeAllNameTags(){ nameTags.forEach(el=> el.remove()); nameTags.clear(); }
+
+  async function connectOnline(roomId){
+    const wait = qs('#waitingOnline');
+    const {db} = await ensureFirebase();
+    // escuchar miembros de la sala
+    db.collection('rooms').doc(roomId).onSnapshot(snap=>{
+      const d = snap.data(); if (!d) return;
+      const members = d.members || [];
+      remotePlayers.length = 0;
+      members.forEach(m=>{
+        const colorMap = {Bronce:'#a87432', Plata:'#b8b8b8', Oro:'#e7c955'};
+        const color = colorMap[m.rank] || '#2df7ff';
+        remotePlayers.push({id:m.uid, name:m.name, rank:m.rank, x:rnd(innerWidth*0.2,innerWidth*0.8), y:rnd(innerHeight*0.2,innerHeight*0.5), color});
+        addNameTag(m.uid, `${m.name} — ${m.rank}`, color);
+      });
+      // Iniciar el juego solo si hay mínimo 2 jugadores
+      if (members.length >= 2 && !running){
+        hideScreen(wait);
+        startGame('Competencia');
+      }
+    });
+  }
 
   qs('#btnPlayOnline').addEventListener('click', async ()=>{
     if (!playerData.uid){ alert('Inicia sesión para jugar online.'); return; }
-    openModal('#modalCompetition'); // muestra ranking por si quieres verlo mientras esperas
+    closeModal('#modalCompetition');
     showScreen(qs('#waitingOnline'));
-    const roomId = await autoMatchRoom().catch(()=>null);
+    const roomId = await autoMatchRoom();
     if (!roomId){ alert('No se pudo crear/entrar a sala'); hideScreen(qs('#waitingOnline')); return; }
     connectOnline(roomId);
   });
-  qs('#btnCancelOnline').addEventListener('click', ()=>{
-    hideScreen(qs('#waitingOnline'));
-  });
+  qs('#btnCancelOnline').addEventListener('click', ()=> hideScreen(qs('#waitingOnline')));
 
-  // Ranking e historial
+  // Leaderboard e historial
   async function loadLeaderboard(){
     const tbody = qs('#rankTable'); tbody.innerHTML='';
     try{
       const {db}= await ensureFirebase();
       const snap = await db.collection('leaderboard').orderBy('points','desc').limit(50).get();
+      let pos = 1;
       snap.forEach(doc=>{
         const d=doc.data();
         const conf = getRankConfByName(d.rank || 'Bronce');
         const iconHTML = rankIconHTML(conf);
         const tr=document.createElement('tr');
-        tr.innerHTML = `<td>${d.username||'—'}</td><td>${iconHTML} <span style="margin-left:6px">${d.rank||'—'}</span></td><td>${d.points||0}</td><td>${d.country||'—'}</td>`;
+        tr.innerHTML = `<td>${pos}-${d.username||'—'}</td><td>${iconHTML} <span style='margin-left:6px'>${d.rank||'—'}</span></td><td>${d.points||0}</td><td>${d.country||'—'}</td>`;
         tbody.appendChild(tr);
+        pos++;
       });
     }catch(e){
-      tbody.innerHTML = `<tr><td colspan="4">No disponible (offline)</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan='4'>No disponible (offline)</td></tr>`;
     }
   }
   async function saveHistoryEntry(entry){
@@ -814,17 +865,6 @@ async function connectOnline(roomId){
     const list = JSON.parse(localStorage.getItem(key)||'[]'); list.unshift(entry); localStorage.setItem(key, JSON.stringify(list.slice(0,200)));
     if (playerData.uid){
       try{ const {db}= await ensureFirebase(); await db.collection('users').doc(playerData.uid).collection('history').add(entry); }catch(e){}
-      try{
-        const {db}= await ensureFirebase();
-        const rk = computeRank(playerData.levelGlobal).name;
-        await db.collection('leaderboard').doc(playerData.uid).set({
-          username: playerData.username||'Jugador',
-          points: playerData.pointsGlobal,
-          rank: rk,
-          country: playerData.country || 'Desconocido',
-          updatedAt: Date.now()
-        }, {merge:true});
-      }catch(e){}
     }
   }
   function openHistory(){
@@ -933,7 +973,7 @@ async function connectOnline(roomId){
     el.classList.remove('combo-in'); void el.offsetWidth; el.classList.add('combo-in');
   }
 
-  function requiredPoints(level){ return 250 * level; }
+  function requiredPoints(level){ return 100 * level; }
   function checkLevelUp(){
     const req = requiredPoints(match.level);
     if (match.points >= req){
@@ -954,7 +994,7 @@ async function connectOnline(roomId){
 
   const ctx = ctxGame;
 
-  // Asteroides
+  // Asteroides con habilidades especiales (incluye spawner de mini-asteroides)
   function drawAsteroid(a){
     ctx.save(); ctx.translate(a.x,a.y);
     const hue = a.type==='ice'? 190 : a.type==='metal'? 220 : a.type==='lava'? 15 : 200;
@@ -990,7 +1030,7 @@ async function connectOnline(roomId){
     const vx = rnd(-60, 60)*speedScale, vy = rnd(90, 190 + lvl*5)*speedScale;
     const typePool = ['ice','metal','lava']; const type = typePool[Math.floor(rnd(0,typePool.length))];
     const sides = Math.floor(rnd(5,8));
-    const baseMul = gameMode==='Competencia' ? 1.2 : 1.0;
+    const baseMul = gameMode==='Competencia' ? 1.25 : 1.0;
     const pShooter = (lvl>=3 ? clamp(0.08 + lvl*0.006, 0, 0.35) : 0) * baseMul;
     const pSplitter = (lvl>=5 ? clamp(0.06 + lvl*0.004, 0, 0.30) : 0) * baseMul;
     const pExploder = (lvl>=7 ? clamp(0.05 + lvl*0.004, 0, 0.28) : 0) * baseMul;
@@ -1004,7 +1044,7 @@ async function connectOnline(roomId){
     asteroids.push({x,y,vx,vy,size:sizeBase, hp, type, sides, rot:rnd(0,Math.PI*2), jitter:rnd(0,Math.PI*2), special, fire:rnd(0.6,1.5)});
   }
 
-  // Poderes
+  // Íconos HUD de poderes
   function powerIconSVG(kind, color){
     const base = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`;
     if (kind==='Magnet') return base + `<path d="M6 7v6a6 6 0 0 0 12 0V7" /><path d="M6 7h12" /></svg>`;
@@ -1075,36 +1115,19 @@ async function connectOnline(roomId){
     }
     playSound('shoot');
   }
-function droneLogic(dt){
-  if (!powers.Drone.active) return;
-  powers.Drone.angle += dt*2.1;
-  const rx = player.x + Math.cos(powers.Drone.angle)*38;
-  const ry = player.y + Math.sin(powers.Drone.angle)*38;
-
-  // Dibujar la nave auxiliar
-  ctx.save();
-  ctx.translate(rx, ry);
-  ctx.strokeStyle = '#ff3a8c';
-  ctx.lineWidth = 2.2;
-  ctx.shadowColor = '#ff3a8c';
-  ctx.shadowBlur = 8;
-  ctx.beginPath();
-  ctx.moveTo(14,0); ctx.lineTo(-10,-8); ctx.lineTo(-10,8); ctx.closePath();
-  ctx.stroke();
-  ctx.restore();
-
-  // Disparo automático hacia asteroides
-  if (Math.random()<0.05){
-    const target = asteroids[0] || bosses[0];
-    const angle = target ? Math.atan2(target.y-ry, target.x-rx) : -Math.PI/2;
-    bullets.push({
-      x:rx, y:ry,
-      vx:Math.cos(angle)*640, vy:Math.sin(angle)*640,
-      r:3.5, life:1500, drone:true
-    });
+  function droneLogic(dt){
+    if (!powers.Drone.active) return;
+    powers.Drone.angle += dt*2.1;
+    const rx = player.x + Math.cos(powers.Drone.angle)*38;
+    const ry = player.y + Math.sin(powers.Drone.angle)*38;
+    if (!powers.Missiles.active && Math.random()< (powers.Burst.active ? 0.10 : 0.04)){
+      const target = asteroids[0] || bosses[0];
+      const angle = target ? Math.atan2(target.y-ry, target.x-rx) : -Math.PI/2;
+      bullets.push({x:rx, y:ry, vx:Math.cos(angle)*640, vy:Math.sin(angle)*640, r:3.5, life:1500, drone:true});
+    } else if (powers.Missiles.active && Math.random()<0.04){
+      missiles.push({x:rx, y:ry, vx:0, vy:-240, r:5, turn:0});
+    }
   }
-}
-
   function vortexLogic(dt){
     if (!powers.Vortex.active) return;
     const R = 120; const cx = player.x, cy = player.y-30;
@@ -1168,14 +1191,7 @@ function droneLogic(dt){
     ctx.drawImage(tempCanvas, -70, -45); ctx.restore();
   }
   function renderRemotePlayers(dt){
-    remotePlayers.forEach((rp, uid)=>{
-      // dibujar al otro jugador
-      ctx.save(); ctx.translate(rp.x, rp.y);
-      ctx.strokeStyle = rp.color; ctx.lineWidth=2.2; ctx.shadowColor=rp.color; ctx.shadowBlur=10;
-      ctx.beginPath(); ctx.moveTo(18,0); ctx.lineTo(-14,-12); ctx.lineTo(-14,12); ctx.closePath(); ctx.stroke();
-      ctx.restore();
-      positionNameTag(uid, rp.x, rp.y);
-    });
+    // No dibujar naves de otros jugadores, solo dejar la nave del jugador
   }
   function renderFlash(){ if (flashShot>0){ const alpha = Math.min(0.25, flashShot/2000); ctx.fillStyle = `rgba(255,255,255,${alpha})`; ctx.fillRect(0,0,W,H); flashShot -= 16; } }
   function renderParticles(dt){
@@ -1358,6 +1374,17 @@ function droneLogic(dt){
       const rk = computeRank(playerData.levelGlobal); playerData.rankName = rk.name; playerData.rankColor = rk.color;
       playerData.shipStoredIndex = currentUnlockedShipIndex(playerData.levelGlobal);
       persistGlobal().catch(()=>{});
+      if (playerData.uid){
+        ensureFirebase().then(({db})=>{
+          db.collection('leaderboard').doc(playerData.uid).set({
+            username: playerData.username||'Jugador',
+            points: playerData.pointsGlobal,
+            rank: rk.name,
+            country: playerData.geoAccepted ? (playerData.country||'Desconocido') : 'Desconocido',
+            updatedAt: Date.now()
+          }, {merge:true});
+        });
+      }
     }
     refreshPlayerStateUI();
     removeAllNameTags();
@@ -1433,13 +1460,7 @@ function droneLogic(dt){
     showLevelBanner(match.level);
     if (mode!=='Competencia'){ removeAllNameTags(); currentRoomId=null; }
   }
-  function exitGame(){
-    running=false; paused=false; hideScreen(qs('#gameOverOverlay')); hideScreen(qs('#pauseOverlay')); hideScreen(qs('#waitingOnline'));
-    switchSections('#game', '#menu'); removeAllNameTags();
-    // cancelar listeners de sala/presencia
-    if (roomUnsub) roomUnsub(); roomUnsub=null;
-    if (presenceUnsub) presenceUnsub(); presenceUnsub=null;
-  }
+  function exitGame(){ running=false; paused=false; hideScreen(qs('#gameOverOverlay')); hideScreen(qs('#pauseOverlay')); hideScreen(qs('#waitingOnline')); switchSections('#game', '#menu'); removeAllNameTags(); }
   function togglePause(){ paused = !paused; const p = qs('#pauseOverlay'); if (paused) showScreen(p); else hideScreen(p); }
   function restartGame(){ hideScreen(qs('#pauseOverlay')); hideScreen(qs('#gameOverOverlay')); startGame(gameMode); }
 
@@ -1451,14 +1472,13 @@ function droneLogic(dt){
   qs('#btnGORestart').addEventListener('click', restartGame);
   qs('#btnGOMenu').addEventListener('click', exitGame);
 
-  // Canvas clicks (debug)
-  qs('#canvas').addEventListener('click', (e)=>{ if (Math.random()<0.15) spawnPickup(e.clientX, e.clientY); });
+  // Clicks en canvas (debug pickups)
+  const canvasEl = qs('#canvas');
+  canvasEl.addEventListener('click', (e)=>{ if (Math.random()<0.15) spawnPickup(e.clientX, e.clientY); });
 
-  // Inicial
-  fetchIP().then(updateIPText);
+  // Menú y tablas
   refreshPlayerStateUI();
   showScreen(qs('#menu'));
 </script>
 </body>
 </html>
-
