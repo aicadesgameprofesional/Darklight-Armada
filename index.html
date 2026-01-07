@@ -746,128 +746,38 @@
   qs('#btnQuit').addEventListener('click', async ()=>{ await logout(); alert('Sesión cerrada. Hasta pronto.'); });
 
   // Online: salas de 2 jugadores con presencia y sincronización básica
-  const MAX_ROOM_PLAYERS = 2;
-  let currentRoomId = null;
-  let presenceUnsub = null;
-  let roomUnsub = null;
-  const remotePlayers = new Map(); // uid -> {x,y,name,rank,color}
-  const nameTags = new Map(); // uid -> el
+  const MAX_ROOM_PLAYERS = 4;
 
-  function addNameTag(id, text, color='#eaf3ff'){
-    let el = nameTags.get(id);
-    if (!el){ el = document.createElement('div'); el.className='name-tag'; document.body.appendChild(el); nameTags.set(id, el); }
-    el.textContent = text; el.style.borderColor = 'rgba(255,255,255,.18)'; el.style.boxShadow = `0 0 12px ${color}33`;
-  }
-  function positionNameTag(id, x, y){ const el = nameTags.get(id); if (!el) return; el.style.left = x+'px'; el.style.top = y+'px'; }
-  function removeAllNameTags(){ nameTags.forEach(el=> el.remove()); nameTags.clear(); }
+async function connectOnline(roomId){
+  const wait = qs('#waitingOnline');
+  const {db} = await ensureFirebase();
+  const roomsRef = db.collection('rooms').doc(roomId);
 
-  async function autoMatchRoom(){
-    const {db} = await ensureFirebase();
-    const roomsRef = db.collection('rooms');
-    // buscar sala abierta con menos de 2
-    const snap = await roomsRef.where('status','==','open').orderBy('createdAt','asc').limit(20).get();
-    let target = null;
-    snap.forEach(doc=>{
-      const d = doc.data();
-      if ((d.members?.length || 0) < MAX_ROOM_PLAYERS) target = {id: doc.id, data:d};
-    });
-    if (!target){
-      const newRoom = await roomsRef.add({ status: 'open', createdAt: Date.now(), members: [] });
-      target = {id:newRoom.id, data:{members:[], status:'open'}};
-    }
-    currentRoomId = target.id;
-    const conf = computeRank(playerData.levelGlobal);
-    await roomsRef.doc(currentRoomId).set({
-      status: 'open',
-      updatedAt: Date.now(),
-      members: firebase.firestore.FieldValue.arrayUnion({
-        uid: playerData.uid,
-        name: playerData.username || 'Jugador',
-        rank: conf.name,
-        joinedAt: Date.now(),
-        ready: false
-      })
-    }, {merge:true});
+  roomUnsub = roomsRef.onSnapshot(async snap=>{
+    const d = snap.data(); if (!d) return;
+    const members = d.members || [];
+    const connected = members.length;
 
-    // marcar llena si llega a 2
-    const doc = await roomsRef.doc(currentRoomId).get();
-    const mcount = (doc.data()?.members||[]).length;
-    if (mcount >= MAX_ROOM_PLAYERS){
-      await roomsRef.doc(currentRoomId).set({ status: 'full', updatedAt: Date.now() }, {merge:true});
-    }
-    return currentRoomId;
-  }
-
-  async function connectOnline(roomId){
-    const wait = qs('#waitingOnline');
-    const {db} = await ensureFirebase();
-    const roomsRef = db.collection('rooms').doc(roomId);
-    const presenceRef = roomsRef.collection('presence');
-
-    // Actualizar mi presencia periódicamente
+    // marcarme ready
     const meId = playerData.uid;
-    let lastPresenceSend = 0;
-    function tickPresence(){
-      const now = Date.now();
-      if (now - lastPresenceSend >= 80 && running && !paused){
-        presenceRef.doc(meId).set({
-          uid: meId,
-          name: playerData.username || 'Yo',
-          rank: computeRank(playerData.levelGlobal).name,
-          x: player.x, y: player.y,
-          alive: player.alive,
-          t: firebase.firestore.FieldValue.serverTimestamp()
-        }, {merge:true});
-        lastPresenceSend = now;
-      }
-      requestAnimationFrame(tickPresence);
+    const updatedMembers = members.map(m=>{
+      if (m.uid === meId && !m.ready) return {...m, ready:true};
+      return m;
+    });
+    if (JSON.stringify(updatedMembers) !== JSON.stringify(members)){
+      await roomsRef.set({ members: updatedMembers }, {merge:true});
     }
 
-    // Escuchar cambios de miembros de la sala para iniciar cuando haya 2 y estén listos
-    if (roomUnsub) roomUnsub();
-    roomUnsub = roomsRef.onSnapshot(async snap=>{
-      const d = snap.data(); if (!d) return;
-      const members = d.members || [];
-      const connected = members.length;
-      // marcarme 'ready' cuando entro
-      const updatedMembers = members.map(m=>{
-        if (m.uid === meId && !m.ready) return {...m, ready:true};
-        return m;
-      });
-      if (JSON.stringify(updatedMembers) !== JSON.stringify(members)){
-        await roomsRef.set({ members: updatedMembers, updatedAt: Date.now() }, {merge:true});
-      }
+    // Condición de inicio: al menos 2 jugadores listos
+    const readyCount = updatedMembers.filter(m=>m.ready).length;
+    if (readyCount >= 2 && !running){
+      hideScreen(wait);
+      startGame('Competencia');
+      tickPresence();
+    }
+  });
+}
 
-      // Cuando haya 2 conectados y ambos listos, iniciar
-      const allReady = connected===2 && updatedMembers.every(m=>m.ready===true);
-      if (allReady && !running){
-        hideScreen(wait);
-        startGame('Competencia');
-        tickPresence();
-      }
-
-      // Crear etiquetas de nombre remotas
-      remotePlayers.clear();
-      members.forEach(m=>{
-        const colorMap = {Bronce:'#a87432', Plata:'#b8b8b8', Oro:'#e7c955'};
-        const color = colorMap[m.rank] || '#2df7ff';
-        addNameTag(m.uid, `${m.name} — ${m.rank}`, color);
-      });
-    });
-
-    // Escuchar presencia (posiciones) para pintar al otro jugador
-    if (presenceUnsub) presenceUnsub();
-    presenceUnsub = presenceRef.onSnapshot(snap=>{
-      snap.docChanges().forEach(ch=>{
-        const data = ch.doc.data();
-        if (!data || data.uid===playerData.uid) return; // ignorar mi propio doc
-        remotePlayers.set(data.uid, {
-          x:data.x||0, y:data.y||0, name:data.name||'Jugador', rank:data.rank||'Bronce',
-          color: (data.rank==='Plata'?'#b8b8b8': data.rank==='Oro'?'#e7c955':'#2df7ff')
-        });
-      });
-    });
-  }
 
   qs('#btnPlayOnline').addEventListener('click', async ()=>{
     if (!playerData.uid){ alert('Inicia sesión para jugar online.'); return; }
@@ -1551,3 +1461,4 @@ function droneLogic(dt){
 </script>
 </body>
 </html>
+
