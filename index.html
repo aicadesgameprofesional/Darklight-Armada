@@ -19,7 +19,7 @@
     --ok:#55ff88;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:#000; color:var(--text); font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  html,body{height:100%;margin:0;background:#000; color:var(--text); font-family:'Press Start 2P', system-ui, Segoe UI, Roboto, Arial, sans-serif; overflow:hidden}
 
   .screen{opacity:0; transform:scale(0.98); filter:blur(4px); transition:opacity .3s, transform .3s, filter .3s}
   .screen.show{opacity:1; transform:scale(1); filter:blur(0)}
@@ -36,8 +36,8 @@
     opacity:0; transform:translateY(18px) scale(.98); animation:logoIn 1.1s ease forwards .2s;
   }
   .rights{margin-top:10px; font-size:13px; color:var(--muted); opacity:0; transform:translateY(10px); animation:fadeUp .9s ease forwards .7s}
-  .beam{position:absolute; left:50%; top:0; transform:translateX(-50%); width:2px; height:0; background:linear-gradient(180deg, rgba(45,247,255,0), rgba(255,58,140,.6)); box-shadow:0 0 22px rgba(255,58,140,.25); animation:beamDrop 1.2s cubic-bezier(.2,.8,.2,1) .55s forwards}
-  @keyframes logoIn{to{opacity:1; transform:translateY(0) scale(1)}}
+  .beam{position:absolute; left:50%; top:0; transform:translateX(-50%); width:2px; height:0; background:linear-gradient(180deg, rgba(45,247,255,0), rgba(255,58,140,.6)); box-shadow:0 0 22px rgba(255,58,140,.25); animation:beamDrop 2.4s cubic-bezier(.2,.8,.2,1) .55s forwards}
+  @keyframes logoIn{0%{opacity:0; transform:translateY(18px) scale(.98)} 70%{opacity:1; transform:translateY(0) scale(1)} 100%{opacity:1; transform:translateY(0) scale(1)}}
   @keyframes fadeUp{to{opacity:.92; transform:translateY(0)}}
   @keyframes beamDrop{to{height:74%}}
 
@@ -58,7 +58,7 @@
     display:grid; grid-template-columns:1.1fr .9fr; gap:16px; }
   .panel{
     background:var(--glass); backdrop-filter:blur(12px);
-    border:1px solid var(--line); border-radius:16px; padding:12px; box-shadow:0 8px 30px rgba(0,0,0,.35);
+    border:2px solid var(--neon1); border-radius:16px; padding:12px; box-shadow:0 0 15px rgba(45,247,255,0.5), 0 0 25px rgba(255,58,140,0.5), inset 0 0 12px rgba(45,247,255,0.3);
     display:flex; flex-direction:column; max-height:calc(100vh - 36px); overflow:auto;
     animation:panelIn .5s ease forwards;
   }
@@ -101,20 +101,91 @@
   .ship-label{ color:var(--muted); font-weight:600; font-size:12px }
 
   /* Juego */
-  #game{ position:fixed; inset:0; display:none; background:radial-gradient(900px 420px at 50% 50%, #0a0d26 0%, #000 62%) }
+  #game{ 
+    position:fixed; 
+    inset:0; 
+    display:none; 
+    background: black;
+    overflow: hidden;
+  }
+  
+  /* Estrellas */
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: fall linear infinite;
+  }
+  
+  /* Animación de caída */
+  @keyframes fall {
+    from { transform: translateY(-100vh); }
+    to   { transform: translateY(100vh); }
+  }
+body { transition: background-color 1.5s ease; }
+/* Fixed: removed stray closing brace that caused a '{ expected' parse error */
+
+  @keyframes starScrollSmall {
+    0% { background-position: 50% 0%; }
+    100% { background-position: 50% 240px; }
+  }
+  @keyframes starScrollMedium {
+    0% { background-position: 30% 100%; }
+    100% { background-position: 30% 0%; }
+  }
+  @keyframes starScrollLarge {
+    0% { background-position: 70% 0%; }
+    100% { background-position: 70% 480px; }
+  }
+  @keyframes nebulaPulse {
+    0% { opacity: 0.95; filter: hue-rotate(0) brightness(1.1); }
+    50% { opacity: 0.8; filter: hue-rotate(30deg) brightness(1); }
+    100% { opacity: 0.95; filter: hue-rotate(0) brightness(1.1); }
+  }
+
+  @keyframes nebulaPulse {
+    0% { opacity: 0.95; }
+    50% { opacity: 0.85; filter: hue-rotate(15deg); }
+    100% { opacity: 0.95; }
+  }
+
+  .level-1 { --level-bg: #0a0d26; --neon1: #2df7ff; }
+  .level-2 { --level-bg: #1a1f4d; --neon1: #ff6f3a; }
+  .level-3 { --level-bg: #2a2f66; --neon1: #7bff7b; }
+  .level-4 { --level-bg: #3a3f86; --neon1: #ff3a8c; }
+  .level-5 { --level-bg: #4a4fa6; --neon1: #ffd166; }
+@keyframes starScroll {
+  0% { background-position: 50% 0%; }
+  100% { background-position: 50% 100%; }
+}
+  @keyframes backgroundPulse {
+    0% { background-color: #0a0d26; }
+    50% { background-color: #1a1d46; }
+    100% { background-color: #2a2d66; }
+  }
+  @keyframes nebulaMove {
+    0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+    100% { background-position: 100% 100%, 100% 100%, 100% 100%; }
+  }
+  .level-1 { background-color: #0a0d26 !important; }
+  .level-2 { background-color: #1a1d46 !important; }
+  .level-3 { background-color: #2a2d66 !important; }
+  .level-4 { background-color: #3a3d86 !important; }
+  .level-5 { background-color: #4a4da6 !important; }
   #canvas{ position:absolute; inset:0 }
   #hud{ position:absolute; top:8px; left:8px; right:8px; display:flex; gap:8px; align-items:flex-start; z-index:3; flex-wrap:wrap; justify-content:center }
   .hud-card{ background:rgba(12,14,28,.72); backdrop-filter:blur(7px); border:1px solid var(--line); border-radius:10px; padding:8px 10px; color:#eaf3ff; min-width:220px }
+  
+  /* Configuración de poderes */
+  .power-spawn-rate { --spawn-interval: 0.3s; }
 
   .hud-row{display:flex; gap:8px; flex-wrap:wrap}
   .hud-stat{ display:flex; align-items:center; gap:6px }
   .hud-ico{ width:16px; height:16px }
 
-  /* Jefe */
-  #bossBarWrap{ position:absolute; top:8px; left:50%; transform:translateX(-50%); width:min(560px, 92%); height:18px; z-index:4; display:none; align-items:center; gap:8px }
-  #bossBar{ flex:1; height:12px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; border:1px solid var(--line) }
-  #bossBarFill{ height:100%; width:0%; background:linear-gradient(90deg, #ff6f3a, var(--accent)); box-shadow:0 0 12px rgba(255,111,58,.45) }
-  #bossName{ color:var(--accent); font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-size:12px }
+
 
   /* Banners */
   #levelBanner,#comboBanner{
@@ -142,18 +213,142 @@
   .toggle.on .toggle-dot{ background:#55ff88 }
 
   /* Online: nombres diminutos sobre naves */
-  .name-tag, .enemy-ship, .drone { display: none !important; }
-  .drone{
-    position:absolute;
-    width:24px;
-    height:24px;
-    background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15 6H9L12 2ZM12 22L9 18H15L12 22ZM22 12L18 9V15L22 12ZM2 12L6 15V9L2 12Z" fill="%232df7ff"/></svg>');
-    animation:droneFloat 1.4s ease-in-out infinite;
-    filter:drop-shadow(0 0 6px rgba(45,247,255,.6));
+  .name-tag, .enemy-ship { display: none !important; }
+  
+  
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+    25% { transform: rotate(90deg) translateX(150px) rotate(-90deg); }
+    50% { transform: rotate(180deg) translateX(150px) rotate(-180deg); }
+    75% { transform: rotate(270deg) translateX(150px) rotate(-270deg); }
+    100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
   }
-  @keyframes droneFloat{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-6px)}
+  
+  @keyframes shoot {
+    0% { box-shadow: 0 0 20px #ff00aa, inset 0 0 10px #ff00aa; }
+    50% { box-shadow: 0 0 40px #ff00aa, inset 0 0 20px #ff00aa; }
+    100% { box-shadow: 0 0 20px #ff00aa, inset 0 0 10px #ff00aa; }
+  }
+  
+  
+  
+  @keyframes laserShot {
+    0% { height: 0; opacity: 0.8; }
+    50% { height: 150px; opacity: 1; }
+    100% { height: 0; opacity: 0; }
+  }
+  
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+  }
+  
+  @keyframes shoot {
+    0% { box-shadow: 0 0 20px #ff00aa, inset 0 0 10px #ff00aa; }
+    100% { box-shadow: 0 0 40px #ff00aa, inset 0 0 20px #ff00aa; }
+  }
+
+  /* Jefes - Estilos CSS */
+  #bossBarWrap {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(12, 14, 28, 0.85);
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--neon1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 0 20px rgba(45, 247, 255, 0.4);
+  }
+  
+  #bossName {
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(45, 247, 255, 0.6);
+  }
+  
+  #bossBar {
+    width: 300px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  #bossBarFill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3a8c, #ff5544);
+    width: 100%;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 10px rgba(255, 58, 140, 0.6);
+  }
+  
+
+  
+  
+  
+  
+  /* Hélices */
+  .rotor {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ff00aa;
+    box-shadow: 0 0 15px #ff00aa;
+    overflow: hidden;
+  }
+
+  .rotor.left-top { top: -25px; left: -25px; }
+  .rotor.right-top { top: -25px; right: -25px; }
+  .rotor.left-bottom { bottom: -25px; left: -25px; }
+  .rotor.right-bottom { bottom: -25px; right: -25px; }
+
+  .blade {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 30px; height: 6px;
+    background: #ff00aa;
+    transform-origin: left center;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .blade:nth-child(1) { transform: translate(-50%,-50%) rotate(0deg); }
+  .blade:nth-child(2) { transform: translate(-50%,-50%) rotate(90deg); }
+  .blade:nth-child(3) { transform: translate(-50%,-50%) rotate(180deg); }
+  .blade:nth-child(4) { transform: translate(-50%,-50%) rotate(270deg); }
+
+  @keyframes spin {
+    to { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+
+  /* Propulsor inferior */
+  .flame {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 30px;
+    background: radial-gradient(circle, #ff00aa, transparent);
+    border-radius: 50%;
+    animation: flamePulse 0.3s infinite alternate;
+  }
+
+  @keyframes flamePulse {
+    from { transform: translateX(-50%) scaleY(1); opacity: 0.8; }
+    to   { transform: translateX(-50%) scaleY(1.4); opacity: 0.4; }
   }
 .name-tag{
     display:none; /* Ocultar naves amarillas */
@@ -183,6 +378,28 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     .hud-card{min-width:auto}
     .btn{font-size:13px; padding:10px}
     .title{font-size:20px}
+  }
+/* Efecto CRT */
+  .menu-wrap::before {
+    content: '';
+    position: fixed;
+    inset:0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.15) 0px,
+      rgba(0,0,0,0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index:1;
+    mix-blend-mode: multiply;
+    animation: scanline 6s linear infinite;
+  }
+  
+  @keyframes scanline {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
   }
 </style>
 </head>
@@ -242,8 +459,8 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   <div class="panel">
     <h3 class="title">Cómo jugar</h3>
     <div class="list">
-      <div><strong>Progresión:</strong> Subes nivel cada 250 puntos. Asteroides dan 5 puntos.</div>
-      <div><strong>Jefes:</strong> Cada 5 niveles. Barra de vida y patrones.</div>
+      <div><strong>Progresión:</strong> Subes nivel cada 50 puntos. Asteroides dan 5 puntos.</div>
+      <div><strong>Jefes:</strong> Desactivados.</div>
       <div><strong>Poderes (20s):</strong> Caída rara. Misiles desactivan balas. Corazón suma +1 vida.</div>
       <div><strong>Asteroides especiales:</strong> Disparan, se dividen, explotan y algunos disparan mini-asteroides.</div>
       <div><strong>Progreso Normal:</strong> Si pierdes, regresas al último nivel alcanzado; en Historial puedes reiniciar a nivel 1.</div>
@@ -472,6 +689,122 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     shipStoredIndex: 0,
     soundOn: true
   };
+
+/* Sistema de jefes */
+let currentBoss = null;
+let bossHealth = 100;
+let bossAttackTimer = 0;
+let bossAttackPattern = 0;
+let bossMoveTimer = 0;
+let defeatedBossLevels = new Set(); // Niveles donde el jefe ya fue derrotado
+
+// Definición de diferentes tipos de jefes con formas y ataques únicos
+const bossTypes = [
+  {
+    name: 'Cyber Kraken',
+    color: '#ff3a8c',
+    shape: 'kraken',
+    baseHP: 80,
+    attacks: ['spread', 'laser', 'orbital'],
+    movePattern: 'horizontal',
+    size: 50
+  },
+  {
+    name: 'Nebula Dragon',
+    color: '#7bff7b',
+    shape: 'dragon',
+    baseHP: 100,
+    attacks: ['flame', 'meteor', 'charge'],
+    movePattern: 'sine',
+    size: 55
+  },
+  {
+    name: 'Phantom Titan',
+    color: '#2df7ff',
+    shape: 'titan',
+    baseHP: 120,
+    attacks: ['homing', 'shield', 'teleport'],
+    movePattern: 'teleport',
+    size: 60
+  },
+  {
+    name: 'Void Reaper',
+    color: '#a07bff',
+    shape: 'reaper',
+    baseHP: 90,
+    attacks: ['spiral', 'void', 'scythe'],
+    movePattern: 'circular',
+    size: 48
+  },
+  {
+    name: 'Solar Flare',
+    color: '#ffd166',
+    shape: 'flare',
+    baseHP: 110,
+    attacks: ['burst', 'nova', 'beam'],
+    movePattern: 'zigzag',
+    size: 52
+  },
+  {
+    name: 'Crystal Guardian',
+    color: '#4bd1b8',
+    shape: 'crystal',
+    baseHP: 130,
+    attacks: ['crystal', 'reflect', 'explode'],
+    movePattern: 'slow',
+    size: 58
+  }
+];
+
+function spawnBoss(level) {
+  const bossLevel = Math.floor(level / 5);
+  const bossIndex = (bossLevel - 1) % bossTypes.length;
+  const bossType = bossTypes[bossIndex];
+  
+  // Aumentar dificultad con el nivel
+  const difficultyMultiplier = 1 + (bossLevel - 1) * 0.3;
+  const bossHP = Math.floor(bossType.baseHP * difficultyMultiplier);
+  
+  currentBoss = {
+    ...bossType,
+    hp: bossHP,
+    maxHP: bossHP,
+    x: W * 0.5,
+    y: 120,
+    vx: bossType.movePattern === 'horizontal' ? 80 : 0,
+    vy: 0,
+    angle: 0,
+    fire: 0,
+    fireRate: 1.8 - Math.min(0.8, bossLevel * 0.05),
+    moveSpeed: 60 + bossLevel * 5,
+    attackCooldown: 0,
+    phase: 0,
+    teleportTimer: 0,
+    chargeDir: 0
+  };
+  
+  currentBossHP = currentBoss.hp;
+  currentBossMax = currentBoss.maxHP;
+  
+  qs('#bossName').textContent = currentBoss.name;
+  qs('#bossBarFill').style.width = '100%';
+  qs('#bossBarWrap').style.display = 'flex';
+  
+  inBoss = true;
+  asteroids.length = 0;
+  bossAttackTimer = 0;
+  bossAttackPattern = 0;
+  bossMoveTimer = 0;
+  
+  playSound('boss');
+}
+
+function checkBossLevel(level) {
+  // Solo aparecer jefe si es múltiplo de 5, mayor a 0, y el jefe no ha sido derrotado en este nivel
+  if (level % 5 === 0 && level > 0 && !defeatedBossLevels.has(level) && !inBoss) {
+    spawnBoss(level);
+  }
+}
 
   let gameMode = 'Normal';
   let running=false, paused=false;
@@ -949,7 +1282,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   const enemyBullets=[];
   const powers = {
     Magnet:{active:false,until:0,color:'#2df7ff'},
-    Drone:{active:false,until:0,color:'#ff3a8c',angle:0},
+    Drone:{active:false,until:0,color:'#ff00aa',angle:0},
     Vortex:{active:false,until:0,color:'#7bff7b'},
     Shield:{active:false,until:0,color:'#a0c8ff'},
     Double:{active:false,until:0,color:'#ffd166'},
@@ -958,8 +1291,10 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     Heart:{active:false,until:0,color:'#ff4d6d'}
   };
   const powerDur = 20_000;
-  const ASTEROID_POINTS = 5;
+  const ASTEROID_POINTS = 10;
   let last=0, screenShake=0, flashShot=0, levelBgHue=210, inBoss=false, currentBossHP=0, currentBossMax=0;
+let bossEnabled = true;
+
 
   let comboChain = 0, lastKillTs = 0;
   function onAsteroidKill(){
@@ -973,7 +1308,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     el.classList.remove('combo-in'); void el.offsetWidth; el.classList.add('combo-in');
   }
 
-  function requiredPoints(level){ return 100 * level; }
+  function requiredPoints(level){ return 50; }
   function checkLevelUp(){
     const req = requiredPoints(match.level);
     if (match.points >= req){
@@ -982,7 +1317,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
       qs('#hudLevel').textContent = match.level;
       levelBgHue = (levelBgHue + 43)%360;
       showLevelBanner(match.level);
-      if (match.level % 5 === 0){ startBossFight(); }
+      checkBossLevel(match.level);
       if (gameMode==='Normal'){ localStorage.setItem('nsf_normal_progress_level', String(match.level)); }
     }
   }
@@ -1048,7 +1383,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   function powerIconSVG(kind, color){
     const base = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`;
     if (kind==='Magnet') return base + `<path d="M6 7v6a6 6 0 0 0 12 0V7" /><path d="M6 7h12" /></svg>`;
-    if (kind==='Drone') return base + `<circle cx="12" cy="12" r="4"/><path d="M4 12h16"/></svg>`;
+    if (kind==='Drone') return base + `<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/><path d="M8 8l-2-2m10 10l2 2m-10 0l-2 2m10-10l2-2"/></svg>`;
     if (kind==='Vortex') return base + `<path d="M12 5c3 3-3 6 0 9s-3 6 0 9" /></svg>`;
     if (kind==='Shield') return base + `<path d="M12 3l8 4v6c0 5-4 8-8 8s-8-3-8-8V7z"/></svg>`;
     if (kind==='Double') return base + `<path d="M5 18l6-12 8 12"/><path d="M9 18l6-12"/></svg>`;
@@ -1061,7 +1396,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     const ctx = ctxGame; ctx.save(); ctx.translate(x,y); ctx.lineWidth=2; ctx.strokeStyle = powers[kind].color; ctx.shadowColor=powers[kind].color; ctx.shadowBlur=6;
     ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.stroke();
     if (kind==='Magnet'){ ctx.beginPath(); ctx.moveTo(-6,-4); ctx.lineTo(-6,6); ctx.arc(0,6,6,Math.PI,0); ctx.lineTo(6,-4); ctx.stroke(); }
-    else if (kind==='Drone'){ ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-8,0); ctx.lineTo(8,0); ctx.stroke(); }
+    else if (kind==='Drone'){ ctx.beginPath(); ctx.arc(0,0,6,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(0,0,2,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-8,-8); ctx.lineTo(-10,-10); ctx.moveTo(8,8); ctx.lineTo(10,10); ctx.moveTo(-8,8); ctx.lineTo(-10,10); ctx.moveTo(8,-8); ctx.lineTo(10,-10); ctx.stroke(); }
     else if (kind==='Vortex'){ for(let i=0;i<3;i++){ ctx.beginPath(); ctx.arc(0,0,4+i*2, i*0.6, i*0.6+Math.PI*1.2); ctx.stroke(); } }
     else if (kind==='Shield'){ ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.stroke(); }
     else if (kind==='Double'){ ctx.beginPath(); ctx.moveTo(-6,-4); ctx.lineTo(-2,4); ctx.moveTo(2,-4); ctx.lineTo(6,4); ctx.stroke(); }
@@ -1070,7 +1405,7 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     else if (kind==='Heart'){ ctx.fillStyle = '#ff4d6d'; ctx.beginPath(); ctx.moveTo(-4,0); ctx.bezierCurveTo(-4,-4,0,-4,0,-2); ctx.bezierCurveTo(0,-4,4,-4,4,0); ctx.bezierCurveTo(4,3,0,6,0,8); ctx.bezierCurveTo(0,6,-4,3,-4,0); ctx.fill(); }
     ctx.restore();
   }
-  function spawnPickup(x,y){ if (Math.random()>0.08) return; const kinds = Object.keys(powers); const k = kinds[Math.floor(rnd(0,kinds.length))]; pickups.push({x,y, vx:rnd(-40,40), vy:rnd(40,90), kind:k, r:12}); }
+  function spawnPickup(x,y){ if (Math.random()>0.3) return; const kinds = Object.keys(powers); const k = kinds[Math.floor(rnd(0,kinds.length))]; pickups.push({x,y, vx:rnd(-40,40), vy:rnd(40,90), kind:k, r:12}); }
   function activatePower(kind){ if (kind==='Heart'){ match.lives++; qs('#hudLives').textContent = match.lives; playSound('pickup'); return; } const p = powers[kind]; p.active=true; p.until = Date.now()+powerDur; playSound('pickup'); }
   function updatePowersUI(){
     const container = qs('#hudPowers'); container.innerHTML='';
@@ -1087,18 +1422,9 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   }
 
   // Jefe
-  function startBossFight(){ inBoss = true; asteroids.length = 0; spawnBoss(); qs('#bossBarWrap').style.display = 'flex'; }
+  function startBossFight(){ if (!bossEnabled) return; inBoss = true; asteroids.length = 0; spawnBoss(); qs('#bossBarWrap').style.display = 'flex'; gameLoop(); }
   function endBossFight(){ inBoss = false; qs('#bossBarWrap').style.display = 'none'; }
-  function spawnBoss(){
-    const shapes = ['tri','quad','ring','hydra'];
-    const shape = shapes[Math.floor(rnd(0,shapes.length))];
-    const hp = 140 + match.level*14;
-    bosses.push({x:W*0.5, y:120, vx:rnd(-70,70), vy:0, hp, shape, fire:0, phase:0});
-    currentBossHP = hp; currentBossMax = hp;
-    qs('#bossName').textContent = `Jefe ${shape.toUpperCase()}`;
-    qs('#bossBarFill').style.width = '100%';
-    playSound('boss');
-  }
+
 
   // Disparo
   function shoot(){
@@ -1115,18 +1441,114 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     }
     playSound('shoot');
   }
-  function droneLogic(dt){
-    if (!powers.Drone.active) return;
-    powers.Drone.angle += dt*2.1;
-    const rx = player.x + Math.cos(powers.Drone.angle)*38;
-    const ry = player.y + Math.sin(powers.Drone.angle)*38;
-    if (!powers.Missiles.active && Math.random()< (powers.Burst.active ? 0.10 : 0.04)){
-      const target = asteroids[0] || bosses[0];
-      const angle = target ? Math.atan2(target.y-ry, target.x-rx) : -Math.PI/2;
-      bullets.push({x:rx, y:ry, vx:Math.cos(angle)*640, vy:Math.sin(angle)*640, r:3.5, life:1500, drone:true});
-    } else if (powers.Missiles.active && Math.random()<0.04){
-      missiles.push({x:rx, y:ry, vx:0, vy:-240, r:5, turn:0});
+  // Sistema de Drone
+  let droneFireCooldown = 0;
+function droneLogic(dt){
+    if (!powers.Drone.active) {
+      droneFireCooldown = 0;
+      powers.Drone.angle = 0;
+      return;
     }
+    
+    // Actualizar ángulo orbital
+    powers.Drone.angle += dt * 2.1;
+    
+    // Calcular posición orbital alrededor del jugador
+    const orbitRadius = 100;
+    const droneX = player.x + Math.cos(powers.Drone.angle) * orbitRadius;
+    const droneY = player.y + Math.sin(powers.Drone.angle) * orbitRadius;
+    
+    // Buscar asteroide más cercano
+    let closestAsteroid = null;
+      let minDist = Infinity;
+      
+    for (let i = 0; i < asteroids.length; i++) {
+      const a = asteroids[i];
+      const dx = a.x - droneX;
+      const dy = a.y - droneY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < 350 && dist < minDist) {
+          minDist = dist;
+        closestAsteroid = a;
+      }
+    }
+    
+    // Disparar al asteroide más cercano
+    droneFireCooldown -= dt;
+    if (closestAsteroid && droneFireCooldown <= 0) {
+      const angle = Math.atan2(closestAsteroid.y - droneY, closestAsteroid.x - droneX);
+      const bulletSpeed = 720;
+      
+        bullets.push({
+        x: droneX,
+        y: droneY,
+        vx: Math.cos(angle) * bulletSpeed,
+        vy: Math.sin(angle) * bulletSpeed,
+        r: 5,
+        life: 1500,
+        drone: true,
+        color: '#ff00aa'
+      });
+      
+      droneFireCooldown = 0.5; // Disparar cada 0.5 segundos
+      playSound('shoot');
+    }
+  }
+  
+  function renderDrone(dt){
+    if (!powers.Drone.active) return;
+    
+    const orbitRadius = 100;
+    const droneX = player.x + Math.cos(powers.Drone.angle) * orbitRadius;
+    const droneY = player.y + Math.sin(powers.Drone.angle) * orbitRadius;
+    
+    ctx.save();
+    ctx.translate(droneX, droneY);
+    ctx.rotate(powers.Drone.angle + Math.PI / 2);
+    
+    // Color del drone
+    const droneColor = '#ff00aa';
+    ctx.strokeStyle = droneColor;
+    ctx.fillStyle = droneColor;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = droneColor;
+    ctx.shadowBlur = 12;
+    
+    // Cuerpo principal del drone (círculo)
+    ctx.beginPath();
+    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fill();
+    
+    // Centro
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    
+    // Hélices (4 puntos alrededor)
+    const propAngle = Date.now() * 0.02; // Rotación rápida de las hélices
+    for (let i = 0; i < 4; i++) {
+      const ang = (Math.PI * 2 * i) / 4 + propAngle;
+      const px = Math.cos(ang) * 12;
+      const py = Math.sin(ang) * 12;
+      
+      ctx.beginPath();
+      ctx.arc(px, py, 3, 0, Math.PI * 2);
+      ctx.fillStyle = droneColor;
+      ctx.fill();
+    }
+    
+    // Propulsor inferior
+    ctx.fillStyle = droneColor;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    ctx.ellipse(0, 12, 4, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    
+    ctx.restore();
   }
   function vortexLogic(dt){
     if (!powers.Vortex.active) return;
@@ -1141,16 +1563,30 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   }
   function missilesLogic(dt){
     missiles.forEach(m=>{
-      const target = bosses[0] || asteroids.reduce((p,c)=> (p && Math.hypot(p.x-m.x,p.y-m.y) < Math.hypot(c.x-m.x,c.y-m.y) ? p : c), null);
+      if (m.hostile) {
+        // Misiles hostiles persiguen al jugador
+        const ang = Math.atan2(player.y-m.y, player.x-m.x);
+        m.vx = lerp(m.vx, Math.cos(ang)*350, dt*2.5);
+        m.vy = lerp(m.vy, Math.sin(ang)*350, dt*2.5);
+      } else {
+        // Misiles del jugador persiguen enemigos
+        const target = currentBoss || asteroids.reduce((p,c)=> (p && Math.hypot(p.x-m.x,p.y-m.y) < Math.hypot(c.x-m.x,c.y-m.y) ? p : c), null);
       if (target){
         const ang = Math.atan2(target.y-m.y, target.x-m.x);
         m.vx = lerp(m.vx, Math.cos(ang)*300, dt*2.2);
         m.vy = lerp(m.vy, Math.sin(ang)*300, dt*2.2);
+        }
       }
       m.x += m.vx*dt; m.y += m.vy*dt;
     });
     for (let i=missiles.length-1;i>=0;i--){
-      if (missiles[i].x< -50 || missiles[i].x> W+50 || missiles[i].y< -50 || missiles[i].y> H+50) missiles.splice(i,1);
+      const m = missiles[i];
+      if (m.x< -50 || m.x> W+50 || m.y< -50 || m.y> H+50) missiles.splice(i,1);
+      // Colisión de misiles hostiles con el jugador
+      if (m.hostile && circleHit(player.x, player.y, 14, m.x, m.y, m.r)){
+        missiles.splice(i,1);
+        hitPlayer();
+      }
     }
   }
 
@@ -1203,14 +1639,35 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     }
   }
   function renderBullets(dt){
-    ctx.fillStyle = '#dbe8ff';
     for (let i=bullets.length-1;i>=0;i--){
       const b = bullets[i]; b.x += b.vx*dt; b.y += b.vy*dt; b.life -= dt*1000;
+      
+      // Usar color especial para balas del drone
+      if (b.drone) {
+        ctx.fillStyle = b.color || '#ff00aa';
+        ctx.shadowColor = b.color || '#ff00aa';
+        ctx.shadowBlur = 8;
+      } else {
+        ctx.fillStyle = '#dbe8ff';
+        ctx.shadowBlur = 0;
+      }
+      
       ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
       if (b.life<=0 || b.y< -40 || b.x<-40 || b.x>W+40) bullets.splice(i,1);
     }
+    ctx.shadowBlur = 0;
+    missiles.forEach(m=>{
+      if (m.hostile) {
+        ctx.fillStyle = '#ff3a8c';
+        ctx.shadowColor = '#ff3a8c';
+        ctx.shadowBlur = 10;
+      } else {
     ctx.fillStyle = '#ff5544';
-    missiles.forEach(m=>{ ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI*2); ctx.fill(); });
+        ctx.shadowBlur = 0;
+      }
+      ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI*2); ctx.fill();
+    });
+    ctx.shadowBlur = 0;
     ctx.fillStyle = '#ffd166';
     for (let i=enemyBullets.length-1;i>=0;i--){
       const eb = enemyBullets[i]; eb.x += eb.vx*dt; eb.y += eb.vy*dt; eb.life -= dt*1000;
@@ -1315,47 +1772,445 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
       if (p.y>H+60) pickups.splice(i,1);
     }
   }
-  function renderBosses(dt){
-    for (let i=bosses.length-1;i>=0;i--){
-      const b = bosses[i];
-      b.x += b.vx*dt; if (b.x<80 || b.x>W-80) b.vx *= -1;
-      b.fire -= dt;
-      if (b.fire<=0){
-        b.fire = 1.5 - Math.min(1.0, match.level*0.02);
-        let shots = [];
-        if (b.shape==='tri') shots = [-0.3,0,0.3];
-        else if (b.shape==='quad') shots = [-0.45,-0.15,0.15,0.45];
-        else if (b.shape==='ring') shots = [0,Math.PI/2,Math.PI,3*Math.PI/2];
-        else shots = [-0.5,-0.25,0,0.25,0.5];
-        shots.forEach(a=>{
-          const ang = b.shape==='ring' ? a : Math.atan2(player.y-b.y, player.x-b.x)+a;
-          bullets.push({x:b.x, y:b.y, vx:Math.cos(ang)*320, vy:Math.sin(ang)*320, r:5, life:2600, hostile:true});
+  // Lógica de ataques de jefes
+  function executeBossAttack(boss, attackType, dt) {
+    const speed = 380 + match.level * 5;
+    const angleToPlayer = Math.atan2(player.y - boss.y, player.x - boss.x);
+    
+    switch(attackType) {
+      case 'spread': // Disparo en abanico
+        for (let i = -2; i <= 2; i++) {
+          const ang = angleToPlayer + i * 0.3;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 5, life: 2800
+          });
+        }
+        break;
+        
+      case 'laser': // Rayo láser directo
+        enemyBullets.push({
+          x: boss.x, y: boss.y,
+          vx: Math.cos(angleToPlayer) * (speed * 1.5),
+          vy: Math.sin(angleToPlayer) * (speed * 1.5),
+          r: 7, life: 2000
         });
-      }
-      ctx.save(); ctx.translate(b.x,b.y); ctx.strokeStyle = '#ff6f3a'; ctx.lineWidth=3; ctx.shadowColor='#ff6f3a'; ctx.shadowBlur=12;
-      if (b.shape==='tri'){ ctx.beginPath(); ctx.moveTo(22,0); ctx.lineTo(-18,-18); ctx.lineTo(-18,18); ctx.closePath(); ctx.stroke(); }
-      else if (b.shape==='quad'){ ctx.strokeRect(-20,-20,40,40); }
-      else if (b.shape==='ring'){ ctx.beginPath(); ctx.arc(0,0,22,0,Math.PI*2); ctx.stroke(); }
-      else { ctx.beginPath(); ctx.arc(-18,0,12,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(18,0,12,0,Math.PI*2); ctx.stroke(); }
-      ctx.restore();
-      for (let j=bullets.length-1;j>=0;j--){
-        const bl = bullets[j]; if (bl.hostile) continue;
-        if (circleHit(b.x,b.y,24, bl.x,bl.y, bl.r)){
-          b.hp -= (powers.Missiles.active? 3:1); bullets.splice(j,1);
-          particles.push(explosionParticle(b.x,b.y,0.8)); playSound('explode');
-          screenShake = Math.max(screenShake, 10);
-          currentBossHP = b.hp; qs('#bossBarFill').style.width = clamp(currentBossHP/currentBossMax,0,1)*100+'%';
-          if (b.hp<=0){
-            match.points += 200 + Math.floor(match.level*4); qs('#hudScore').textContent = match.points;
-            for (let k=0;k<20;k++) particles.push(explosionParticle(b.x,b.y,1.1));
-            spawnPickup(b.x,b.y); bosses.splice(i,1); endBossFight(); break;
+        break;
+        
+      case 'orbital': // Balas orbitales
+        for (let i = 0; i < 8; i++) {
+          const ang = (Math.PI * 2 * i) / 8;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * (speed * 0.7),
+            vy: Math.sin(ang) * (speed * 0.7),
+            r: 4, life: 3000
+          });
+        }
+        break;
+        
+      case 'flame': // Llamas en cono
+        for (let i = -1; i <= 1; i++) {
+          const ang = angleToPlayer + i * 0.4;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 6, life: 2500
+          });
+        }
+        break;
+        
+      case 'meteor': // Meteoritos que caen
+        for (let i = 0; i < 5; i++) {
+          enemyBullets.push({
+            x: boss.x + (i - 2) * 40,
+            y: boss.y,
+            vx: (i - 2) * 60,
+            vy: speed * 0.8,
+            r: 6, life: 3000
+          });
+        }
+        break;
+        
+      case 'charge': // Carga hacia el jugador
+        boss.vx = Math.cos(angleToPlayer) * boss.moveSpeed * 2;
+        boss.vy = Math.sin(angleToPlayer) * boss.moveSpeed * 2;
+        boss.chargeDir = angleToPlayer;
+        break;
+        
+      case 'homing': // Misiles dirigidos
+        for (let i = 0; i < 3; i++) {
+          const ang = angleToPlayer + (i - 1) * 0.2;
+          missiles.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * 200,
+            vy: Math.sin(ang) * 200,
+            r: 6, turn: 0, hostile: true
+          });
+        }
+        break;
+        
+      case 'shield': // Escudo de balas
+        for (let i = 0; i < 12; i++) {
+          const ang = (Math.PI * 2 * i) / 12;
+          enemyBullets.push({
+            x: boss.x + Math.cos(ang) * 30,
+            y: boss.y + Math.sin(ang) * 30,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 5, life: 3200
+          });
+        }
+        break;
+        
+      case 'teleport': // Teletransporte y disparo
+        boss.x = rnd(100, W - 100);
+        boss.y = rnd(80, 200);
+        for (let i = 0; i < 6; i++) {
+          const ang = (Math.PI * 2 * i) / 6;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 5, life: 2800
+          });
+        }
+        break;
+        
+      case 'spiral': // Espiral de balas
+        boss.angle += dt * 3;
+        for (let i = 0; i < 3; i++) {
+          const ang = boss.angle + (Math.PI * 2 * i) / 3;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 5, life: 3000
+          });
+        }
+        break;
+        
+      case 'void': // Orbes de vacío
+        for (let i = 0; i < 4; i++) {
+          const ang = angleToPlayer + (i - 1.5) * 0.5;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * (speed * 0.6),
+            vy: Math.sin(ang) * (speed * 0.6),
+            r: 8, life: 3500
+          });
+        }
+        break;
+        
+      case 'scythe': // Hoz giratoria
+        boss.angle += dt * 2;
+        for (let i = 0; i < 2; i++) {
+          const ang = boss.angle + i * Math.PI;
+          enemyBullets.push({
+            x: boss.x + Math.cos(ang) * 40,
+            y: boss.y + Math.sin(ang) * 40,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 6, life: 3000
+          });
+        }
+        break;
+        
+      case 'burst': // Explosión de balas
+        for (let i = 0; i < 16; i++) {
+          const ang = (Math.PI * 2 * i) / 16;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 4, life: 2500
+          });
+        }
+        break;
+        
+      case 'nova': // Nova explosiva
+        for (let i = 0; i < 20; i++) {
+          const ang = (Math.PI * 2 * i) / 20;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * (speed * 1.2),
+            vy: Math.sin(ang) * (speed * 1.2),
+            r: 5, life: 2800
+          });
+        }
+        break;
+        
+      case 'beam': // Haz continuo
+        for (let i = 0; i < 3; i++) {
+          const ang = angleToPlayer + (i - 1) * 0.15;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * (speed * 1.8),
+            vy: Math.sin(ang) * (speed * 1.8),
+            r: 6, life: 1800
+          });
+        }
+        break;
+        
+      case 'crystal': // Cristales que se dividen
+        for (let i = 0; i < 6; i++) {
+          const ang = (Math.PI * 2 * i) / 6;
+          enemyBullets.push({
+            x: boss.x, y: boss.y,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            r: 7, life: 3000, crystal: true
+          });
+        }
+        break;
+        
+      case 'reflect': // Reflejo de balas
+        // Las balas del jugador se reflejan
+        break;
+        
+      case 'explode': // Explosión cercana
+        const dist = Math.hypot(player.x - boss.x, player.y - boss.y);
+        if (dist < 200) {
+          for (let i = 0; i < 12; i++) {
+            const ang = (Math.PI * 2 * i) / 12;
+            enemyBullets.push({
+              x: boss.x, y: boss.y,
+              vx: Math.cos(ang) * speed,
+              vy: Math.sin(ang) * speed,
+              r: 6, life: 2000
+            });
           }
         }
-      }
+        break;
+    }
+  }
+  
+  function renderBosses(dt){
+    if (!currentBoss || !inBoss) return;
+    
+    const b = currentBoss;
+    
+    // Movimiento según patrón
+    bossMoveTimer += dt;
+    switch(b.movePattern) {
+      case 'horizontal':
+        b.x += b.vx * dt;
+        if (b.x < 80 || b.x > W - 80) b.vx *= -1;
+        break;
+        
+      case 'sine':
+        b.x = W * 0.5 + Math.sin(bossMoveTimer * 1.5) * (W * 0.3);
+        b.y = 120 + Math.sin(bossMoveTimer * 0.8) * 30;
+        break;
+        
+      case 'teleport':
+        b.teleportTimer -= dt;
+        if (b.teleportTimer <= 0) {
+          b.x = rnd(100, W - 100);
+          b.y = rnd(80, 200);
+          b.teleportTimer = 3;
+        }
+        break;
+        
+      case 'circular':
+        b.angle += dt * 0.8;
+        b.x = W * 0.5 + Math.cos(b.angle) * (W * 0.25);
+        b.y = 120 + Math.sin(b.angle) * 40;
+        break;
+        
+      case 'zigzag':
+        b.x += b.vx * dt;
+        b.y = 120 + Math.sin(bossMoveTimer * 2) * 40;
+        if (b.x < 80 || b.x > W - 80) b.vx *= -1;
+        break;
+        
+      case 'slow':
+        b.x += Math.cos(bossMoveTimer * 0.5) * 40 * dt;
+        break;
+    }
+    
+    // Ataques
+    b.attackCooldown -= dt;
+    if (b.attackCooldown <= 0) {
+      const attackIndex = bossAttackPattern % b.attacks.length;
+      const attackType = b.attacks[attackIndex];
+      executeBossAttack(b, attackType, dt);
+      bossAttackPattern++;
+      b.attackCooldown = b.fireRate;
+    }
+    
+    // Renderizado según forma
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    ctx.strokeStyle = b.color;
+    ctx.fillStyle = b.color;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 15;
+    
+    switch(b.shape) {
+      case 'kraken': // Kraken con tentáculos
+        ctx.beginPath();
+        ctx.arc(0, 0, b.size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        for (let i = 0; i < 6; i++) {
+          const ang = (Math.PI * 2 * i) / 6 + bossMoveTimer;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(ang) * b.size, Math.sin(ang) * b.size);
+          ctx.stroke();
+        }
+        break;
+        
+      case 'dragon': // Dragón con alas
+        ctx.beginPath();
+        ctx.moveTo(0, -b.size * 0.6);
+        ctx.lineTo(-b.size * 0.5, b.size * 0.3);
+        ctx.lineTo(0, b.size * 0.5);
+        ctx.lineTo(b.size * 0.5, b.size * 0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-b.size * 0.3, -b.size * 0.2, b.size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(b.size * 0.3, -b.size * 0.2, b.size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+        
+      case 'titan': // Titán con escudo
+        ctx.beginPath();
+        ctx.arc(0, 0, b.size * 0.5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.rect(-b.size * 0.3, -b.size * 0.6, b.size * 0.6, b.size * 0.4);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(0, 0, b.size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+        
+      case 'reaper': // Reaper con guadaña
+        ctx.beginPath();
+        ctx.arc(0, 0, b.size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(0, -b.size * 0.5);
+        ctx.lineTo(Math.cos(b.angle) * b.size, Math.sin(b.angle) * b.size);
+        ctx.stroke();
+        break;
+        
+      case 'flare': // Flare solar
+        ctx.beginPath();
+        ctx.arc(0, 0, b.size * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        for (let i = 0; i < 8; i++) {
+          const ang = (Math.PI * 2 * i) / 8 + bossMoveTimer;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(ang) * b.size, Math.sin(ang) * b.size);
+          ctx.stroke();
+        }
+        break;
+        
+      case 'crystal': // Cristal geométrico
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const ang = (Math.PI * 2 * i) / 6;
+          const x = Math.cos(ang) * b.size * 0.5;
+          const y = Math.sin(ang) * b.size * 0.5;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+        break;
+    }
+    
+      ctx.restore();
+    
+    // Colisiones con balas del jugador
       for (let j=bullets.length-1;j>=0;j--){
-        const bl = bullets[j]; if (!bl.hostile) continue;
-        if (circleHit(player.x,player.y,14, bl.x,bl.y, bl.r)){ bullets.splice(j,1); hitPlayer(); }
+      const bl = bullets[j];
+      if (bl.hostile || bl.drone) continue;
+      if (circleHit(b.x, b.y, b.size, bl.x, bl.y, bl.r)){
+        b.hp -= (powers.Missiles.active? 3:1);
+        bullets.splice(j,1);
+        particles.push(explosionParticle(b.x, b.y, 0.8));
+        playSound('explode');
+          screenShake = Math.max(screenShake, 10);
+        currentBossHP = b.hp;
+        qs('#bossBarFill').style.width = clamp(currentBossHP/currentBossMax, 0, 1)*100+'%';
+        
+          if (b.hp<=0){
+          match.points += 200 + Math.floor(match.level*4);
+          qs('#hudScore').textContent = match.points;
+          for (let k=0;k<30;k++) particles.push(explosionParticle(b.x, b.y, 1.2));
+          spawnPickup(b.x, b.y);
+          // Marcar este nivel como completado (jefe derrotado)
+          defeatedBossLevels.add(match.level);
+          // Guardar niveles derrotados en localStorage (solo en modo Normal)
+          if (gameMode === 'Normal') {
+            localStorage.setItem('nsf_defeated_boss_levels', JSON.stringify(Array.from(defeatedBossLevels)));
+          }
+          currentBoss = null;
+          inBoss = false;
+          qs('#bossBarWrap').style.display = 'none';
+          playSound('explode');
+          break;
+        }
       }
+    }
+    
+    // Colisiones con misiles
+    for (let j=missiles.length-1;j>=0;j--){
+      const m = missiles[j];
+      if (m.hostile) continue;
+      if (circleHit(b.x, b.y, b.size, m.x, m.y, m.r)){
+        b.hp -= 5;
+        missiles.splice(j,1);
+        particles.push(explosionParticle(b.x, b.y, 1.0));
+        playSound('explode');
+        screenShake = Math.max(screenShake, 12);
+        currentBossHP = b.hp;
+        qs('#bossBarFill').style.width = clamp(currentBossHP/currentBossMax, 0, 1)*100+'%';
+        
+        if (b.hp<=0){
+          match.points += 200 + Math.floor(match.level*4);
+          qs('#hudScore').textContent = match.points;
+          for (let k=0;k<30;k++) particles.push(explosionParticle(b.x, b.y, 1.2));
+          spawnPickup(b.x, b.y);
+          // Marcar este nivel como completado (jefe derrotado)
+          defeatedBossLevels.add(match.level);
+          // Guardar niveles derrotados en localStorage (solo en modo Normal)
+          if (gameMode === 'Normal') {
+            localStorage.setItem('nsf_defeated_boss_levels', JSON.stringify(Array.from(defeatedBossLevels)));
+          }
+          currentBoss = null;
+          inBoss = false;
+          qs('#bossBarWrap').style.display = 'none';
+          playSound('explode');
+          break;
+        }
+      }
+    }
+    
+    // Colisiones con balas hostiles
+    for (let j=enemyBullets.length-1;j>=0;j--){
+      const eb = enemyBullets[j];
+      if (circleHit(player.x, player.y, 14, eb.x, eb.y, eb.r)){
+        enemyBullets.splice(j,1);
+        hitPlayer();
+      }
+    }
+    
+    // Colisión directa con el jugador
+    if (circleHit(b.x, b.y, b.size, player.x, player.y, 14)){
+      hitPlayer();
     }
   }
 
@@ -1367,10 +2222,22 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     const go = qs('#gameOverOverlay'); showScreen(go);
     const entry = { ts: Date.now(), points: match.points, level: match.level, mode: gameMode };
     saveHistoryEntry(entry);
-    if (gameMode==='Normal'){ localStorage.setItem('nsf_normal_progress_level', String(match.level)); }
+    // Si hay un jefe activo, quedarse en el mismo nivel (no avanzar)
+    // Si no hay jefe activo, guardar el nivel actual normalmente
+    if (gameMode==='Normal'){
+      if (inBoss && currentBoss) {
+        // Si hay jefe activo, quedarse en este nivel hasta vencerlo
+        localStorage.setItem('nsf_normal_progress_level', String(match.level));
+      } else {
+        // Si no hay jefe, guardar normalmente
+        localStorage.setItem('nsf_normal_progress_level', String(match.level));
+      }
+    }
     if (gameMode==='Competencia'){
       playerData.pointsGlobal += match.points;
       playerData.levelGlobal = Math.max(playerData.levelGlobal, match.level);
+checkBossLevel(playerData.levelGlobal);
+    checkBossLevel(playerData.levelGlobal);
       const rk = computeRank(playerData.levelGlobal); playerData.rankName = rk.name; playerData.rankColor = rk.color;
       playerData.shipStoredIndex = currentUnlockedShipIndex(playerData.levelGlobal);
       persistGlobal().catch(()=>{});
@@ -1404,13 +2271,14 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
 
     renderBackground();
     updateSpawns(dt);
-    droneLogic(dt); vortexLogic(dt); missilesLogic(dt);
+    vortexLogic(dt); missilesLogic(dt); droneLogic(dt);
 
     const sx = screenShake>0? rnd(-screenShake,screenShake):0;
     const sy = screenShake>0? rnd(-screenShake,screenShake):0;
     ctx.save(); ctx.translate(sx, sy);
 
     renderShip();
+    renderDrone(dt);
     renderRemotePlayers(dt);
     renderBullets(dt);
     renderAsteroids(dt);
@@ -1454,10 +2322,38 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
     const startLevel = mode==='Normal' ? getSavedNormalLevel() : 1;
     match = { points:0, level:startLevel, lives:3 };
     bullets.length=0; missiles.length=0; enemyBullets.length=0; asteroids.length=0; pickups.length=0; particles.length=0; bosses.length=0;
-    inBoss=false; qs('#bossBarWrap').style.display='none';
+    inBoss=false; currentBoss=null; currentBossHP=0; currentBossMax=0; bossAttackTimer=0; bossAttackPattern=0; bossMoveTimer=0;
+    qs('#bossBarWrap').style.display='none';
     player.alive=true; player.invul=0; player.x=W*0.5; player.y=H*0.72; player.angle=-Math.PI/2;
+    // Desactivar todos los poderes y resetear el drone
+    for (const key in powers) {
+      powers[key].active = false;
+      powers[key].until = 0;
+    }
+    powers.Drone.angle = 0;
+    droneFireCooldown = 0;
+    
+    // Cargar niveles de jefes derrotados desde localStorage (solo en modo Normal)
+    if (mode === 'Normal') {
+      const savedDefeated = localStorage.getItem('nsf_defeated_boss_levels');
+      if (savedDefeated) {
+        const levels = JSON.parse(savedDefeated);
+        defeatedBossLevels = new Set(levels);
+      } else {
+        defeatedBossLevels = new Set();
+      }
+    } else {
+      defeatedBossLevels = new Set();
+    }
+    
     qs('#hudScore').textContent = match.points; qs('#hudLevel').textContent = match.level; qs('#hudLives').textContent = match.lives;
     showLevelBanner(match.level);
+    
+    // Verificar si debe aparecer un jefe al iniciar (si el nivel es múltiplo de 5 y el jefe no fue derrotado)
+    setTimeout(() => {
+      checkBossLevel(match.level);
+    }, 500);
+    
     if (mode!=='Competencia'){ removeAllNameTags(); currentRoomId=null; }
   }
   function exitGame(){ running=false; paused=false; hideScreen(qs('#gameOverOverlay')); hideScreen(qs('#pauseOverlay')); hideScreen(qs('#waitingOnline')); switchSections('#game', '#menu'); removeAllNameTags(); }
@@ -1479,6 +2375,53 @@ tr[data-position] td:nth-child(2)::before { content: attr(data-position) "-"; ma
   // Menú y tablas
   refreshPlayerStateUI();
   showScreen(qs('#menu'));
+</script>
+  <div class="starfield" id="starfield"></div>
+  
+  <script>
+    const starfield = document.getElementById('starfield');
+    const numStars = 150;
+
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.animationDuration = (2 + Math.random() * 4) + 's';
+      star.style.opacity = Math.random();
+      starfield.appendChild(star);
+    }
+  </script>
+<script>
+// Sistema de juego
+let gameActive = false;
+let animationFrameId = null;
+
+function gameloop() {
+    if (!gameActive) return;
+    
+    // Lógica principal del juego
+    updateGameState();
+    renderGame();
+    
+    animationFrameId = requestAnimationFrame(gameloop);
+}
+
+function startGame() {
+    gameActive = true;
+    document.getElementById('game').style.display = 'block';
+    gameloop();
+}
+
+function stopGame() {
+    gameActive = false;
+    cancelAnimationFrame(animationFrameId);
+    document.getElementById('game').style.display = 'none';
+}
+
+// Controladores de eventos
+document.getElementById('btnPlay').addEventListener('click', startGame);
+document.getElementById('btnQuit').addEventListener('click', stopGame);
 </script>
 </body>
 </html>
